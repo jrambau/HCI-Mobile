@@ -11,7 +11,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                LoginScreen()
+                //LoginScreen()
+                AppNavHost()
             }
         }
     }

@@ -18,9 +18,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.ui.tooling.preview.Preview
+import theme.LupayTheme
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
+fun LoginScreen(
+    onNavigateToRegister: () -> Unit,
+    onNavigateToMain: () -> Unit,
+    viewModel: LoginViewModel = viewModel()
+) {
     var showPassword by remember { mutableStateOf(false) }
 
     Box(
@@ -93,7 +99,7 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
 
             Spacer(modifier = Modifier.height(24.dp))
             Button(
-                onClick = { viewModel.onLoginClicked() },
+                onClick = onNavigateToMain,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
@@ -103,7 +109,7 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
 
             Spacer(modifier = Modifier.height(8.dp))
             Button(
-                onClick = { viewModel.onRegisterClicked() },
+                onClick = onNavigateToRegister,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A1A1A))
