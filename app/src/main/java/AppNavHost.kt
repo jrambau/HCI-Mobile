@@ -5,12 +5,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHost
-import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.lupay.ui.screens.LoginScreen
 import com.example.lupay.ui.screens.RegisterScreen
+import com.example.lupay.ui.screens.WalletScreen
 
 @Composable
 fun AppNavHost(
@@ -31,8 +29,12 @@ fun AppNavHost(
         }
         composable("register") {
             RegisterScreen(
-                onNavigateToLogin = {navController.navigate("login")},
-                onNavigateToMain = { navController.navigate("main") })
+                onNavigateToLogin = { navController.navigate("login") },
+                onNavigateToMain = { navController.navigate("main") }
+            )
+        }
+        composable("wallet") {
+            WalletScreen()
         }
     }
 }
