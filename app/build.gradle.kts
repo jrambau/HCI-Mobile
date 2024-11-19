@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.lupay"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.lupay"
@@ -59,6 +59,19 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.ui)
+    implementation(libs.material3)
+    implementation(libs.ui.tooling.preview)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.activity.compose.v172)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.glance)
+    implementation(libs.androidx.animation.core.lint)
+    implementation(libs.androidx.material.icons.extended.v150)
+    implementation(libs.androidx.material3.v100)
+    implementation(libs.androidx.lifecycle.viewmodel.compose.v251)
+    implementation(libs.androidx.material.icons.extended.v105)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
