@@ -1,3 +1,5 @@
+package com.example.lupay.ui.screens
+import LoginViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -78,12 +80,16 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
             )
 
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "¿Olvido su contraseña?",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray,
+            TextButton(
+                onClick = { /* Acción al hacer clic en el botón */ },
                 modifier = Modifier.align(Alignment.End)
-            )
+            ) {
+                Text(
+                    text = "¿Olvido su contraseña?",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
             Button(
