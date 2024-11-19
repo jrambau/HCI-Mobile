@@ -31,7 +31,6 @@ fun HomeScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        bottomBar = { BottomBar() } // Add BottomBar here
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -99,6 +98,12 @@ fun PanelSection(
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
+                IconButton(onClick = onNotificationClick) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "Notificaciones"
+                    )
+                }
             }
 
             Text(

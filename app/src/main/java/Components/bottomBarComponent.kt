@@ -9,39 +9,45 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
-fun BottomBar() {
+fun BottomBar(navController: NavController) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
     NavigationBar {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home") },
-            selected = true,
-            onClick = { /* Handle navigation */ }
+            label = { Text("Panel") },
+            selected = currentRoute == "main",
+            onClick = { navController.navigate("main") }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.CreditCard, contentDescription = "Cards") },
-            label = { Text("Cards") },
-            selected = false,
-            onClick = { /* Handle navigation */ }
+            label = { Text("Tarjetas") },
+            selected = currentRoute == "wallet",
+            onClick = { navController.navigate("wallet") }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.QrCode, contentDescription = "QR") },
             label = { Text("QR") },
-            selected = false,
-            onClick = { /* Handle navigation */ }
+            selected = currentRoute == "qr",
+            onClick = { navController.navigate("qr") }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Analytics, contentDescription = "Analytics") },
-            label = { Text("Analytics") },
-            selected = false,
-            onClick = { /* Handle navigation */ }
+            label = { Text("Inversiones") },
+            selected = currentRoute == "analytics",
+            onClick = { navController.navigate("analytics") }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-            label = { Text("Profile") },
-            selected = false,
-            onClick = { /* Handle navigation */ }
+            label = { Text("Perfil") },
+            selected = currentRoute == "profile",
+            onClick = { navController.navigate("profile") }
         )
     }
 }

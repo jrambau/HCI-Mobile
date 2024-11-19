@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import com.example.lupay.ui.AppNavHost
 import com.example.lupay.ui.viewmodels.CreditCardViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,9 +37,6 @@ fun WalletScreen(
                 }
             )
         },
-        bottomBar = {
-            BottomBar()
-        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
