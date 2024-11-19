@@ -1,4 +1,5 @@
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -32,16 +33,23 @@ fun CreditCard(
 
     Card(
         modifier = modifier
-            .width(350.dp)
-            .height(200.dp),
-        shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+            .width(320.dp)
+            .height(180.dp)
+            .border(
+                width = 1.dp, // Small black border
+                color = Color.Black,
+                shape = RoundedCornerShape(16.dp)
+            ),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(20.dp)
+                .height(400.dp)
+                .padding(16.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -52,18 +60,29 @@ fun CreditCard(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.TopEnd
                 ) {
-                    Icon(
-                        painter = painterResource(
-                            id = when (cardType) {
-                                CardType.VISA -> R.drawable.visa
-                                CardType.MASTERCARD -> R.drawable.ma_symbol_opt_45_1x
-                                CardType.AMEX -> R.drawable.amx
-                                CardType.UNKNOWN -> R.drawable.ic_launcher_foreground
-                            }
-                        ),
-                        contentDescription = "Card Logo",
-                        modifier = Modifier.height(40.dp)
-                    )
+                    if (cardType != CardType.UNKNOWN) {
+                        Icon(
+                            painter = painterResource(
+                                id = when (cardType) {
+                                    CardType.VISA -> R.drawable.visa
+                                    CardType.MASTERCARD -> R.drawable.ma_symbol_opt_45_1x
+                                    CardType.AMEX -> R.drawable.amx
+                                    else -> 0 // Should never reach here
+                                }
+                            ),
+                            contentDescription = "Card Logo",
+                            modifier = Modifier
+                                .size(
+                                    when (cardType) {
+                                        CardType.VISA -> 40.dp
+                                        CardType.MASTERCARD, CardType.AMEX -> 45.dp
+                                        else -> 0.dp
+                                    }
+                                )
+                                .padding(end = 4.dp),
+                            tint = Color.Unspecified
+                        )
+                    }
                 }
 
                 // Card Number
@@ -72,46 +91,65 @@ fun CreditCard(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 2.sp,
-                    color = Color(0xFF2C3E50)
+                    color = Color(0xFF000000),
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
 
                 // Card Name
                 Text(
                     text = cardName.uppercase(),
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF2C3E50)
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF444444),
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
 
                 // Card Details
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp), // Reduce top padding for balance
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column {
+                    // Expiry Column
+                    Column(
+                        modifier = Modifier.padding(end = 22.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start
+                    ) {
                         Text(
                             text = "VENCIMIENTO",
                             fontSize = 10.sp,
-                            color = Color(0xFF7F8C8D)
+                            color = Color(0xFF999999),
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.padding(bottom = 2.dp) // Padding instead of offset
                         )
                         Text(
                             text = formatExpiry(cardExpiry, isHidden),
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2C3E50)
+                            color = Color(0xFF000000),
                         )
                     }
-                    Column {
+
+                    // CVV Column
+                    Column(
+                        modifier = Modifier.padding(start = 16.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.End
+                    ) {
                         Text(
                             text = "CVV",
                             fontSize = 10.sp,
-                            color = Color(0xFF7F8C8D)
+                            color = Color(0xFF999999),
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.padding(bottom = 2.dp) // Padding instead of offset
                         )
                         Text(
                             text = formatCVV(cvv, isHidden),
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2C3E50)
+                            color = Color(0xFF000000),
                         )
                     }
                 }

@@ -67,8 +67,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.glance)
-    implementation(libs.androidx.material3.v110)
-    implementation(libs.material3)
+    implementation(libs.androidx.material3) // Corrected reference
     implementation(libs.material3)
     implementation(libs.androidx.animation.core.lint)
     implementation(libs.androidx.material.icons.extended.v150)
@@ -84,5 +83,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.converter.gson.v290)
 
 }
