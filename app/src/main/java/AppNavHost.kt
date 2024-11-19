@@ -3,6 +3,7 @@ package com.example.lupay.ui
 import BottomBar
 import HomeScreen
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -11,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.lupay.ui.screens.LoginScreen
+import com.example.lupay.ui.screens.ProfileScreen
 import com.example.lupay.ui.screens.RegisterScreen
 import com.example.lupay.ui.screens.WalletScreen
 
@@ -71,7 +73,7 @@ fun AppNavHost(
             Scaffold(
                 bottomBar = { BottomBar(navController) }
             ) {
-                // Add your ProfileScreen here
+                ProfileScreen(modifier = Modifier.padding(it))
             }
         }
     }
