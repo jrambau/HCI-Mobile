@@ -49,8 +49,8 @@ android {
     }
 }
 dependencies {
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -67,6 +67,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.glance)
+    implementation(libs.androidx.material3.v110)
+    implementation(libs.material3)
+    implementation(libs.material3)
     implementation(libs.androidx.animation.core.lint)
     implementation(libs.androidx.material.icons.extended.v150)
     implementation(libs.androidx.material3.v100)

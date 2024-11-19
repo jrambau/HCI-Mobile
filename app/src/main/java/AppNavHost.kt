@@ -1,5 +1,6 @@
 package com.example.lupay.ui
 
+import HomeScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -35,6 +36,9 @@ fun AppNavHost(
         }
         composable("wallet") {
             WalletScreen()
+        }
+        composable("main") {
+            HomeScreen()
         }
     }
 }

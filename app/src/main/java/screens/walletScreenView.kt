@@ -1,4 +1,5 @@
 package com.example.lupay.ui.screens
+import BottomBar
 import CreditCard
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -16,7 +17,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lupay.ui.viewmodels.CreditCardViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
 fun WalletScreen(
     viewModel: CreditCardViewModel = viewModel()
@@ -36,38 +36,7 @@ fun WalletScreen(
             )
         },
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home") },
-                    selected = true,
-                    onClick = { /* Handle navigation */ }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.CreditCard, contentDescription = "Cards") },
-                    label = { Text("Cards") },
-                    selected = false,
-                    onClick = { /* Handle navigation */ }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.QrCode, contentDescription = "QR") },
-                    label = { Text("QR") },
-                    selected = false,
-                    onClick = { /* Handle navigation */ }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Analytics, contentDescription = "Analytics") },
-                    label = { Text("Analytics") },
-                    selected = false,
-                    onClick = { /* Handle navigation */ }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-                    label = { Text("Profile") },
-                    selected = false,
-                    onClick = { /* Handle navigation */ }
-                )
-            }
+            BottomBar()
         }
     ) { paddingValues ->
         Column(

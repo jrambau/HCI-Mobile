@@ -1,4 +1,6 @@
+// RegisterScreen.kt
 package com.example.lupay.ui.screens
+
 import LoginViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,9 +20,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.ui.tooling.preview.Preview
-import theme.LupayTheme
+import androidx.compose.material.icons.filled.DateRange
+import java.time.format.DateTimeFormatter
+import java.time.Instant
+import java.time.ZoneId
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     onNavigateToLogin: () -> Unit,
@@ -28,6 +33,7 @@ fun RegisterScreen(
     viewModel: LoginViewModel = viewModel()
 ) {
     var showPassword by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -56,25 +62,41 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             OutlinedTextField(
-                value = viewModel.email,
-                onValueChange = { viewModel.onEmailChanged(it) },
+                value = viewModel.name,
+                onValueChange = { viewModel.onNameChanged(it) },
                 label = { Text("Ingrese su nombre y apellido") },
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = viewModel.email,
-                onValueChange = { viewModel.onEmailChanged(it) },
-                label = { Text("Ingrese su documento") },
+                value = viewModel.birthDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "",
+                onValueChange = { },
+                label = { Text("Fecha de nacimiento") },
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                readOnly = true,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp)
+                shape = RoundedCornerShape(24.dp),
+                trailingIcon = {
+                    IconButton(onClick = { showDatePicker = true }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Seleccionar fecha"
+                        )
+                    }
+                },
+                isError = viewModel.birthDateError != null
             )
+            viewModel.birthDateError?.let { error ->
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
@@ -110,8 +132,8 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                value = viewModel.password,
-                onValueChange = { viewModel.onPasswordChanged(it) },
+                value = viewModel.confirmPassword,
+                onValueChange = { viewModel.onConfirmPasswordChanged(it) },
                 label = { Text("Vuelva a ingresar la contraseña") },
                 singleLine = true,
                 visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
@@ -129,14 +151,14 @@ fun RegisterScreen(
             )
 
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             Button(
-                onClick = onNavigateToMain,
+                onClick = { viewModel.onRegisterClicked() },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
             ) {
-                Text("Ingresar")
+                Text("Registrarse")
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -156,16 +178,16 @@ fun RegisterScreen(
                 CircularProgressIndicator()
             }
 
-            viewModel.loginResult?.let { result ->
+            viewModel.registerResult?.let { result ->
                 Spacer(modifier = Modifier.height(16.dp))
                 when (result) {
-                    is LoginResult.Success -> {
+                    is RegisterResult.Success -> {
                         Text(
-                            text = "Login exitoso",
+                            text = "Registro exitoso",
                             color = Color.Green
                         )
                     }
-                    is LoginResult.Error -> {
+                    is RegisterResult.Error -> {
                         Text(
                             text = result.message,
                             color = Color.Red
@@ -177,4 +199,38 @@ fun RegisterScreen(
             }
         }
     }
+
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = viewModel.birthDate?.atStartOfDay(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val selectedDate = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+                            viewModel.onBirthDateChanged(selectedDate)
+                        }
+                        showDatePicker = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDatePicker = false }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState,
+            )
+        }
+    }
 }
+
