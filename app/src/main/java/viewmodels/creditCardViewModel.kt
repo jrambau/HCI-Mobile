@@ -75,8 +75,8 @@ class CreditCardViewModel : ViewModel() {
             try {
                 // Using fake data instead of fetching from API
                 val fakeCards = listOf(
-                    Card(1, "1234 5678 9012 3456", "John Doe", "12/23", "123"),
-                    Card(2, "9876 5432 1098 7654", "Jane Smith", "11/24", "456")
+                    Card(1, "3455 5678 9012 3456", "John Doe", "12/23", "123"),
+                    Card(2, "4593 5432 1098 7654", "Jane Smith", "11/24", "456")
                 )
                 _cards.value = fakeCards
             } catch (e: Exception) {
