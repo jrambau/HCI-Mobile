@@ -24,22 +24,35 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = viewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(
-            text = "Tu Perfil",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
+        // Profile Title
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 15.dp).padding(top = 10.dp)
+        ) {
+            Text(
+                text = "Perfil - ",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = uiState.userName,
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
 
         ProfileMenuItem(
             title = "Información personal",
             description = "Información de tu documento de identidad y tu actividad fiscal.",
-            onClick = { /* TODO: Navigate to personal info */ }
+            onClick = { /* TODO: Navigate to personal info */ },
         )
 
         ProfileMenuItem(
@@ -65,7 +78,9 @@ fun ProfileMenuItem(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp)
+            .padding(top = 4.dp)
+            .padding(bottom = 4.dp),
         onClick = onClick,
         color = Color(0xFFE0E0E0),
         shape = RoundedCornerShape(8.dp)
