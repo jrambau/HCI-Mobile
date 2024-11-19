@@ -2,6 +2,7 @@ package com.example.lupay.ui
 
 import BottomBar
 import HomeScreen
+import TopBarComponent
 import android.annotation.SuppressLint
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -40,36 +41,42 @@ fun AppNavHost(
         }
         composable("wallet") {
             Scaffold(
-                bottomBar = { BottomBar(navController) }
+                bottomBar = { BottomBar(navController) },
+                topBar = {TopBarComponent("Tarjetas")}
             ) {
                 WalletScreen()
             }
         }
         composable("main") {
             Scaffold(
-                bottomBar = { BottomBar(navController) }
+                bottomBar = { BottomBar(navController) },
+                topBar = {TopBarComponent("General")}
             ) {
                 HomeScreen()
             }
+
         }
 
         composable("qr") {
             Scaffold(
                 bottomBar = { BottomBar(navController) }
+
             ) {
                 // Add your QRScreen here
             }
         }
         composable("analytics") {
             Scaffold(
-                bottomBar = { BottomBar(navController) }
+                bottomBar = { BottomBar(navController) },
+                topBar = {TopBarComponent("Inversiones")}
             ) {
                 // Add your AnalyticsScreen here
             }
         }
         composable("profile") {
             Scaffold(
-                bottomBar = { BottomBar(navController) }
+                bottomBar = { BottomBar(navController) },
+                topBar = {TopBarComponent("Perfil")}
             ) {
                 // Add your ProfileScreen here
             }

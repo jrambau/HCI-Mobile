@@ -180,21 +180,16 @@ fun RegisterScreen(
 
             viewModel.registerResult?.let { result ->
                 Spacer(modifier = Modifier.height(16.dp))
-                when (result) {
-                    is RegisterResult.Success -> {
-                        Text(
-                            text = "Registro exitoso",
-                            color = Color.Green
-                        )
-                    }
-                    is RegisterResult.Error -> {
-                        Text(
-                            text = result.message,
-                            color = Color.Red
-                        )
-                    }
-
-                    else -> {}
+                if (result.success) {
+                    Text(
+                        text = "Registro exitoso",
+                        color = Color.Green
+                    )
+                } else {
+                    Text(
+                        text = result.message,
+                        color = Color.Red
+                    )
                 }
             }
         }
@@ -233,4 +228,3 @@ fun RegisterScreen(
         }
     }
 }
-

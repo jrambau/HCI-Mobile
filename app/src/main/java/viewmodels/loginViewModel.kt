@@ -37,8 +37,6 @@ class LoginViewModel : ViewModel() {
         private set
     var isLoading by mutableStateOf(false)
         private set
-    var registerResult by mutableStateOf<RegisterResult?>(null)
-        private set
     var birthDate by mutableStateOf<LocalDate?>(null)
         private set
     var birthDateError by mutableStateOf<String?>(null)
@@ -96,6 +94,9 @@ class LoginViewModel : ViewModel() {
         // Implement password recovery logic
     }
 
+    var registerResult by mutableStateOf<RegisterResult?>(null)
+        private set
+
     fun onRegisterClicked() {
         viewModelScope.launch {
             isLoading = true
@@ -110,7 +111,7 @@ class LoginViewModel : ViewModel() {
                 val result = ApiManager.apiService.registerUser(request)
                 registerResult = result
             } catch (e: Exception) {
-                registerResult = RegisterResult.Error("Failed to register: ${e.message}")
+                registerResult = RegisterResult(success = false, message = "Failed to register: ${e.message}")
             } finally {
                 isLoading = false
             }
@@ -123,7 +124,8 @@ sealed class LoginResult {
     data class Error(val message: String) : LoginResult()
 }
 
-sealed class RegisterResult {
-    object Success : RegisterResult()
-    data class Error(val message: String) : RegisterResult()
-}
+@Serializable
+data class RegisterResult(
+    val success: Boolean,
+    val message: String,
+)

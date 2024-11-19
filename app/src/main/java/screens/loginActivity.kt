@@ -19,7 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.tooling.preview.Preview
-import theme.LupayTheme
+
 
 @Composable
 fun LoginScreen(

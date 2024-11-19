@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Lupay</string>
+    <string name="Bienvenido">Bienvenido</string>
+    <string name="Iniciar_sesion">Iniciar sesión</string>
+    <string name="Registrarse">Registrarse</string>
+
 </resources>
