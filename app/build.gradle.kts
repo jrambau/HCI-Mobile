@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -69,6 +70,7 @@ dependencies {
     implementation(libs.androidx.glance)
     implementation(libs.androidx.material3.v110)
     implementation(libs.material3)
+    implementation(libs.logging.interceptor)
     implementation(libs.material3)
     implementation(libs.androidx.animation.core.lint)
     implementation(libs.androidx.material.icons.extended.v150)
@@ -77,12 +79,18 @@ dependencies {
     implementation(libs.androidx.material.icons.extended.v105)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.serialization.core)
+    implementation(libs.retrofit.v2110)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.kotlinx.serialization.json.v163)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
+    implementation(libs.converter.kotlinx.serialization)
     debugImplementation(libs.androidx.ui.test.manifest)
 
 }

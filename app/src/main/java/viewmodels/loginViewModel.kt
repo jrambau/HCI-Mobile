@@ -3,6 +3,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.lupay.ui.network.ApiManager
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -11,7 +12,9 @@ import java.time.Period
 import retrofit2.http.Body
 import retrofit2.http.POST
 import java.time.format.DateTimeFormatter
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class RegisterRequest(
     val firstName: String,
     val lastName: String,
@@ -20,10 +23,7 @@ data class RegisterRequest(
     val password: String
 )
 
-interface UserService {
-    @POST("api/user")
-    suspend fun registerUser(@Body request: RegisterRequest): RegisterResult
-}
+
 
 class LoginViewModel : ViewModel() {
     val loginResult: Any = false
@@ -44,12 +44,6 @@ class LoginViewModel : ViewModel() {
     var birthDateError by mutableStateOf<String?>(null)
         private set
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("http://localhost:8080/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val userService = retrofit.create(UserService::class.java)
 
     fun onNameChanged(newName: String) {
         name = newName
@@ -113,7 +107,7 @@ class LoginViewModel : ViewModel() {
                     email = email,
                     password = password
                 )
-                val result = userService.registerUser(request)
+                val result = ApiManager.apiService.registerUser(request)
                 registerResult = result
             } catch (e: Exception) {
                 registerResult = RegisterResult.Error("Failed to register: ${e.message}")
