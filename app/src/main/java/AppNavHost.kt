@@ -3,7 +3,6 @@ package com.example.lupay.ui
 import BottomBar
 import HomeScreen
 import LoginViewModel
-import RegisterScreen
 import TopBarComponent
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.padding
@@ -17,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.lupay.ui.screens.InvestmentScreen
 import com.example.lupay.ui.screens.LoginScreen
 import com.example.lupay.ui.screens.ProfileScreen
+import com.example.lupay.ui.screens.RegisterScreen
 import com.example.lupay.ui.screens.WalletScreen
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

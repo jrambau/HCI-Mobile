@@ -21,9 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lupay.ui.viewmodels.CreditCardViewModel
 import theme.CustomTheme
+import androidx.navigation.NavHostController
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WalletScreen(
+    navController: NavHostController, // Pass NavController to navigate
     viewModel: CreditCardViewModel = viewModel()
 ) {
     CustomTheme {
@@ -59,9 +62,8 @@ fun WalletScreen(
                         )
                     }
 
-                    // Add Button (right)
                     Button(
-                        onClick = { /* Handle add card */ },
+                        onClick = { navController.navigate("add_card") }, // Navigate to AddCardScreen
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null)
