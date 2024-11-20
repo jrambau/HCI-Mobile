@@ -2,6 +2,7 @@ package com.example.lupay.ui.network
 
 import RegisterRequest
 import RegisterResult
+import RegisterReturn
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -26,7 +27,7 @@ private val retrofit = Retrofit.Builder()
 
 interface ApiService {
     @POST("api/user")
-    suspend fun registerUser(@Body request: RegisterRequest): RegisterResult
+    suspend fun registerUser(@Body request: RegisterRequest): RegisterReturn
 }
 
 object ApiManager {

@@ -39,11 +39,11 @@ fun HomeScreen(
                 .padding(16.dp)
         ) {
             item {
+                Spacer(modifier = Modifier.height(40.dp))
                 PanelSection(
                     availableBalance = uiState.availableBalance,
-                    onNotificationClick = { /* TODO */ }
                 )
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(40.dp))
             }
 
             item {
@@ -60,7 +60,7 @@ fun HomeScreen(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 SearchBar(
                     onSearchQueryChange = { query ->
                         viewModel.updateSearchQuery(query)
@@ -80,40 +80,31 @@ fun HomeScreen(
 @Composable
 fun PanelSection(
     availableBalance: Int,
-    onNotificationClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(3.dp) // Add padding to the Card
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp) // Adjust padding inside the Column
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Panel",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    text = "Disponible",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
                 )
-                IconButton(onClick = onNotificationClick) {
-                    Icon(
-                        imageVector = Icons.Default.Notifications,
-                        contentDescription = "Notificaciones"
-                    )
-                }
+
             }
 
-            Text(
-                text = "Disponible",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
-            )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(top = 8.dp) // Add padding to the Row
             ) {
                 Text(
                     text = "$ $availableBalance",

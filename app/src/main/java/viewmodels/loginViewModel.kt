@@ -41,12 +41,15 @@ class LoginViewModel : ViewModel() {
         private set
     var birthDateError by mutableStateOf<String?>(null)
         private set
-
+    var lastname by mutableStateOf("")
+        private set
 
     fun onNameChanged(newName: String) {
         name = newName
     }
-
+    fun onLastNameChanged(newLastName: String) {
+        lastname = newLastName
+    }
     fun onEmailChanged(newEmail: String) {
         email = newEmail
     }
@@ -96,8 +99,25 @@ class LoginViewModel : ViewModel() {
 
     var registerResult by mutableStateOf<RegisterResult?>(null)
         private set
+    var registerReturn by mutableStateOf<RegisterReturn?>(null)
+        private set
 
     fun onRegisterClicked() {
+        if (name.isBlank() || lastname.isBlank() || birthDate == null || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+            registerResult = RegisterResult(
+                success = false,
+                message = "Todos los campos son obligatorios",
+            )
+            return
+        }
+
+        if (password != confirmPassword) {
+            registerResult = RegisterResult(
+                success = false,
+                message = "Las contraseñas no coinciden",
+            )
+            return
+        }
         viewModelScope.launch {
             isLoading = true
             try {
@@ -109,9 +129,17 @@ class LoginViewModel : ViewModel() {
                     password = password
                 )
                 val result = ApiManager.apiService.registerUser(request)
-                registerResult = result
+                registerReturn = result
+                registerResult = RegisterResult(success = true, message = "Registro exitoso")
             } catch (e: Exception) {
-                registerResult = RegisterResult(success = false, message = "Failed to register: ${e.message}")
+                registerReturn = RegisterReturn(
+                    id = -1,
+                    firstName = "",
+                    lastName = "",
+                    birthdate = "",
+                    email = ""
+                )
+                registerResult = RegisterResult(success = false, message = "Error al registrar ${e.message}")
             } finally {
                 isLoading = false
             }
@@ -125,7 +153,14 @@ sealed class LoginResult {
 }
 
 @Serializable
+data class RegisterReturn(
+    val id: Int,
+    val firstName: String,
+    val lastName: String,
+    val birthdate: String,
+    val email: String
+)
 data class RegisterResult(
     val success: Boolean,
-    val message: String,
+    val message: String
 )

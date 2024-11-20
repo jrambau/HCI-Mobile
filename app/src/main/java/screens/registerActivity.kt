@@ -64,14 +64,23 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = viewModel.name,
                 onValueChange = { viewModel.onNameChanged(it) },
-                label = { Text("Ingrese su nombre y apellido") },
+                label = { Text("Ingrese su nombre") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-
+            OutlinedTextField(
+                value = viewModel.lastname,
+                onValueChange = { viewModel.onLastNameChanged(it) },
+                label = { Text("Ingrese su apellido") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = viewModel.birthDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "",
                 onValueChange = { },
