@@ -99,11 +99,12 @@ fun WalletScreen(
                                     modifier = Modifier
                                 )
 
-                                Spacer(modifier = Modifier.height(8.dp))
+                                // Spacer between the card and the delete button
+                                Spacer(modifier = Modifier.height(16.dp)) // Adjust the height as needed
 
                                 // Circular Red Delete Button
                                 IconButton(
-                                    onClick = { /* Handle remove card */ },
+                                    onClick = { viewModel.deleteCard(card.id) }, // Call deleteCard method
                                     modifier = Modifier
                                         .size(48.dp) // Ensures the button is a circle
                                         .clip(CircleShape) // Clips the button into a circle

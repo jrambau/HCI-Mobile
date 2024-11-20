@@ -2,7 +2,6 @@ package com.example.lupay.ui
 
 import BottomBar
 import HomeScreen
-import LoginViewModel
 import RegisterScreen
 import TopBarComponent
 import android.annotation.SuppressLint
