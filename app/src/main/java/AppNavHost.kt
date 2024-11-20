@@ -3,6 +3,7 @@ package com.example.lupay.ui
 import BottomBar
 import HomeScreen
 import LoginViewModel
+import RegisterScreen
 import TopBarComponent
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.padding
@@ -12,12 +13,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.lupay.ui.screens.InvestmentScreen
 import com.example.lupay.ui.screens.LoginScreen
 import com.example.lupay.ui.screens.ProfileScreen
-import com.example.lupay.ui.screens.RegisterScreen
 import com.example.lupay.ui.screens.WalletScreen
+import com.example.lupay.ui.screens.AddCardScreen // Import AddCardScreen
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AppNavHost(
@@ -39,21 +42,21 @@ fun AppNavHost(
         composable("register") {
             RegisterScreen(
                 onNavigateToLogin = { navController.navigate("login") },
-                onNavigateToMain = { navController.navigate("main") },
+                onNavigateToMain = { navController.navigate("main") }
             )
         }
         composable("wallet") {
             Scaffold(
                 bottomBar = { BottomBar(navController) },
-                topBar = { TopBarComponent("john doe", "Tarjetas", navController) } // Pass navController
-            ) { paddingValues -> // Ensure the padding values are passed to the WalletScreen
-                WalletScreen()
+                topBar = { TopBarComponent("john doe", "Tarjetas", navController) }
+            ) { paddingValues ->
+                WalletScreen(navController = navController, viewModel = viewModel()) // Pass ViewModel here
             }
         }
         composable("main") {
             Scaffold(
                 bottomBar = { BottomBar(navController) },
-                topBar = { TopBarComponent("john doe", "General", navController) } // Pass navController
+                topBar = { TopBarComponent("john doe", "General", navController) }
             ) { paddingValues ->
                 HomeScreen()
             }
@@ -69,17 +72,25 @@ fun AppNavHost(
         composable("analytics") {
             Scaffold(
                 bottomBar = { BottomBar(navController) },
-                topBar = { TopBarComponent("john doe", "Inversiones", navController) } // Pass navController
-            ) {
+                topBar = { TopBarComponent("john doe", "Inversiones", navController) }
+            ) { paddingValues ->
                 InvestmentScreen()
             }
         }
         composable("profile") {
             Scaffold(
                 bottomBar = { BottomBar(navController) },
-                topBar = { TopBarComponent("john doe", "Perfil", navController) } // Pass navController
-            ) {
-                ProfileScreen(modifier = Modifier.padding(it))
+                topBar = { TopBarComponent("john doe", "Perfil", navController) }
+            ) { paddingValues ->
+                ProfileScreen(modifier = Modifier.padding(paddingValues))
+            }
+        }
+        composable("add_card") {
+            Scaffold(
+                bottomBar = { BottomBar(navController) }
+            ) { paddingValues ->
+                // Create the AddCardScreen with necessary ViewModel
+                AddCardScreen(navController = navController, viewModel = viewModel()) // Pass ViewModel here
             }
         }
     }
