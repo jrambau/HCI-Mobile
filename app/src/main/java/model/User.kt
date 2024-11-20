@@ -18,6 +18,7 @@ fun asNetworkModel(user: User): NetworkUser {
         name = user.name,
         lastname = user.lastname,
         birthdate = user.birthdate.toString(),
-        email = user.email
+        email = user.email,
+        password = user.password
     )
 }
