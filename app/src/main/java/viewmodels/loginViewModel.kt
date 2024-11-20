@@ -110,9 +110,9 @@ class LoginViewModel(
             return
         }
          val user = User(
-            name = name,
-            lastname = lastname,
-            birthdate = birthDate!!,
+            firstName = name,
+            lastName = lastname,
+            birthDate = birthDate!!,
             email = email,
              id = null,
             password = password

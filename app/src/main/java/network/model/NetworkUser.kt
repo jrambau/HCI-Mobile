@@ -6,27 +6,32 @@ import java.time.format.DateTimeFormatter
 
 
 @Serializable
-data class NetworkUser (
+data class NetworkUserResponse(
+    val user: NetworkUser
+)
+
+@Serializable
+data class NetworkUser(
     val id: Int?,
-    val name: String,
-    val lastname: String,
-    val birthdate: String,
+    val firstName: String,
+    val lastName: String,
+    val birthDate: String,
     val email: String,
-    val password: String?
+    val password: String? = null
 ) {
     fun getBirthdateAsLocalDate(): LocalDate {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        return LocalDate.parse(birthdate, formatter)
-
+        return LocalDate.parse(birthDate, formatter)
     }
 }
-fun asModel(user: NetworkUser): model.User {
+
+fun asModel(userResponse: NetworkUserResponse): model.User {
     return model.User(
-        id = user.id,
-        name = user.name,
-        lastname = user.lastname,
-        birthdate = user.getBirthdateAsLocalDate(),
-        email = user.email,
-        password = user.password
+        id = userResponse.user.id,
+        firstName = userResponse.user.firstName,
+        lastName = userResponse.user.lastName,
+        birthDate = userResponse.user.getBirthdateAsLocalDate(),
+        email = userResponse.user.email,
+        password = userResponse.user.password
     )
 }
