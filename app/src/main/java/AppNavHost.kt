@@ -19,6 +19,7 @@ import com.example.lupay.ui.screens.LoginScreen
 import com.example.lupay.ui.screens.ProfileScreen
 import com.example.lupay.ui.screens.WalletScreen
 import com.example.lupay.ui.screens.AddCardScreen // Import AddCardScreen
+import com.example.lupay.ui.screens.PersonalInfoScreen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -81,7 +82,10 @@ fun AppNavHost(
                 bottomBar = { BottomBar(navController) },
                 topBar = { TopBarComponent("john doe", "Perfil", navController) }
             ) { paddingValues ->
-                ProfileScreen(modifier = Modifier.padding(paddingValues))
+                ProfileScreen(
+                    modifier = Modifier.padding(paddingValues),
+                    navController = navController
+                )
             }
         }
         composable("add_card") {
@@ -90,6 +94,15 @@ fun AppNavHost(
             ) { paddingValues ->
                 // Create the AddCardScreen with necessary ViewModel
                 AddCardScreen(navController = navController, viewModel = viewModel()) // Pass ViewModel here
+            }
+        }
+        composable("personal_info") {
+            Scaffold(
+            ) { paddingValues ->
+                PersonalInfoScreen(
+                    navController = navController,
+                    modifier = Modifier.padding(paddingValues)
+                )
             }
         }
     }

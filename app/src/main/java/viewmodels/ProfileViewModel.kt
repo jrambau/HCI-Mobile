@@ -6,7 +6,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 data class ProfileUiState(
-    val userName: String = "Juan Pérez",
+    val userName: String = "John Doe",
+    val firstName: String = "John",
+    val lastName: String = "Doe",
+    val birthDate: String? = "08/01/1999",
+    val fiscalActivity: String? = null,
     val isLoading: Boolean = false,
     val error: String? = null
 )

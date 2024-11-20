@@ -14,11 +14,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lupay.ui.viewmodels.ProfileViewModel
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
+    navController: NavController,
     viewModel: ProfileViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -43,7 +45,7 @@ fun ProfileScreen(
         ProfileMenuItem(
             title = "Información personal",
             description = "Información de tu documento de identidad y tu actividad fiscal.",
-            onClick = { /* TODO: Navigate to personal info */ },
+            onClick = { navController.navigate("personal_info")},
         )
 
         ProfileMenuItem(
