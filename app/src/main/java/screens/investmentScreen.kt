@@ -62,7 +62,7 @@ fun InvestmentScreen(
         }
     }
 
-    var showConfirmationDialog by remember { mutableStateOf(false) }
+    var withdrawal by remember { mutableStateOf(false) }
     var invest by remember { mutableStateOf(false) }
 
 
@@ -154,7 +154,7 @@ fun InvestmentScreen(
             )
 
             Button(
-                onClick = { showConfirmationDialog = true; invest = true },
+                onClick = { invest = true },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
             ) {
@@ -171,7 +171,7 @@ fun InvestmentScreen(
             )
 
             Button(
-                onClick = { showConfirmationDialog = true },
+                onClick = { withdrawal = true },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
@@ -179,29 +179,31 @@ fun InvestmentScreen(
             }
         }
 
-        // Confirmation Dialog
-        if (showConfirmationDialog) {
+        if (invest) {
             ConfirmationDialog(
                 onConfirm = {
-                    // Perform investment or withdrawal action
-                    if (invest) {
-                        viewModel.onInvest()
-                    } else {
-                        viewModel.onWithdraw()
-                    }
-                    showConfirmationDialog = false // Close dialog on confirmation
+                    viewModel.onInvest()
+                    invest = false // Close dialog on confirmation
                 },
                 onDismiss = {
-                    showConfirmationDialog = false // Close dialog on dismiss
+                    invest = false // Close dialog on dismiss
                 },
-                title = if (invest) "¿Confirmar inversión?" else "¿Confirmar retiro?",
-                message = if (invest) {
-                    "¿Estás seguro de invertir $${uiState.investmentAmount}?"
-                } else {
-                    "¿Estás seguro de retirar $${uiState.withdrawalAmount}?"
-                }
+                title ="Confirmar inversión" ,
+                message = "¿Estás seguro de invertir $${uiState.investmentAmount}?"
             )
-            invest = false
+        }
+        if (withdrawal) {
+            ConfirmationDialog(
+                onConfirm = {
+                    viewModel.onWithdraw()
+                    withdrawal = false // Close dialog on confirmation
+                },
+                onDismiss = {
+                    withdrawal = false // Close dialog on dismiss
+                },
+                title ="Confirmar rescate" ,
+                message = "¿Estás seguro de rescatar $${uiState.withdrawalAmount}?"
+            )
         }
     }
 }

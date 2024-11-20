@@ -34,6 +34,7 @@ fun WalletScreen(
         val cards by viewModel.cards.collectAsState()
         val uiState by viewModel.uiState.collectAsState()
         var delete by remember { mutableStateOf(false) }
+        var selectedCardId by remember { mutableStateOf<Int>(value = 0) }
 
         Scaffold { paddingValues ->
             Column(
@@ -107,7 +108,7 @@ fun WalletScreen(
 
                                 // Circular Red Delete Button
                                 IconButton(
-                                    onClick = { delete = true}, // Call deleteCard method
+                                    onClick = { selectedCardId = card.id ; delete = true}, // Call deleteCard method
                                     modifier = Modifier
                                         .size(48.dp) // Ensures the button is a circle
                                         .clip(CircleShape) // Clips the button into a circle
@@ -121,21 +122,21 @@ fun WalletScreen(
                                 }
                             }
                         }
-                        if(delete){
-                            ConfirmationDialog(
-                                onConfirm = {
-                                    viewModel.deleteCard(card.id)
-                                    delete = false // Close dialog on confirmation
-                                },
-                                onDismiss = {
-                                    delete = false
-                                },
-                                title = "Eliminar tarjeta",
-                                message = "¿Estás seguro de eliminar la tarjeta?"
-
-                            )
-                        }
                     }
+                }
+                if(delete){
+                    ConfirmationDialog(
+                        onConfirm = {
+                            viewModel.deleteCard(selectedCardId)
+                            delete = false // Close dialog on confirmation
+                        },
+                        onDismiss = {
+                            delete = false
+                        },
+                        title = "Eliminar tarjeta",
+                        message = "¿Estás seguro de eliminar la tarjeta?"
+
+                    )
                 }
             }
         }
