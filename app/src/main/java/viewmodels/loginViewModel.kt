@@ -1,28 +1,30 @@
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.lupay.ui.model.UserAnswer
+import com.example.lupay.MyApplication
 import com.example.lupay.ui.network.ApiManager
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
 import kotlinx.serialization.Serializable
-
-@Serializable
-data class RegisterRequest(
-    val firstName: String,
-    val lastName: String,
-    val birthDate: String,
-    val email: String,
-    val password: String
-)
+import model.User
+import network.Repository.UserRepository
+import java.sql.Date
 
 
+class LoginViewModel(
+    private val sessionManager: SessionManager,
+    private val userRepository: UserRepository
+) : ViewModel() {
 
-class LoginViewModel : ViewModel() {
+    var uiState by mutableStateOf(GeneralUiState(isAuthenticated = sessionManager.loadAuthToken() != null))
+        private set
     val loginResult: Any = false
     var name by mutableStateOf("")
         private set
@@ -94,36 +96,30 @@ class LoginViewModel : ViewModel() {
         // Implement password recovery logic
     }
 
-    var registerResult: RegisterResult by mutableStateOf(RegisterResult.Loading)
-        private set
+
 
 
     fun onRegisterClicked() {
         if (name.isBlank() || lastname.isBlank() || birthDate == null || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
-            registerResult = RegisterResult.Error("Por favor, complete todos los campos")
+            uiState = uiState.copy(error = Error("Por favor, complete todos los campos."))
             return
         }
 
         if (password != confirmPassword) {
-            registerResult = RegisterResult.Error("Las contraseñas no coinciden")
+            uiState = uiState.copy(error = Error("Las contraseñas no coinciden."))
             return
         }
-        viewModelScope.launch {
-            registerResult = RegisterResult.Loading
-            try {
-                val request = RegisterRequest(
-                    firstName = name,
-                    lastName = lastname,
-                    birthDate = birthDate?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: "",
-                    email = email,
-                    password = password
-                )
-                val result = ApiManager.apiService.registerUser(request)
-                registerResult= RegisterResult.Success(result)
-            } catch (e: Exception) {
-                registerResult = RegisterResult.Error(e.message ?: "Error desconocido")
-        }
-    }
+         val user = User(
+            name = name,
+            lastname = lastname,
+            birthdate = birthDate!!,
+            email = email,
+             id = null
+        )
+        runOnViewModelScope(
+        {userRepository.registerUser(user)},
+            {state, _ -> state.copy(isAuthenticated = false)}
+    )
 }
 
 sealed class LoginResult {
@@ -131,10 +127,29 @@ sealed class LoginResult {
     data class Error(val message: String) : LoginResult()
 }
 
-
-sealed interface RegisterResult{
-   data class Success(val answer: UserAnswer) : RegisterResult
-    data class Error(val message: String) : RegisterResult
-    data object Loading : RegisterResult
+private fun<R> runOnViewModelScope(
+    block: suspend () -> R,
+    updateState: (GeneralUiState, R) -> GeneralUiState
+): Job = viewModelScope.launch {
+    uiState = uiState.copy(isFetching = true, error = null)
+    runCatching { block()
+    }.onSuccess { response ->
+        uiState = updateState(uiState, response).copy(isFetching = false,success = true)
+    }.onFailure {e->
+        uiState = uiState.copy(isFetching = false, error = Error(e.message))
+        Log.e("LoginViewModel", "Error", e)
+    }
 }
+    companion object {
+        fun provideFactory(application: MyApplication
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return LoginViewModel(
+                    application.sessionManager,
+                    application.userRepository
+                ) as T
+            }
+        }
+    }
 }

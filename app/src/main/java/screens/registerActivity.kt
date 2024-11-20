@@ -1,6 +1,5 @@
-// RegisterScreen.kt
-package com.example.lupay.ui.screens
 
+import GeneralUiState
 import LoginViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -21,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.ui.platform.LocalContext
+import com.example.lupay.MyApplication
 import java.time.format.DateTimeFormatter
 import java.time.Instant
 import java.time.ZoneId
@@ -31,8 +32,9 @@ fun RegisterScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToMain: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = viewModel(),
+    viewModel: LoginViewModel = viewModel(factory = LoginViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
 ) {
+    val uiState = viewModel.uiState
     var showPassword by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
 
@@ -189,30 +191,15 @@ fun RegisterScreen(
                 CircularProgressIndicator()
             }
 
-            var registerResult = viewModel.registerResult
-            when (registerResult) {
-               is LoginViewModel.RegisterResult.Loading -> {
-                    CircularProgressIndicator()
-                }
 
-                is LoginViewModel.RegisterResult.Success -> {
-                    Text(
-                        text= registerResult.answer.toString(),
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+            if (uiState.isFetching) {
+                CircularProgressIndicator()
+            } else {
+                if (uiState.error != null) {
+                    Text(text = "Error: ${uiState.error.message}")
+                } else if (uiState.success) {
                     onNavigateToLogin()
                 }
-
-                is LoginViewModel.RegisterResult.Error -> {
-                    Text(
-                        text = registerResult.message,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-
-                else -> {}
             }
         }
 
