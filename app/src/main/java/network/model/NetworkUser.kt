@@ -11,7 +11,8 @@ data class NetworkUser (
     val name: String,
     val lastname: String,
     val birthdate: String,
-    val email: String
+    val email: String,
+    val password: String?
 ) {
     fun getBirthdateAsLocalDate(): LocalDate {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -25,6 +26,7 @@ fun asModel(user: NetworkUser): model.User {
         name = user.name,
         lastname = user.lastname,
         birthdate = user.getBirthdateAsLocalDate(),
-        email = user.email
+        email = user.email,
+        password = user.password
     )
 }

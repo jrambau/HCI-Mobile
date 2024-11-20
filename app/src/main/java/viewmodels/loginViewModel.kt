@@ -114,7 +114,8 @@ class LoginViewModel(
             lastname = lastname,
             birthdate = birthDate!!,
             email = email,
-             id = null
+             id = null,
+            password = password
         )
         runOnViewModelScope(
         {userRepository.registerUser(user)},

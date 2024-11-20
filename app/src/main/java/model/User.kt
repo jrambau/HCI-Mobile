@@ -9,7 +9,8 @@ class User(
     val name: String,
     val lastname: String,
     val birthdate: LocalDate,
-    val email: String
+    val email: String,
+    val password: String?
 )
 fun asNetworkModel(user: User): NetworkUser {
     return NetworkUser(
