@@ -20,6 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import com.example.lupay.R
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.IconButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,7 +83,9 @@ fun HomeScreen(
 @Composable
 fun PanelSection(
     availableBalance: Int,
+    viewModel: HomeViewModel = viewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -107,14 +112,18 @@ fun PanelSection(
                 modifier = Modifier.padding(top = 8.dp) // Add padding to the Row
             ) {
                 Text(
-                    text = "$ $availableBalance",
+                    text = if (uiState.isHidden) "********" else "$ $availableBalance",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
-                Icon(
-                    imageVector = Icons.Default.Visibility,
-                    contentDescription = "Ver"
-                )
+                IconButton(
+                    onClick = { viewModel.toggleHidden() },
+                ) {
+                    Icon(
+                        imageVector = if (uiState.isHidden) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                        contentDescription = if (uiState.isHidden) "Ocultar" else "Mostrar"
+                    )
+                }
             }
 
             Row(

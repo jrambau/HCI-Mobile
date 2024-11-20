@@ -51,6 +51,12 @@ class HomeViewModel : ViewModel() {
         )
     }
 
+    fun toggleHidden() {
+        _uiState.update { currentState ->
+            currentState.copy(isHidden = !currentState.isHidden)
+        }
+    }
+
     fun updateSearchQuery(query: String) {
         _uiState.update { currentState ->
             val filteredTransactions = if (query.isBlank()) {
@@ -74,7 +80,8 @@ data class HomeUiState(
     val monthlyExpenses: List<MonthlyExpense> = emptyList(),
     val transactions: List<Transaction> = emptyList(),
     val searchQuery: String = "",
-    val filteredTransactions: List<Transaction> = emptyList()
+    val filteredTransactions: List<Transaction> = emptyList(),
+    val isHidden: Boolean = true
 )
 
 data class MonthlyExpense(
