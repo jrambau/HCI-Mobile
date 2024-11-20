@@ -28,11 +28,11 @@ interface WalletApiService {
     @POST("wallet/cards")
     suspend fun addCard(@Body request: NetworkCard ): Response<NetworkCard>
     @DELETE("wallet/cards/{cardId}")
-    suspend fun deleteCard(@Path("cardId") cardId: Int): Unit
+    suspend fun deleteCard(@Path("cardId") cardId: Int): Response<Unit>
     @GET("wallet/daily-returns")
     suspend fun getDailyReturns(@Query("page") page: Int): Response<Array<NetworkInvestInfo>>
     @GET("wallet/daily-interest")
-    suspend fun getDailyInterest(): Response<Array<NetworkInterest>>
+    suspend fun getDailyInterest(): Response<NetworkInterest>
     @GET("wallet/details")
     suspend fun getWalletDetails(): Response<NetworkWalletInfo>
 }
