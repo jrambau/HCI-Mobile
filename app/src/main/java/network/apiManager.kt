@@ -1,8 +1,7 @@
 package com.example.lupay.ui.network
 
 import RegisterRequest
-import RegisterResult
-import RegisterReturn
+import com.example.lupay.ui.model.UserAnswer
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -12,7 +11,7 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-private const val BASE_URL = "http://localhost:8080/"
+private const val BASE_URL = "http://localhost:8080/api/"
 private val httpLoggingInterceptor = HttpLoggingInterceptor()
     .setLevel(HttpLoggingInterceptor.Level.BODY)
 private val okHttpClient = OkHttpClient.Builder()
@@ -26,8 +25,8 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface ApiService {
-    @POST("api/user")
-    suspend fun registerUser(@Body request: RegisterRequest): RegisterReturn
+    @POST("user")
+    suspend fun registerUser(@Body request: RegisterRequest): UserAnswer
 }
 
 object ApiManager {

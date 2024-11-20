@@ -2,6 +2,7 @@ package com.example.lupay.ui
 
 import BottomBar
 import HomeScreen
+import LoginViewModel
 import TopBarComponent
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.example.lupay.ui.screens.InvestmentScreen
 import com.example.lupay.ui.screens.LoginScreen
 import com.example.lupay.ui.screens.ProfileScreen
 import com.example.lupay.ui.screens.RegisterScreen
@@ -38,7 +40,7 @@ fun AppNavHost(
         composable("register") {
             RegisterScreen(
                 onNavigateToLogin = { navController.navigate("login") },
-                onNavigateToMain = { navController.navigate("main") }
+                onNavigateToMain = { navController.navigate("main") },
             )
         }
         composable("wallet") {
@@ -72,7 +74,7 @@ fun AppNavHost(
                 bottomBar = { BottomBar(navController) },
                 topBar = {TopBarComponent("Inversiones")}
             ) {
-                // Add your AnalyticsScreen here
+               InvestmentScreen()
             }
         }
         composable("profile") {

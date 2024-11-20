@@ -124,22 +124,22 @@ fun LoginScreen(
 
             viewModel.loginResult?.let { result ->
                 Spacer(modifier = Modifier.height(16.dp))
-                when (result) {
-                    is LoginResult.Success -> {
-                        Text(
-                            text = "Login exitoso",
-                            color = Color.Green
-                        )
-                    }
-                    is LoginResult.Error -> {
-                        Text(
-                            text = result.message,
-                            color = Color.Red
-                        )
-                    }
-
-                    else -> {}
-                }
+//                when (result) {
+//                    is LoginResult.Success -> {
+//                        Text(
+//                            text = "Login exitoso",
+//                            color = Color.Green
+//                        )
+//                    }
+//                    is LoginResult.Error -> {
+//                        Text(
+//                            text = result.message,
+//                            color = Color.Red
+//                        )
+//                    }
+//
+//                    else -> {}
+              //  }
             }
         }
     }

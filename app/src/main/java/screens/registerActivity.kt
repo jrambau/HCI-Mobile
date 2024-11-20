@@ -30,7 +30,8 @@ import java.time.ZoneId
 fun RegisterScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToMain: () -> Unit,
-    viewModel: LoginViewModel = viewModel()
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = viewModel(),
 ) {
     var showPassword by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
@@ -82,7 +83,8 @@ fun RegisterScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
-                value = viewModel.birthDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) ?: "",
+                value = viewModel.birthDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    ?: "",
                 onValueChange = { },
                 label = { Text("Fecha de nacimiento") },
                 singleLine = true,
@@ -187,22 +189,33 @@ fun RegisterScreen(
                 CircularProgressIndicator()
             }
 
-            viewModel.registerResult?.let { result ->
-                Spacer(modifier = Modifier.height(16.dp))
-                if (result.success) {
+            var registerResult = viewModel.registerResult
+            when (registerResult) {
+               is LoginViewModel.RegisterResult.Loading -> {
+                    CircularProgressIndicator()
+                }
+
+                is LoginViewModel.RegisterResult.Success -> {
                     Text(
-                        text = "Registro exitoso",
-                        color = Color.Green
+                        text= registerResult.answer.toString(),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.bodyMedium
                     )
-                } else {
+                    onNavigateToLogin()
+                }
+
+                is LoginViewModel.RegisterResult.Error -> {
                     Text(
-                        text = result.message,
-                        color = Color.Red
+                        text = registerResult.message,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
+
+                else -> {}
             }
         }
-    }
+
 
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
@@ -236,4 +249,4 @@ fun RegisterScreen(
             )
         }
     }
-}
+}}

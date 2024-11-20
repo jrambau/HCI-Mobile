@@ -3,14 +3,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.lupay.ui.model.UserAnswer
 import com.example.lupay.ui.network.ApiManager
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.time.LocalDate
 import java.time.Period
-import retrofit2.http.Body
-import retrofit2.http.POST
 import java.time.format.DateTimeFormatter
 import kotlinx.serialization.Serializable
 
@@ -97,52 +94,34 @@ class LoginViewModel : ViewModel() {
         // Implement password recovery logic
     }
 
-    var registerResult by mutableStateOf<RegisterResult?>(null)
+    var registerResult: RegisterResult by mutableStateOf(RegisterResult.Loading)
         private set
-    var registerReturn by mutableStateOf<RegisterReturn?>(null)
-        private set
+
 
     fun onRegisterClicked() {
         if (name.isBlank() || lastname.isBlank() || birthDate == null || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
-            registerResult = RegisterResult(
-                success = false,
-                message = "Todos los campos son obligatorios",
-            )
+            registerResult = RegisterResult.Error("Por favor, complete todos los campos")
             return
         }
 
         if (password != confirmPassword) {
-            registerResult = RegisterResult(
-                success = false,
-                message = "Las contraseñas no coinciden",
-            )
+            registerResult = RegisterResult.Error("Las contraseñas no coinciden")
             return
         }
         viewModelScope.launch {
-            isLoading = true
+            registerResult = RegisterResult.Loading
             try {
                 val request = RegisterRequest(
-                    firstName = name.split(" ").firstOrNull() ?: "",
-                    lastName = name.split(" ").drop(1).joinToString(" "),
+                    firstName = name,
+                    lastName = lastname,
                     birthDate = birthDate?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: "",
                     email = email,
                     password = password
                 )
                 val result = ApiManager.apiService.registerUser(request)
-                registerReturn = result
-                registerResult = RegisterResult(success = true, message = "Registro exitoso")
+                registerResult= RegisterResult.Success(result)
             } catch (e: Exception) {
-                registerReturn = RegisterReturn(
-                    id = -1,
-                    firstName = "",
-                    lastName = "",
-                    birthdate = "",
-                    email = ""
-                )
-                registerResult = RegisterResult(success = false, message = "Error al registrar ${e.message}")
-            } finally {
-                isLoading = false
-            }
+                registerResult = RegisterResult.Error(e.message ?: "Error desconocido")
         }
     }
 }
@@ -152,15 +131,10 @@ sealed class LoginResult {
     data class Error(val message: String) : LoginResult()
 }
 
-@Serializable
-data class RegisterReturn(
-    val id: Int,
-    val firstName: String,
-    val lastName: String,
-    val birthdate: String,
-    val email: String
-)
-data class RegisterResult(
-    val success: Boolean,
-    val message: String
-)
+
+sealed interface RegisterResult{
+   data class Success(val answer: UserAnswer) : RegisterResult
+    data class Error(val message: String) : RegisterResult
+    data object Loading : RegisterResult
+}
+}
