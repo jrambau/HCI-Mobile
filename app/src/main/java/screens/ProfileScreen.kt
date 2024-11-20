@@ -51,7 +51,7 @@ fun ProfileScreen(
         ProfileMenuItem(
             title = "Datos de tu cuenta",
             description = "Email, teléfono, nombre de usuario, CVU y Alias.",
-            onClick = { /* TODO: Navigate to account data */ }
+            onClick = { navController.navigate("account_info") }
         )
 
         ProfileMenuItem(

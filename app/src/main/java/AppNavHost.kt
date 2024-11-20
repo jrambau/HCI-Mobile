@@ -20,6 +20,7 @@ import com.example.lupay.ui.screens.ProfileScreen
 import com.example.lupay.ui.screens.WalletScreen
 import com.example.lupay.ui.screens.AddCardScreen // Import AddCardScreen
 import com.example.lupay.ui.screens.PersonalInfoScreen
+import com.example.lupay.ui.screens.AccountInfoScreen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -100,6 +101,16 @@ fun AppNavHost(
             Scaffold(
             ) { paddingValues ->
                 PersonalInfoScreen(
+                    navController = navController,
+                    modifier = Modifier.padding(paddingValues)
+                )
+            }
+        }
+        composable("account_info") {
+            Scaffold(
+                topBar = { TopBarComponent("john doe", "Cuenta", navController) }
+            ) { paddingValues ->
+                AccountInfoScreen(
                     navController = navController,
                     modifier = Modifier.padding(paddingValues)
                 )
