@@ -19,7 +19,6 @@ import com.example.lupay.R
 enum class CardType {
     VISA, MASTERCARD, AMEX, UNKNOWN
 }
-
 @Composable
 fun CreditCard(
     cardNumber: String,
@@ -34,7 +33,7 @@ fun CreditCard(
     Card(
         modifier = modifier
             .width(320.dp)
-            .height(180.dp)
+            .height(200.dp)
             .border(
                 width = 1.dp, // Small black border
                 color = Color.Black,
@@ -104,17 +103,17 @@ fun CreditCard(
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
 
-                // Card Details
+                // Card Details (VENCIMIENTO and CVV)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 4.dp), // Reduce top padding for balance
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Expiry Column
+                    // Expiry Column (VENCIMIENTO)
                     Column(
                         modifier = Modifier.padding(end = 22.dp),
-                        verticalArrangement = Arrangement.Center,
+                        verticalArrangement = Arrangement.Top, // Align the text to the top
                         horizontalAlignment = Alignment.Start
                     ) {
                         Text(
@@ -135,7 +134,7 @@ fun CreditCard(
                     // CVV Column
                     Column(
                         modifier = Modifier.padding(start = 16.dp),
-                        verticalArrangement = Arrangement.Center,
+                        verticalArrangement = Arrangement.Top, // Align the text to the top
                         horizontalAlignment = Alignment.End
                     ) {
                         Text(
@@ -157,6 +156,7 @@ fun CreditCard(
         }
     }
 }
+
 
 fun getCardType(cardNumber: String): CardType {
     return when {
