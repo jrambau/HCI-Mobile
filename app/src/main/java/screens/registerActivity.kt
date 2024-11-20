@@ -1,3 +1,4 @@
+import Components.InputField
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -58,78 +59,55 @@ fun RegisterScreen(
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Input fields
-                OutlinedTextField(
+                // Name Input
+                InputField(
                     value = viewModel.name,
                     onValueChange = { viewModel.onNameChanged(it) },
-                    label = { Text("Ingrese su nombre") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium
+                    label = "Ingrese su nombre",
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                    modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(modifier = Modifier.height(16.dp))
 
-                OutlinedTextField(
+                // Lastname Input
+                InputField(
                     value = viewModel.lastname,
                     onValueChange = { viewModel.onLastNameChanged(it) },
-                    label = { Text("Ingrese su apellido") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium
+                    label = "Ingrese su apellido",
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+                    modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(modifier = Modifier.height(16.dp))
 
-                OutlinedTextField(
+                // Email Input
+                InputField(
                     value = viewModel.email,
                     onValueChange = { viewModel.onEmailChanged(it) },
-                    label = { Text("Ingrese su mail") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium
+                    label = "Ingrese su mail",
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+                    modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(modifier = Modifier.height(16.dp))
 
-                OutlinedTextField(
+                // Password Input
+                InputField(
                     value = viewModel.password,
                     onValueChange = { viewModel.onPasswordChanged(it) },
-                    label = { Text("Ingrese su contraseña") },
-                    singleLine = true,
-                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    trailingIcon = {
-                        IconButton(onClick = { showPassword = !showPassword }) {
-                            Icon(
-                                imageVector = if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                contentDescription = if (showPassword) "Ocultar contraseña" else "Mostrar contraseña"
-                            )
-                        }
-                    }
+                    label = "Ingrese su contraseña",
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
+                    isPassword = true,
+                    showPassword = showPassword,
+                    onPasswordVisibilityChange = { showPassword = !showPassword },
+                    modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                OutlinedTextField(
+                // Confirm Password Input
+                InputField(
                     value = viewModel.confirmPassword,
                     onValueChange = { viewModel.onConfirmPasswordChanged(it) },
-                    label = { Text("Vuelva a ingresar la contraseña") },
-                    singleLine = true,
-                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    trailingIcon = {
-                        IconButton(onClick = { showPassword = !showPassword }) {
-                            Icon(
-                                imageVector = if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                contentDescription = if (showPassword) "Ocultar contraseña" else "Mostrar contraseña"
-                            )
-                        }
-                    }
+                    label = "Vuelva a ingresar la contraseña",
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
+                    isPassword = true,
+                    showPassword = showPassword,
+                    onPasswordVisibilityChange = { showPassword = !showPassword },
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
