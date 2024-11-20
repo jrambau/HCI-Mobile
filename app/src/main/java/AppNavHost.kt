@@ -108,7 +108,6 @@ fun AppNavHost(
         }
         composable("account_info") {
             Scaffold(
-                topBar = { TopBarComponent("john doe", "Cuenta", navController) }
             ) { paddingValues ->
                 AccountInfoScreen(
                     navController = navController,

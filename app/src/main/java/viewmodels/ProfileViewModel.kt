@@ -11,7 +11,7 @@ data class ProfileUiState(
     val lastName: String = "Doe",
     val birthDate: String? = "08/01/1999",
     val fiscalActivity: String? = null,
-    val email: String = "a@gmail.com",
+    val email: String = "johndoe@gmail.com",
     val phone: String? = null,
     val cvu: String = "000957057772782438000",
     val alias: String = "doe.john",

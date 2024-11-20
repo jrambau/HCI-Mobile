@@ -16,6 +16,8 @@ import com.example.lupay.ui.viewmodels.ProfileViewModel
 import androidx.compose.foundation.shape.RoundedCornerShape
 import com.example.lupay.ui.Components.ReadOnlyInfoField
 import com.example.lupay.ui.Components.PersonalInfoField
+import androidx.compose.material.icons.filled.ArrowBack
+
 
 
 
@@ -33,6 +35,30 @@ fun AccountInfoScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Volver",
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(8.dp))
+            
+            Text(
+                text = "Datos de tu cuenta",
+                style = MaterialTheme.typography.headlineMedium
+            )
+        }
         // Personal Information Fields
         Card(
             modifier = Modifier
