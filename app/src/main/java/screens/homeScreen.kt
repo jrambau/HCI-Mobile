@@ -23,12 +23,15 @@ import com.example.lupay.R
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.IconButton
+import androidx.compose.ui.platform.LocalContext
+import com.example.lupay.MyApplication
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel(factory = HomeViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication
+    ))
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

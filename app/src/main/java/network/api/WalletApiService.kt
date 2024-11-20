@@ -18,7 +18,7 @@ interface WalletApiService {
     @POST("wallet/recharge")
     suspend fun rechargeWallet(@Body request: NetworkWalletInfo ): Response<NetworkWalletInfo>
     @GET("wallet/investment")
-    suspend fun getInvestment(): Response<NetworkWalletInfo>
+    suspend fun getInvestment(): Response<NetworkInvestInfo>
     @POST("wallet/invest")
     suspend fun invest(@Body request: NetworkWalletInfo ): Response<NetworkWalletInfo>
     @POST("wallet/divest")

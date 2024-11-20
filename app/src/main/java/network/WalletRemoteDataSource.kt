@@ -24,7 +24,7 @@ suspend fun getWalletBalance() : NetworkWalletInfo {
 suspend fun rechargeWallet(amount: Double) : NetworkWalletInfo {
     return handleApiResponse { walletApiService.rechargeWallet(NetworkWalletInfo(amount=amount))}
 }
-suspend fun getInvestment() : NetworkWalletInfo {
+suspend fun getInvestment() : NetworkInvestInfo {
     return handleApiResponse { walletApiService.getInvestment() }
 }
     suspend fun invest(amount: Double) : NetworkWalletInfo {

@@ -18,17 +18,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lupay.ui.viewmodels.CreditCardViewModel
 import theme.CustomTheme
 import androidx.navigation.NavHostController
+import com.example.lupay.MyApplication
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WalletScreen(
     navController: NavHostController, // Pass NavController to navigate
-    viewModel: CreditCardViewModel = viewModel()
+    viewModel: CreditCardViewModel = viewModel(factory = CreditCardViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
 ) {
     CustomTheme {
         val cards by viewModel.cards.collectAsState()

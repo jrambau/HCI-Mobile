@@ -7,7 +7,10 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import AuthInterceptor
+import network.api.PaymentApiService
 import network.api.UserApiService
+import network.api.WalletApiService
+
 object ApiManager {
     private const val BASE_URL = "http://10.0.2.2:8080/api/"
     @Volatile
@@ -32,4 +35,11 @@ object ApiManager {
     }
     fun getUserApiService(context: Context): UserApiService{
         return  getInstance(context).create(UserApiService::class.java)
-    }}
+    }
+    fun getWalletApiService(context: Context): WalletApiService{
+        return  getInstance(context).create(WalletApiService::class.java)
+    }
+    fun getPaymentApiService(context: Context): PaymentApiService {
+        return  getInstance(context).create(PaymentApiService::class.java)
+    }
+}

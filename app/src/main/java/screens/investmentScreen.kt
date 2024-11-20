@@ -28,182 +28,207 @@ import com.patrykandpatrick.vico.core.entry.FloatEntry
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import com.example.lupay.MyApplication
+import theme.CustomTheme
 
 @Composable
 fun InvestmentScreen(
-    viewModel: InvestmentViewModel = viewModel()
+    viewModel: InvestmentViewModel = viewModel(factory = InvestmentViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication) )
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
-    Log.d("ContextCheck", "Context: $context")
 
-    val activity = context as? Activity
-    val configuration = LocalConfiguration.current
-    var isLandscape by remember { mutableStateOf(configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) }
+    // State for confirmation dialogs
+    var showInvestConfirmation by remember { mutableStateOf(false) }
+    var showWithdrawConfirmation by remember { mutableStateOf(false) }
 
-
-    DisposableEffect(configuration) {
-        val orientationEventListener = object : OrientationEventListener(context) {
-            override fun onOrientationChanged(orientation: Int) {
-                isLandscape = orientation in 60..300
-            }
-        }
-        orientationEventListener.enable()
-        onDispose {
-            orientationEventListener.disable()
-        }
-    }
-
-    LaunchedEffect(isLandscape) {
-        activity?.requestedOrientation = if (isLandscape) {
-            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        } else {
-            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        }
-    }
-
-    var withdrawal by remember { mutableStateOf(false) }
-    var invest by remember { mutableStateOf(false) }
-
-
-    BoxWithConstraints(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val screenHeight = maxHeight
-        val screenWidth = maxWidth
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 80.dp)
+    CustomTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
         ) {
-            // Investment Details
-            Text(
-                text = "Inversiones",
-                fontSize = 20.sp,
-                modifier = Modifier.padding(top = 16.dp)
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text("Mi Inversion")
-                    Text(
-                        text = "$${uiState.myInvestment}",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Column {
-                    Text("Valor Actual")
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "$${uiState.currentValue}",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        val percentageGain = ((uiState.currentValue - uiState.myInvestment) / uiState.myInvestment * 100).toInt()
-                        Text(
-                            text = "+$percentageGain%",
-                            color = Color.Green,
-                            modifier = Modifier.padding(start = 4.dp)
-                        )
-                    }
-                }
-            }
-
-            // Chart
-            Box(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(if (isLandscape) screenHeight * 0.7f else screenHeight * 0.3f)
-                    .padding(vertical = 16.dp)
+                    .fillMaxSize()
+                    .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 16.dp), // Lower content further
+                verticalArrangement = Arrangement.spacedBy(20.dp) // Uniform spacing
             ) {
+                // Header
+                Text(
+                    text = "Inversiones",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                // Investment Details
+                Column(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp) // Consistent spacing between sections
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(
+                                "Invertido",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = 12.sp
+                            )
+                            Text(
+                                "$${uiState.myInvestment}",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(
+                                "Valor Actual",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = 12.sp
+                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    "$${uiState.currentValue}",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                val percentageGain = if (uiState.myInvestment > 0) {
+                                    ((uiState.currentValue - uiState.myInvestment) / uiState.myInvestment * 100).toInt()
+                                } else 0
+                                Text(
+                                    text = "+$percentageGain%",
+                                    color = Color.Green,
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.padding(start = 4.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp)) // Increased space before the chart for balance
+                }
+
+                // Chart
                 Chart(
                     chart = lineChart(),
                     model = entryModelOf(uiState.chartData.map { FloatEntry(it.x, it.y) }),
                     startAxis = rememberStartAxis(),
                     bottomAxis = rememberBottomAxis(),
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .padding(top = 16.dp) // Add space to ensure no crowding
+                )
+
+                // Balance and Buttons
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Balance
+                    Column {
+                        Text(
+                            "Balance Actual",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Text(
+                            "$${uiState.currentBalance}",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    // Input Fields and Buttons
+                    OutlinedTextField(
+                        value = uiState.investmentAmount,
+                        onValueChange = viewModel::onInvestmentAmountChanged,
+                        label = { Text("Monto a invertir") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                    Button(
+                        onClick = { showInvestConfirmation = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        contentPadding = PaddingValues(vertical = 8.dp)
+                    ) {
+                        Text("Invertir")
+                    }
+
+                    OutlinedTextField(
+                        value = uiState.withdrawalAmount,
+                        onValueChange = viewModel::onWithdrawalAmountChanged,
+                        label = { Text("Monto a rescatar") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                    Button(
+                        onClick = { showWithdrawConfirmation = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                        contentPadding = PaddingValues(vertical = 8.dp)
+                    ) {
+                        Text("Rescatar", color = Color.White)
+                    }
+                }
+            }
+
+            // Confirmation Dialog for Invest
+            if (showInvestConfirmation) {
+                AlertDialog(
+                    onDismissRequest = { showInvestConfirmation = false },
+                    title = { Text("Confirmar Inversión") },
+                    text = { Text("¿Estás seguro de que deseas invertir $${uiState.investmentAmount}?") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showInvestConfirmation = false
+                            viewModel.onInvest()
+                        }) {
+                            Text("Confirmar")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showInvestConfirmation = false }) {
+                            Text("Cancelar")
+                        }
+                    }
                 )
             }
 
-            // Balance
-            Text(
-                text = "Balance Actual",
-                fontSize = 18.sp,
-                modifier = Modifier.padding(top = 16.dp)
-            )
-            Text(
-                text = "$${uiState.currentBalance}",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            // Input Fields
-            OutlinedTextField(
-                value = uiState.investmentAmount,
-                onValueChange = { viewModel.onInvestmentAmountChanged(it) },
-                label = { Text("Monto a invertir") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            )
-
-            Button(
-                onClick = { invest = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
-            ) {
-                Text("Invertir")
+            // Confirmation Dialog for Withdraw
+            if (showWithdrawConfirmation) {
+                AlertDialog(
+                    onDismissRequest = { showWithdrawConfirmation = false },
+                    title = { Text("Confirmar Rescate") },
+                    text = { Text("¿Estás seguro de que deseas rescatar $${uiState.withdrawalAmount}?") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showWithdrawConfirmation = false
+                            viewModel.onWithdraw()
+                        }) {
+                            Text("Confirmar")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showWithdrawConfirmation = false }) {
+                            Text("Cancelar")
+                        }
+                    }
+                )
             }
-
-            OutlinedTextField(
-                value = uiState.withdrawalAmount,
-                onValueChange = { viewModel.onWithdrawalAmountChanged(it) },
-                label = { Text("Monto a rescatar") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            )
-
-            Button(
-                onClick = { withdrawal = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
-            ) {
-                Text("Rescatar")
-            }
-        }
-
-        if (invest) {
-            ConfirmationDialog(
-                onConfirm = {
-                    viewModel.onInvest()
-                    invest = false // Close dialog on confirmation
-                },
-                onDismiss = {
-                    invest = false // Close dialog on dismiss
-                },
-                title ="Confirmar inversión" ,
-                message = "¿Estás seguro de invertir $${uiState.investmentAmount}?"
-            )
-        }
-        if (withdrawal) {
-            ConfirmationDialog(
-                onConfirm = {
-                    viewModel.onWithdraw()
-                    withdrawal = false // Close dialog on confirmation
-                },
-                onDismiss = {
-                    withdrawal = false // Close dialog on dismiss
-                },
-                title ="Confirmar rescate" ,
-                message = "¿Estás seguro de rescatar $${uiState.withdrawalAmount}?"
-            )
         }
     }
 }

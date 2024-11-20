@@ -1,14 +1,29 @@
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.example.lupay.MyApplication
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import network.Repository.PaymentRepository
+import network.Repository.UserRepository
+import network.Repository.WalletRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val sessionManager: SessionManager,
+    private val userRepository: UserRepository,
+    private val paymentRepository: PaymentRepository,
+    private val walletRepository: WalletRepository,
 
+    ) : ViewModel() {
+    var generalUiState by mutableStateOf(GeneralUiState(isAuthenticated = sessionManager.loadAuthToken() != null))
+        private set
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
@@ -70,6 +85,20 @@ class HomeViewModel : ViewModel() {
                 searchQuery = query,
                 filteredTransactions = filteredTransactions
             )
+        }
+    }
+    companion object {
+        fun provideFactory(application: MyApplication
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return HomeViewModel(
+                    application.sessionManager,
+                    application.userRepository,
+                    application.paymentRepository,
+                    application.walletRepository
+                ) as T
+            }
         }
     }
 }

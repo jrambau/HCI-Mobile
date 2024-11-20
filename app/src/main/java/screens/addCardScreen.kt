@@ -10,18 +10,26 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.lupay.MyApplication
 import com.example.lupay.ui.viewmodels.CreditCardViewModel
 import com.example.lupay.ui.viewmodels.NewCardData
+import com.example.lupay.ui.viewmodels.ProfileViewModel
 import theme.CustomTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddCardScreen(navController: NavController, viewModel: CreditCardViewModel) {
+fun AddCardScreen(
+    navController: NavController,
+    viewModel: CreditCardViewModel = viewModel(factory = CreditCardViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
+) {
     var cardNumber by remember { mutableStateOf("") }
     var cardName by remember { mutableStateOf("") }
     var cardExpiry by remember { mutableStateOf("") }

@@ -19,8 +19,8 @@ class PaymentRemoteDataSource (
 suspend fun makePayment(amount: Double, type: String,description: String, cardId: Int?, receiverEmail:String?) {
     handleApiResponse { paymentApiService.makePayment(NetworkPaymentInfo(amount=amount, type = type, description = description, cardId = cardId, receiverEmail = receiverEmail)) }
 }
-    suspend fun getPaymentInfo(page: Int? = 1, direction: String? = "ASC", pending: Boolean? = null, type: String? = null, range: String? = null, source: String? = null, cardId: Int? = null): Array<NetworkPaymentInfo> {
-        val response = handleApiResponse { paymentApiService.getPaymentInfo(page, direction, pending, type, range, source, cardId) }
+    suspend fun getPaymentsInfo(page: Int? = 1, direction: String? = "ASC", pending: Boolean? = null, type: String? = null, range: String? = null, source: String? = null, cardId: Int? = null): Array<NetworkPaymentInfo> {
+        val response = handleApiResponse { paymentApiService.getPaymentsInfo(page, direction, pending, type, range, source, cardId) }
         return response
     }
     suspend fun getPaymentDetails(paymentId: Int): NetworkPaymentInfo {

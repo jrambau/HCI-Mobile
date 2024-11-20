@@ -1,11 +1,21 @@
 package com.example.lupay.ui.viewmodels
 
+import GeneralUiState
+import SessionManager
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.lupay.MyApplication
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import network.Repository.PaymentRepository
+import network.Repository.UserRepository
+import network.Repository.WalletRepository
 
 data class Card(
     val id: Int,
@@ -27,7 +37,14 @@ data class UiState(
     val isLoading: Boolean = false
 )
 
-class CreditCardViewModel : ViewModel() {
+class CreditCardViewModel(
+    private val sessionManager: SessionManager,
+    private val walletRepository: WalletRepository,
+    private val userRepository: UserRepository,
+    private val paymentRepository: PaymentRepository,
+) : ViewModel() {
+    var generalUiState by mutableStateOf(GeneralUiState(isAuthenticated = sessionManager.loadAuthToken() != null))
+    private set
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
@@ -102,5 +119,19 @@ class CreditCardViewModel : ViewModel() {
     // Function to update the error message
     fun updateError(errorMessage: String?) {
         _error.value = errorMessage
+    }
+    companion object {
+        fun provideFactory(application: MyApplication
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return CreditCardViewModel(
+                    application.sessionManager,
+                    application.walletRepository,
+                    application.userRepository,
+                    application.paymentRepository
+                ) as T
+            }
+        }
     }
 }

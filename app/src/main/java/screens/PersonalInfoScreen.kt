@@ -15,6 +15,8 @@ import androidx.navigation.NavController
 import com.example.lupay.ui.viewmodels.ProfileViewModel
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import com.example.lupay.MyApplication
 import com.example.lupay.ui.Components.ReadOnlyInfoField
 import com.example.lupay.ui.Components.PersonalInfoField
 
@@ -23,7 +25,7 @@ import com.example.lupay.ui.Components.PersonalInfoField
 fun PersonalInfoScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: ProfileViewModel = viewModel()
+    viewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

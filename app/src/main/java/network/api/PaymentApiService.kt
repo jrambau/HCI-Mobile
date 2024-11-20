@@ -19,7 +19,7 @@ interface PaymentApiService {
     @POST("payment")
     suspend fun makePayment(@Body request: NetworkPaymentInfo): Response<Unit>
     @GET("payment")
-    suspend fun getPaymentInfo(
+    suspend fun getPaymentsInfo(
         @Query("page") page: Int? = 1,
         @Query("direction") direction: String? = "ASC",
         @Query("pending") pending: Boolean? = null,

@@ -51,7 +51,7 @@ fun AppNavHost(
                 bottomBar = { BottomBar(navController) },
                 topBar = { TopBarComponent("john doe", "Tarjetas", navController) }
             ) { paddingValues ->
-                WalletScreen(navController = navController, viewModel = viewModel()) // Pass ViewModel here
+                WalletScreen(navController = navController) // Pass ViewModel here
             }
         }
         composable("main") {
@@ -94,7 +94,7 @@ fun AppNavHost(
                 bottomBar = { BottomBar(navController) }
             ) { paddingValues ->
                 // Create the AddCardScreen with necessary ViewModel
-                AddCardScreen(navController = navController, viewModel = viewModel()) // Pass ViewModel here
+                AddCardScreen(navController = navController) // Pass ViewModel here
             }
         }
         composable("personal_info") {

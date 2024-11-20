@@ -17,8 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import com.example.lupay.ui.Components.ReadOnlyInfoField
 import com.example.lupay.ui.Components.PersonalInfoField
 import androidx.compose.material.icons.filled.ArrowBack
-
-
+import androidx.compose.ui.platform.LocalContext
+import com.example.lupay.MyApplication
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,7 +26,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 fun AccountInfoScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: ProfileViewModel = viewModel()
+    viewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
