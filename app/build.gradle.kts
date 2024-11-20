@@ -51,6 +51,7 @@ android {
     }
 }
 dependencies {
+    implementation (libs.material3)
     implementation (libs.androidx.navigation.compose.v250)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
