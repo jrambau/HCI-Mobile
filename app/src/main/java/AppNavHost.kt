@@ -46,25 +46,23 @@ fun AppNavHost(
         composable("wallet") {
             Scaffold(
                 bottomBar = { BottomBar(navController) },
-                topBar = {TopBarComponent("Tarjetas")}
-            ) {
+                topBar = { TopBarComponent("Tarjetas") }
+            ) { paddingValues -> // Ensure the padding values are passed to the WalletScreen
                 WalletScreen()
             }
         }
         composable("main") {
             Scaffold(
                 bottomBar = { BottomBar(navController) },
-                topBar = {TopBarComponent("General")}
-            ) {
+                topBar = { TopBarComponent("General") }
+            ) { paddingValues ->
                 HomeScreen()
             }
-
         }
 
         composable("qr") {
             Scaffold(
                 bottomBar = { BottomBar(navController) }
-
             ) {
                 // Add your QRScreen here
             }
@@ -72,15 +70,15 @@ fun AppNavHost(
         composable("analytics") {
             Scaffold(
                 bottomBar = { BottomBar(navController) },
-                topBar = {TopBarComponent("Inversiones")}
+                topBar = { TopBarComponent("Inversiones") }
             ) {
-               InvestmentScreen()
+                InvestmentScreen()
             }
         }
         composable("profile") {
             Scaffold(
                 bottomBar = { BottomBar(navController) },
-                topBar = {TopBarComponent("Perfil")}
+                topBar = { TopBarComponent("Perfil") }
             ) {
                 ProfileScreen(modifier = Modifier.padding(it))
             }
