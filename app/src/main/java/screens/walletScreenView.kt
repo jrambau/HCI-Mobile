@@ -1,5 +1,6 @@
 package com.example.lupay.ui.screens
 
+import Components.ConfirmationDialog
 import CreditCard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -32,6 +33,7 @@ fun WalletScreen(
     CustomTheme {
         val cards by viewModel.cards.collectAsState()
         val uiState by viewModel.uiState.collectAsState()
+        var delete by remember { mutableStateOf(false) }
 
         Scaffold { paddingValues ->
             Column(
@@ -40,6 +42,7 @@ fun WalletScreen(
                     .padding(paddingValues) // Use paddingValues here for correct spacing
                     .padding(start = 16.dp, end = 16.dp) // Optional: Add side padding
             ) {
+
                 // Spacer to push content down a bit
                 Spacer(modifier = Modifier.height(65.dp)) // Adjust this height as needed
 
@@ -104,7 +107,7 @@ fun WalletScreen(
 
                                 // Circular Red Delete Button
                                 IconButton(
-                                    onClick = { viewModel.deleteCard(card.id) }, // Call deleteCard method
+                                    onClick = { delete = true}, // Call deleteCard method
                                     modifier = Modifier
                                         .size(48.dp) // Ensures the button is a circle
                                         .clip(CircleShape) // Clips the button into a circle
@@ -117,6 +120,20 @@ fun WalletScreen(
                                     )
                                 }
                             }
+                        }
+                        if(delete){
+                            ConfirmationDialog(
+                                onConfirm = {
+                                    viewModel.deleteCard(card.id)
+                                    delete = false // Close dialog on confirmation
+                                },
+                                onDismiss = {
+                                    delete = false
+                                },
+                                title = "Eliminar tarjeta",
+                                message = "¿Estás seguro de eliminar la tarjeta?"
+
+                            )
                         }
                     }
                 }

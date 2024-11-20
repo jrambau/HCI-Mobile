@@ -1,7 +1,12 @@
 
 
+import Components.ConfirmationDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -34,8 +39,8 @@ class InvestmentViewModel : ViewModel() {
         _uiState.value = _uiState.value.copy(withdrawalAmount = amount)
     }
 
-    fun onInvest() {
-        // Implement investment logic here
+    public final fun onInvest() {
+        //
     }
 
     fun onWithdraw() {

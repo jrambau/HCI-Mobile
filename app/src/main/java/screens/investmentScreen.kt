@@ -1,5 +1,6 @@
 package com.example.lupay.ui.screens
 
+import Components.ConfirmationDialog
 import InvestmentViewModel
 import android.app.Activity
 import android.content.pm.ActivityInfo
@@ -60,6 +61,10 @@ fun InvestmentScreen(
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
     }
+
+    var showConfirmationDialog by remember { mutableStateOf(false) }
+    var invest by remember { mutableStateOf(false) }
+
 
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
@@ -149,7 +154,7 @@ fun InvestmentScreen(
             )
 
             Button(
-                onClick = { viewModel.onInvest() },
+                onClick = { showConfirmationDialog = true; invest = true },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
             ) {
@@ -166,12 +171,37 @@ fun InvestmentScreen(
             )
 
             Button(
-                onClick = { viewModel.onWithdraw() },
+                onClick = { showConfirmationDialog = true },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
                 Text("Rescatar")
             }
+        }
+
+        // Confirmation Dialog
+        if (showConfirmationDialog) {
+            ConfirmationDialog(
+                onConfirm = {
+                    // Perform investment or withdrawal action
+                    if (invest) {
+                        viewModel.onInvest()
+                    } else {
+                        viewModel.onWithdraw()
+                    }
+                    showConfirmationDialog = false // Close dialog on confirmation
+                },
+                onDismiss = {
+                    showConfirmationDialog = false // Close dialog on dismiss
+                },
+                title = if (invest) "¿Confirmar inversión?" else "¿Confirmar retiro?",
+                message = if (invest) {
+                    "¿Estás seguro de invertir $${uiState.investmentAmount}?"
+                } else {
+                    "¿Estás seguro de retirar $${uiState.withdrawalAmount}?"
+                }
+            )
+            invest = false
         }
     }
 }
