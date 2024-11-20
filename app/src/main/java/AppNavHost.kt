@@ -18,7 +18,6 @@ import com.example.lupay.ui.screens.LoginScreen
 import com.example.lupay.ui.screens.ProfileScreen
 import com.example.lupay.ui.screens.RegisterScreen
 import com.example.lupay.ui.screens.WalletScreen
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AppNavHost(
@@ -46,7 +45,7 @@ fun AppNavHost(
         composable("wallet") {
             Scaffold(
                 bottomBar = { BottomBar(navController) },
-                topBar = { TopBarComponent("Tarjetas") }
+                topBar = { TopBarComponent("john doe", "Tarjetas", navController) } // Pass navController
             ) { paddingValues -> // Ensure the padding values are passed to the WalletScreen
                 WalletScreen()
             }
@@ -54,7 +53,7 @@ fun AppNavHost(
         composable("main") {
             Scaffold(
                 bottomBar = { BottomBar(navController) },
-                topBar = { TopBarComponent("General") }
+                topBar = { TopBarComponent("john doe", "General", navController) } // Pass navController
             ) { paddingValues ->
                 HomeScreen()
             }
@@ -70,7 +69,7 @@ fun AppNavHost(
         composable("analytics") {
             Scaffold(
                 bottomBar = { BottomBar(navController) },
-                topBar = { TopBarComponent("Inversiones") }
+                topBar = { TopBarComponent("john doe", "Inversiones", navController) } // Pass navController
             ) {
                 InvestmentScreen()
             }
@@ -78,7 +77,7 @@ fun AppNavHost(
         composable("profile") {
             Scaffold(
                 bottomBar = { BottomBar(navController) },
-                topBar = { TopBarComponent("Perfil") }
+                topBar = { TopBarComponent("john doe", "Perfil", navController) } // Pass navController
             ) {
                 ProfileScreen(modifier = Modifier.padding(it))
             }
