@@ -3,7 +3,6 @@ package network.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-class NetworkError(
-    val message: String,
-    val success: Boolean?
+class NetworkVerificationCode (
+    val code: String
 )
