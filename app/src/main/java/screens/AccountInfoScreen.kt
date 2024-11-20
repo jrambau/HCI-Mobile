@@ -14,6 +14,8 @@ import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lupay.ui.viewmodels.ProfileViewModel
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.lupay.ui.Components.ReadOnlyInfoField
+import com.example.lupay.ui.Components.PersonalInfoField
 
 
 
@@ -78,62 +80,6 @@ fun AccountInfoScreen(
                     onEditClick = { /* Handle edit */ }
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun ReadOnlyInfoField(
-    label: String,
-    value: String
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
-}
-
-@Composable
-private fun PersonalInfoField(
-    label: String,
-    value: String,
-    onEditClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = value,
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-        IconButton(onClick = onEditClick) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = "Edit $label",
-                tint = MaterialTheme.colorScheme.primary
-            )
         }
     }
 } 
