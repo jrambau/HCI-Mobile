@@ -85,13 +85,13 @@ class LoginViewModel(
         )
     }
 
-    fun onConfirmAccount(email: String, code: String) {
+    fun onConfirmAccount(code: String) {
         if (code.isBlank()) {
             uiState = uiState.copy(error = Error("Por favor, complete todos los campos."))
             return
         }
         runOnViewModelScope(
-            { userRepository.verifyUser(code=code, email=null, password=null) },
+            { userRepository.verifyUser(code=code) },
             { state, _ ->
                 state.copy(successMessage = "Cuenta confirmada exitosamente")
             }
@@ -140,7 +140,7 @@ class LoginViewModel(
         )
         runOnViewModelScope(
             { userRepository.registerUser(user) },
-            { state, _ -> state.copy(successMessage = "Registro exitoso. Por favor, confirme su cuenta.") }
+            { state, _ -> state.copy(successMessage = "Registro exitoso. Por favor, confirme su cuenta en la pantalla anterior.") }
         )
     }
 

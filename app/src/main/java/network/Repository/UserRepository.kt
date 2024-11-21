@@ -7,6 +7,7 @@ import network.UserRemoteDataSource
 import network.model.NetworkAlias
 import network.model.NetworkToken
 import network.model.NetworkUser
+import network.model.NetworkVerificationCode
 import network.model.NetworkWalletInfo
 import network.model.asModel
 
@@ -54,7 +55,7 @@ class UserRepository (
     suspend fun updateAlias(alias: String) : NetworkWalletInfo {
         return remoteDataSource.updateAlias(alias)
     }
-    suspend fun verifyUser(email: String?, password: String?, code: String) : NetworkToken {
-        return remoteDataSource.verifyUser(email,password,code)
+    suspend fun verifyUser( code: String) : NetworkUser {
+        return remoteDataSource.verifyUser(NetworkVerificationCode(code))
     }
 }

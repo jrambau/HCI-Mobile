@@ -190,7 +190,7 @@ fun LoginScreen(
                 confirmButton = {
                     Button(
                         onClick = {
-                            viewModel.onConfirmAccount(confirmationEmail, confirmationCode)
+                            viewModel.onConfirmAccount(confirmationCode)
                         },
                         enabled = !uiState.isFetching
                     ) {
@@ -305,7 +305,6 @@ fun LoginScreen(
 
     LaunchedEffect(uiState.successMessage) {
         if (uiState.successMessage != null && uiState.successMessage!!.contains("código de recuperación")) {
-            // Avanzar al siguiente paso solo si se envió el código de recuperación exitosamente
             showResetPasswordDialog = true
         }
     }

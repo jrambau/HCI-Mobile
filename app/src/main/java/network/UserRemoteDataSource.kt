@@ -11,6 +11,7 @@ import network.model.NetworkUser
 import network.model.NetworkUserCredentials
 import network.model.asModel
 import network.model.NetworkUserResponse
+import network.model.NetworkVerificationCode
 import network.model.NetworkWalletInfo
 
 class UserRemoteDataSource (
@@ -27,8 +28,8 @@ class UserRemoteDataSource (
         sessionManager.saveAuthToken(response.token)
         return response
     }
-    suspend fun verifyUser(email: String?, password: String?, code: String) : NetworkToken {
-        val response = handleApiResponse { userApiService.loginUser(NetworkUserCredentials(email,password,code)) }
+    suspend fun verifyUser(code:NetworkVerificationCode) : NetworkUser {
+        val response = handleApiResponse { userApiService.verifyUser(code) }
         return response
     }
     suspend fun logoutUser() {

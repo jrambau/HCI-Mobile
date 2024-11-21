@@ -195,46 +195,54 @@ fun RegisterScreen(
             if (uiState.isFetching) {
                 CircularProgressIndicator()
             } else {
-                if (uiState.error != null) {
-                    Text(text = "Error: ${uiState.error.message}")
-                } else if (uiState.success) {
-                    uiState.success=false
-                    onNavigateToLogin()
+                uiState.error?.let { error ->
+                    Text(
+                        text = "Error: ${error.message}",
+                        color = Color.Red,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
                 }
-            }
-        }
+                uiState.successMessage?.let { message ->
+                    Text(
+                        text = message,
+                        color = Color.Green,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
 
 
-        if (showDatePicker) {
-            val datePickerState = rememberDatePickerState(
-                initialSelectedDateMillis = viewModel.birthDate?.atStartOfDay(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
-            )
-            DatePickerDialog(
-                onDismissRequest = { showDatePicker = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            datePickerState.selectedDateMillis?.let { millis ->
-                                val selectedDate = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
-                                viewModel.onBirthDateChanged(selectedDate)
+                if (showDatePicker) {
+                    val datePickerState = rememberDatePickerState(
+                        initialSelectedDateMillis = viewModel.birthDate?.atStartOfDay(ZoneId.systemDefault())
+                            ?.toInstant()?.toEpochMilli()
+                    )
+                    DatePickerDialog(
+                        onDismissRequest = { showDatePicker = false },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    datePickerState.selectedDateMillis?.let { millis ->
+                                        val selectedDate = Instant.ofEpochMilli(millis)
+                                            .atZone(ZoneId.systemDefault()).toLocalDate()
+                                        viewModel.onBirthDateChanged(selectedDate)
+                                    }
+                                    showDatePicker = false
+                                }
+                            ) {
+                                Text("OK")
                             }
-                            showDatePicker = false
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = { showDatePicker = false }
+                            ) {
+                                Text("Cancelar")
+                            }
                         }
                     ) {
-                        Text("OK")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = { showDatePicker = false }
-                    ) {
-                        Text("Cancelar")
+                        DatePicker(
+                            state = datePickerState,
+                        )
                     }
                 }
-            ) {
-                DatePicker(
-                    state = datePickerState,
-                )
-            }
-        }
-    }}
+            }}}  }
