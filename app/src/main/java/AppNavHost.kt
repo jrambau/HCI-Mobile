@@ -153,7 +153,7 @@ fun AppNavHost(
 
         composable("main") {
             TopBarScaffoldWrapper(
-                title = "Panel",
+                title = "General",
                 navController = navController,
                 deviceType = deviceType,
                 currentRoute = currentRoute
