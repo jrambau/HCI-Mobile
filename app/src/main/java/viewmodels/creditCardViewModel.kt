@@ -9,9 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.lupay.MyApplication
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import network.Repository.PaymentRepository
 import network.Repository.UserRepository
@@ -34,11 +32,14 @@ class CreditCardViewModel(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private val _cards = MutableStateFlow<List<NetworkCard>>(emptyList())
-    val cards: StateFlow<List<NetworkCard>> = _cards.asStateFlow()
+    private val _cards = MutableSharedFlow<List<NetworkCard>>(replay = 1)
+    val cards: SharedFlow<List<NetworkCard>> = _cards.asSharedFlow()
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
+
+    private val _addCardSuccess = MutableStateFlow(false)
+    val addCardSuccess: StateFlow<Boolean> = _addCardSuccess.asStateFlow()
 
     init {
         fetchCards()
@@ -49,7 +50,7 @@ class CreditCardViewModel(
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {
                 val fetchedCards = walletRepository.getCards().toList()
-                _cards.value = fetchedCards
+                _cards.emit(fetchedCards)
             } catch (e: Exception) {
                 _error.value = "Failed to fetch cards: ${e.message}"
             } finally {
@@ -63,9 +64,11 @@ class CreditCardViewModel(
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {
                 val addedCard = walletRepository.addCard(newCardData)
-                _cards.value = _cards.value + addedCard
+                fetchCards() // Actualiza la lista de tarjetas después de agregar una nueva
+                _addCardSuccess.value = true
             } catch (e: Exception) {
                 _error.value = "Failed to add new card: ${e.message}"
+                _addCardSuccess.value = false
             } finally {
                 _uiState.value = _uiState.value.copy(isLoading = false)
             }
@@ -76,7 +79,7 @@ class CreditCardViewModel(
         viewModelScope.launch {
             try {
                 walletRepository.deleteCard(cardId)
-                _cards.value = _cards.value.filter { it.id != cardId }
+                fetchCards() // Actualiza la lista de tarjetas después de eliminar una
             } catch (e: Exception) {
                 _error.value = "Failed to delete card: ${e.message}"
             }
@@ -89,6 +92,10 @@ class CreditCardViewModel(
 
     fun updateError(errorMessage: String?) {
         _error.value = errorMessage
+    }
+
+    fun resetAddCardSuccess() {
+        _addCardSuccess.value = false
     }
 
     companion object {

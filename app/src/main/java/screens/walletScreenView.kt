@@ -25,19 +25,32 @@ import theme.CustomTheme
 import androidx.navigation.NavHostController
 import com.example.lupay.MyApplication
 import components.CreditCard
+import kotlinx.coroutines.flow.collectLatest
+import network.model.NetworkCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WalletScreen(
-    modifier: Modifier = Modifier,
     navController: NavHostController,
+    modifier: Modifier = Modifier,
     viewModel: CreditCardViewModel = viewModel(factory = CreditCardViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
 ) {
     CustomTheme {
-        val cards by viewModel.cards.collectAsState()
+        val cards = remember { mutableStateListOf<NetworkCard>() }
         val uiState by viewModel.uiState.collectAsState()
         var delete by remember { mutableStateOf(false) }
         var selectedCardId by remember { mutableStateOf<Int?>(null) }
+
+        LaunchedEffect(Unit) {
+            viewModel.cards.collectLatest { newCards ->
+                cards.clear()
+                cards.addAll(newCards)
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            viewModel.fetchCards()
+        }
 
         Scaffold { paddingValues ->
             Column(
