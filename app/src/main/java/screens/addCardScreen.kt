@@ -178,7 +178,6 @@ private fun AddCardContent(
             cardNumber = cardNumber,
             cardName = cardName,
             cardExpiry = cardExpiry,
-            cvv = cvv,
             isHidden = false
         )
         Spacer(modifier = Modifier.height(32.dp))
@@ -233,21 +232,6 @@ private fun AddCardContent(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         Spacer(modifier = Modifier.height(8.dp))
-
-        // CVV Field
-        Text(text = "Código de seguridad", style = MaterialTheme.typography.bodyMedium)
-        OutlinedTextField(
-            value = cvv,
-            onValueChange = { cvv = it.take(3) },
-            label = { Text("***") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(24.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-        Spacer(modifier = Modifier.height(32.dp))
 
         // Add Card Button
         Button(

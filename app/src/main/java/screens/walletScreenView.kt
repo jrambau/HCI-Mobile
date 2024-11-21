@@ -61,23 +61,14 @@ fun WalletScreen(
             ) {
                 Spacer(modifier = Modifier.height(65.dp))
 
+                // Row for "Add Card" button
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
-                        onClick = { viewModel.toggleHidden() },
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        Icon(
-                            if (uiState.isHidden) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = "Toggle visibility"
-                        )
-                    }
-
                     Button(
                         onClick = { navController.navigate("add_card") },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
@@ -90,6 +81,7 @@ fun WalletScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // LazyRow to display cards
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
@@ -107,13 +99,13 @@ fun WalletScreen(
                                     cardNumber = card.number,
                                     cardName = card.fullName,
                                     cardExpiry = card.expirationDate,
-                                    cvv = card.cvv ?: "",
-                                    isHidden = uiState.isHidden,
+                                    isHidden = false,  // Always show the data
                                     modifier = Modifier
                                 )
 
                                 Spacer(modifier = Modifier.height(16.dp))
 
+                                // Delete Button
                                 IconButton(
                                     onClick = {
                                         selectedCardId = card.id
@@ -134,7 +126,9 @@ fun WalletScreen(
                         }
                     }
                 }
-                if(delete){
+
+                // Confirmation Dialog for Deletion
+                if (delete) {
                     ConfirmationDialog(
                         onConfirm = {
                             selectedCardId?.let { viewModel.deleteCard(it) }
@@ -151,4 +145,3 @@ fun WalletScreen(
         }
     }
 }
-

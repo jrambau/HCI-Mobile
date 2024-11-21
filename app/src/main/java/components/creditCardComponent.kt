@@ -26,7 +26,6 @@ fun CreditCard(
     cardNumber: String,
     cardName: String,
     cardExpiry: String,
-    cvv: String,
     isHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -57,7 +56,6 @@ fun CreditCard(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(cardBackgroundColor)
-                    .height(400.dp)
                     .padding(16.dp)
             ) {
                 Column(
@@ -113,7 +111,7 @@ fun CreditCard(
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
 
-                    // Card Details (VENCIMIENTO and CVV)
+                    // Card Expiry (VENCIMIENTO)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -122,7 +120,7 @@ fun CreditCard(
                     ) {
                         // Expiry Column (VENCIMIENTO)
                         Column(
-                            modifier = Modifier.padding(end = 22.dp),
+                            modifier = Modifier.padding(end = 16.dp),
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.Start
                         ) {
@@ -140,33 +138,13 @@ fun CreditCard(
                                 color = textColor,
                             )
                         }
-
-                        // CVV Column
-                        Column(
-                            modifier = Modifier.padding(start = 16.dp),
-                            verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.End
-                        ) {
-                            Text(
-                                text = "CVV",
-                                fontSize = 10.sp,
-                                color = tertiaryTextColor,
-                                fontWeight = FontWeight.Normal,
-                                modifier = Modifier.padding(bottom = 2.dp)
-                            )
-                            Text(
-                                text = formatCVV(cvv, isHidden),
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = textColor,
-                            )
-                        }
                     }
                 }
             }
         }
     }
 }
+
 
 // Updated helper functions
 fun getCardType(cardNumber: String): CardType {
@@ -200,7 +178,4 @@ fun formatExpiry(expiry: String, isHidden: Boolean): String {
     }
 }
 
-fun formatCVV(cvv: String, isHidden: Boolean): String {
-    return if (isHidden) "•••" else cvv
-}
 
