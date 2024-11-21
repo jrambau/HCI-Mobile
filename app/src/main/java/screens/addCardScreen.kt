@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,6 +25,7 @@ import java.util.*
 import com.example.lupay.ui.utils.DeviceType
 import com.example.lupay.ui.utils.rememberDeviceType
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddCardScreen(
     navController: NavHostController,
@@ -30,32 +33,59 @@ fun AddCardScreen(
 ) {
     val deviceType = rememberDeviceType()
 
-    if (deviceType == DeviceType.TABLET) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(32.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                modifier = Modifier
-                    .width(600.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Agregar Tarjeta", color = MaterialTheme.colorScheme.onBackground) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Go Back",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
+            )
+        },
+        content = { paddingValues ->
+            if (deviceType == DeviceType.TABLET) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .width(600.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        AddCardContent(
+                            navController = navController,
+                            viewModel = viewModel,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(paddingValues)
+                        )
+                    }
+                }
+            } else {
                 AddCardContent(
                     navController = navController,
                     viewModel = viewModel,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.padding(paddingValues)
                 )
             }
         }
-    } else {
-        AddCardContent(
-            navController = navController,
-            viewModel = viewModel
-        )
-    }
+    )
 }
+
+
 
 @Composable
 private fun AddCardContent(
