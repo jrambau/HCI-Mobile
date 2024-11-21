@@ -1,7 +1,93 @@
 <resources>
-    <string name="app_name">Lupay</string>
-    <string name="Bienvenido">Bienvenido</string>
-    <string name="Iniciar_sesion">Iniciar sesión</string>
-    <string name="Registrarse">Registrarse</string>
+    <!-- generales -->
+
+    <string name="app_name" translatable="false">Lupay</string>
+    <string name="welcome">Bienvenido</string>
+    <string name="confirm">Confirmar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="unkown_error">Error desconocido</string>
+    <string name="ok" translatable="false">Ok</string>
+    <string name="enter">Ingresar...</string>
+    <string name="no_specified">No especificado</string>
+
+
+    <!-- iniciar sesión y registrarse  -->
+
+    <string name="login_title">Iniciar sesión</string>
+    <string name="enter_mail">Ingrese su correo electrónico</string>
+    <string name="enter_pass">Ingrese su contraseña</string>
+    <string name="validate">Confirmar cuenta</string>
+    <string name="val_code">Ingrese el código de confirmación:</string>
+    <string name="forgot_pass">¿Olvido su contraseña?</string>
+    <string name="reset_pass">Restablecer contraseña</string>
+    <string name="got_code">Ya tengo mi código</string>
+    <string name="write_code">Ingrese el código recibido por correo: </string>
+    <string name="new_pass">Ingrese la nueva contraseña</string>
+    <string name="send_code">Enviar código</string>
+    <string name="reset">Restablecer</string>
+
+    <string name="register_title">Registrarse</string>
+    <string name="enter_name">Ingrese su nombre</string>
+    <string name="enter_lastname">Ingrese su apellido</string>
+    <string name="enter_bday">Fecha de nacimiento</string>
+    <string name="enter_day">Seleccionar fecha</string>
+    <string name="reenter_pass">Vuelva a ingresar la contraseña</string>
+    <string name="has_account">Ya tienes cuenta? Ingrese aquí</string>
+
+    <!-- home -->
+
+    <string name="money_av">Disponible</string>
+    <string name="deposit">Ingresar dinero</string>
+    <string name="to_transfer">Transferir dinero</string>
+    <string name="tranfer">Transferencia</string>
+    <string name="link">Link de pago</string>
+    <string name="expenses">Gastos</string>
+    <string name="last_months">Últimos 6 meses</string>
+    <string name="search">Buscar</string>
+
+    <!-- tarjetas -->
+
+    <string name="add">Agregar</string>
+    <string name="delete">Eliminar tarjeta</string>
+    <string name="confirm_delete">¿Estás seguro de eliminar la tarjeta?</string>
+    <string name="card_number">Número de tarjeta</string>
+    <string name="card_owner">Nombre del titular</string>
+    <string name="expiration">Vencimiento</string>
+    <string name="date">MM/AA</string>
+    <string name="cvv">Código de seguridad</string>
+
+    <!-- inveriones -->
+    
+    <string name="investment">Inversiones</string>
+    <string name="Invested">Invertido</string>
+    <string name="current_inve">Valor actual</string>
+    <string name="current_money">Balance actual</string>
+    <string name="to_invest">Monto a invertir</string>
+    <string name="invest">Invertir</string>
+    <string name="to_withdraw">Monto a rescatar</string>
+    <string name="withdraw">Rescatar</string>
+    <string name="confirm_investment">Confirmar inversión</string>
+    <string name="confirm_invest_desc">¿Estás seguro de que deseas invertir?</string>
+    <string name="confirm_withdraw">Confirmar rescate</string>
+    <string name="confirm_withdraw_desc">¿Estás seguro de que deseas rescatar?</string>
+
+    <!-- ajustes -->
+
+    <string name="personal_info">Información personal</string>
+    <string name="name">Nombre</string>
+    <string name="lastname">Apellido</string>
+    <string name="fiscal">Actividad fiscal</string>
+    <string name="personal_info_desc">Información de tu documento de identidad y tu actividad fiscal.</string>
+
+    <string name="user_info">Datos de tu cuenta</string>
+    <string name="user_info_desc">Email, teléfono, nombre de usuario, CVU y alias.</string>
+    <string name="mail">Correo electrónico</string>
+    <string name="cbu" translatable="false">CBU</string>
+    <string name="alias" translatable="false">Alias</string>
+
+    <string name="security">Seguridad</string>
+    <string name="security_desc">Configura la seguridad de tu cuenta.</string>
+    <string name="enter2">Ingresar</string>
+
 
 </resources>

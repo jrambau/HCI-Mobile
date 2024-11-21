@@ -17,8 +17,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.example.lupay.MyApplication
+import com.example.lupay.R
 import theme.CustomTheme
 
 @Composable
@@ -48,14 +50,14 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Iniciar sesion",
+                    text = stringResource(id = R.string.login_title),
                     style = MaterialTheme.typography.headlineMedium,
                     textAlign = TextAlign.Center,
                     color = if (isSystemInDarkTheme()) Color.White else MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Bienvenido",
+                    text = stringResource(id = R.string.welcome),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray,
                     textAlign = TextAlign.Center
@@ -65,7 +67,7 @@ fun LoginScreen(
                 InputField(
                     value = viewModel.email,
                     onValueChange = { viewModel.onEmailChanged(it) },
-                    label = "Ingrese su mail",
+                    label = stringResource(id = R.string.enter_mail),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     isPassword = false,
                     modifier = Modifier.fillMaxWidth()
@@ -74,7 +76,7 @@ fun LoginScreen(
                 InputField(
                     value = viewModel.password,
                     onValueChange = { viewModel.onPasswordChanged(it) },
-                    label = "Ingrese su contraseña",
+                    label = stringResource(id = R.string.enter_pass),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     isPassword = true,
                     showPassword = showPassword,
@@ -92,7 +94,7 @@ fun LoginScreen(
                         modifier = Modifier.align(Alignment.CenterVertically)
                     ) {
                         Text(
-                            text = "Confirmar cuenta",
+                            text = stringResource(id = R.string.validate),
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.Gray
                         )
@@ -102,7 +104,7 @@ fun LoginScreen(
                         modifier = Modifier.align(Alignment.CenterVertically)
                     ) {
                         Text(
-                            text = "¿Olvido su contraseña?",
+                            text = stringResource(id = R.string.forgot_pass),
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.Gray
                         )
@@ -117,7 +119,7 @@ fun LoginScreen(
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                 ) {
-                    Text("Ingresar")
+                    Text(stringResource(id = R.string.enter2))
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -127,7 +129,7 @@ fun LoginScreen(
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.surfaceVariant else Color.Black)
                 ) {
-                    Text("Registrarse", color = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.onSurface else Color.White)
+                    Text(stringResource(id = R.string.register_title), color = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.onSurface else Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -161,11 +163,11 @@ fun LoginScreen(
         if (showConfirmationDialog) {
             AlertDialog(
                 onDismissRequest = { showConfirmationDialog = false },
-                title = { Text("Confirmar cuenta") },
+                title = { Text(stringResource(id = R.string.validate)) },
                 text = {
                     Column {
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Ingrese el código de confirmación:")
+                        Text(stringResource(id = R.string.val_code))
                         TextField(
                             value = confirmationCode,
                             onValueChange = { confirmationCode = it },
@@ -173,7 +175,7 @@ fun LoginScreen(
                         )
                         if (uiState.error != null) {
                             Text(
-                                text = uiState.error.message ?: "Error desconocido",
+                                text = uiState.error.message ?: stringResource(id = R.string.unkown_error),
                                 color = Color.Red,
                                 modifier = Modifier.padding(top = 8.dp)
                             )
@@ -194,12 +196,12 @@ fun LoginScreen(
                         },
                         enabled = !uiState.isFetching
                     ) {
-                        Text("Confirmar")
+                        Text(stringResource(id = R.string.confirm))
                     }
                 },
                 dismissButton = {
                     Button(onClick = { showConfirmationDialog = false }) {
-                        Text("Cancelar")
+                        Text(stringResource(id = R.string.cancel))
                     }
                 }
             )
@@ -216,12 +218,12 @@ fun LoginScreen(
                     showResetPasswordDialog = false
                     resetStep = 0
                 },
-                title = { Text("Restablecer contraseña") },
+                title = { Text(stringResource(id = R.string.reset_pass)) },
                 text = {
                     Column {
                         when (resetStep) {
                             0 -> {
-                                Text("Ingrese su correo electrónico:")
+                                Text(stringResource(id = R.string.enter_mail))
                                 TextField(
                                     value = resetEmail,
                                     onValueChange = { resetEmail = it },
@@ -232,18 +234,18 @@ fun LoginScreen(
                                     onClick = { resetStep = 1 },
                                     modifier = Modifier.align(Alignment.End)
                                 ) {
-                                    Text("Ya tengo mi código")
+                                    Text(stringResource(id = R.string.got_code))
                                 }
                             }
                             1 -> {
-                                Text("Ingrese el código recibido por correo:")
+                                Text(stringResource(id = R.string.write_code))
                                 TextField(
                                     value = resetCode,
                                     onValueChange = { resetCode = it },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
-                                Text("Ingrese la nueva contraseña:")
+                                Text(stringResource(id = R.string.enter_pass))
                                 TextField(
                                     value = newPassword,
                                     onValueChange = { newPassword = it },
@@ -254,7 +256,7 @@ fun LoginScreen(
                         }
                         if (uiState.error != null) {
                             Text(
-                                text = uiState.error.message ?: "Error desconocido",
+                                text = uiState.error.message ?: stringResource(id = R.string.unkown_error),
                                 color = Color.Red,
                                 modifier = Modifier.padding(top = 8.dp)
                             )
@@ -282,7 +284,7 @@ fun LoginScreen(
                         },
                         enabled = !uiState.isFetching
                     ) {
-                        Text(if (resetStep == 0) "Enviar código" else "Restablecer")
+                        Text(if (resetStep == 0) stringResource(id = R.string.send_code) else stringResource(id = R.string.reset))
                     }
                 },
                 dismissButton = {
@@ -290,7 +292,7 @@ fun LoginScreen(
                         showResetPasswordDialog = false
                         resetStep = 0
                     }) {
-                        Text("Cancelar")
+                        Text(stringResource(id = R.string.cancel))
                     }
                 }
             )

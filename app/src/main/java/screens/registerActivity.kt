@@ -21,7 +21,9 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.example.lupay.MyApplication
+import com.example.lupay.R
 import java.time.format.DateTimeFormatter
 import java.time.Instant
 import java.time.ZoneId
@@ -51,13 +53,13 @@ fun RegisterScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Registrarse",
+                text = stringResource(id = R.string.register_title),
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Bienvenido",
+                text = stringResource(id = R.string.welcome),
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
                 textAlign = TextAlign.Center
@@ -67,7 +69,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = viewModel.name,
                 onValueChange = { viewModel.onNameChanged(it) },
-                label = { Text("Ingrese su nombre") },
+                label = { Text(stringResource(id = R.string.enter_name)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 modifier = Modifier.fillMaxWidth(),
@@ -77,7 +79,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = viewModel.lastname,
                 onValueChange = { viewModel.onLastNameChanged(it) },
-                label = { Text("Ingrese su apellido") },
+                label = { Text(stringResource(id = R.string.enter_lastname)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 modifier = Modifier.fillMaxWidth(),
@@ -88,7 +90,7 @@ fun RegisterScreen(
                 value = viewModel.birthDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                     ?: "",
                 onValueChange = { },
-                label = { Text("Fecha de nacimiento") },
+                label = { Text(stringResource(id = R.string.enter_bday)) },
                 singleLine = true,
                 readOnly = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -97,7 +99,7 @@ fun RegisterScreen(
                     IconButton(onClick = { showDatePicker = true }) {
                         Icon(
                             imageVector = Icons.Default.DateRange,
-                            contentDescription = "Seleccionar fecha"
+                            contentDescription = stringResource(id = R.string.date)
                         )
                     }
                 },
@@ -115,7 +117,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = viewModel.email,
                 onValueChange = { viewModel.onEmailChanged(it) },
-                label = { Text("Ingrese su mail") },
+                label = { Text(stringResource(id = R.string.enter_mail)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth(),
@@ -126,7 +128,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = viewModel.password,
                 onValueChange = { viewModel.onPasswordChanged(it) },
-                label = { Text("Ingrese su contraseña") },
+                label = { Text(stringResource(id = R.string.enter_pass)) },
                 singleLine = true,
                 visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -147,7 +149,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = viewModel.confirmPassword,
                 onValueChange = { viewModel.onConfirmPasswordChanged(it) },
-                label = { Text("Vuelva a ingresar la contraseña") },
+                label = { Text(stringResource(id = R.string.reenter_pass)) },
                 singleLine = true,
                 visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -171,7 +173,7 @@ fun RegisterScreen(
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
             ) {
-                Text("Registrarse")
+                Text(stringResource(id = R.string.register_title))
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -180,7 +182,7 @@ fun RegisterScreen(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text(
-                    text = "¿Ya tienes cuenta? Ingrese aquí",
+                    text = stringResource(id = R.string.has_account),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )
@@ -236,7 +238,7 @@ fun RegisterScreen(
                             TextButton(
                                 onClick = { showDatePicker = false }
                             ) {
-                                Text("Cancelar")
+                                Text(stringResource(id = R.string.cancel))
                             }
                         }
                     ) {
