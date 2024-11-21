@@ -14,8 +14,8 @@ import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lupay.ui.viewmodels.ProfileViewModel
 import androidx.compose.foundation.shape.RoundedCornerShape
-import com.example.lupay.ui.Components.ReadOnlyInfoField
-import com.example.lupay.ui.Components.PersonalInfoField
+import components.ReadOnlyInfoField
+import components.PersonalInfoField
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.platform.LocalContext
 import com.example.lupay.MyApplication

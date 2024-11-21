@@ -13,10 +13,37 @@ class WalletRepository(
     private val remoteDataSource: WalletRemoteDataSource
 ) {
     private val mutex = Mutex()
-    private var balance:Double? = null
-    private var investment:Double? = null
-    private var cards: Array<NetworkCard>? = null
+    private var balance: Double? = null
+    private var investment: Double? = null
+    private var cards: List<NetworkCard>? = null
     private var currentCard: NetworkCard? = null
+
+    suspend fun getCards(): List<NetworkCard> {
+        val response = remoteDataSource.getCards()
+        mutex.withLock {
+            this.cards = response.toList()
+        }
+        return response.toList()
+    }
+
+    suspend fun addCard(card: NetworkCard): NetworkCard {
+        val response = remoteDataSource.addCard(card)
+        mutex.withLock {
+            this.currentCard = response
+            this.cards = this.cards?.plus(card) ?: listOf(card)
+        }
+        return response
+    }
+
+    suspend fun deleteCard(cardId: Int) {
+        remoteDataSource.deleteCard(cardId)
+        mutex.withLock {
+            this.cards = this.cards?.filter { it.id != cardId }
+            if (this.currentCard?.id == cardId) {
+                this.currentCard = null
+            }
+        }
+    }
     suspend fun getWalletBalance() : NetworkWalletInfo {
        val response = remoteDataSource.getWalletBalance()
         mutex.withLock {
@@ -47,24 +74,7 @@ class WalletRepository(
     suspend fun getWalletDetails() : NetworkWalletInfo {
         return remoteDataSource.getWalletDetails()
     }
-    suspend fun getCards() : Array<NetworkCard> {
-        val response = remoteDataSource.getCards()
-        mutex.withLock {
-            this.cards = response
-        }
-        return response
-    }
-    suspend fun addCard(card: NetworkCard) : NetworkCard {
-        val response = remoteDataSource.addCard(card)
-        mutex.withLock {
-            this.currentCard = response
-        }
-        return response
-    }
-    suspend fun deleteCard(cardId: Int) {
-        remoteDataSource.deleteCard(cardId)
-    }
-    suspend fun getDailyReturns(page: Int) : Array<NetworkInvestInfo> {
+    suspend fun getDailyReturns(page: Int) : List<NetworkInvestInfo> {
         return remoteDataSource.getDailyReturns(page)
     }
     suspend fun getDailyInterest() : NetworkInterest {

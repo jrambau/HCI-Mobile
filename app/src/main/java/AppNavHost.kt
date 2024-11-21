@@ -1,9 +1,8 @@
 package com.example.lupay.ui
 
-import BottomBar
 import HomeScreen
 import RegisterScreen
-import TopBarComponent
+import components.TopBarComponent
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -11,19 +10,18 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.collectAsState
-import kotlinx.coroutines.flow.map
+import components.NavigationRail
+import components.TabletLayout
 import com.example.lupay.ui.screens.*
-import com.example.lupay.ui.components.*
 import com.example.lupay.ui.utils.DeviceType
 import com.example.lupay.ui.utils.rememberDeviceType
+import components.BottomBar
 
 @Composable
 private fun TabletScreenWrapper(

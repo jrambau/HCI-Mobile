@@ -1,22 +1,15 @@
 
 
-import Components.ConfirmationDialog
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.example.lupay.MyApplication
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import network.Repository.PaymentRepository
-import network.Repository.UserRepository
 import network.Repository.WalletRepository
 
 class InvestmentViewModel(

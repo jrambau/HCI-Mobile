@@ -1,6 +1,6 @@
 package com.example.lupay.ui.screens
 
-import Components.InputField
+import components.InputField
 import LoginViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme

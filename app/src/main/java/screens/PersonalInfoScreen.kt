@@ -17,8 +17,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.example.lupay.MyApplication
-import com.example.lupay.ui.Components.ReadOnlyInfoField
-import com.example.lupay.ui.Components.PersonalInfoField
+import components.ReadOnlyInfoField
+import components.PersonalInfoField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

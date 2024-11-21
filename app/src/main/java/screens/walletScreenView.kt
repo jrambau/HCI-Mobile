@@ -1,7 +1,6 @@
 package com.example.lupay.ui.screens
 
-import Components.ConfirmationDialog
-import CreditCard
+import components.ConfirmationDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -25,31 +24,29 @@ import com.example.lupay.ui.viewmodels.CreditCardViewModel
 import theme.CustomTheme
 import androidx.navigation.NavHostController
 import com.example.lupay.MyApplication
+import components.CreditCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WalletScreen(
-    navController: NavHostController, // Pass NavController to navigate
+    navController: NavHostController,
     viewModel: CreditCardViewModel = viewModel(factory = CreditCardViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
 ) {
     CustomTheme {
         val cards by viewModel.cards.collectAsState()
         val uiState by viewModel.uiState.collectAsState()
         var delete by remember { mutableStateOf(false) }
-        var selectedCardId by remember { mutableStateOf<Int>(value = 0) }
+        var selectedCardId by remember { mutableStateOf<Int?>(null) }
 
         Scaffold { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues) // Use paddingValues here for correct spacing
-                    .padding(start = 16.dp, end = 16.dp) // Optional: Add side padding
+                    .padding(paddingValues)
+                    .padding(start = 16.dp, end = 16.dp)
             ) {
+                Spacer(modifier = Modifier.height(65.dp))
 
-                // Spacer to push content down a bit
-                Spacer(modifier = Modifier.height(65.dp)) // Adjust this height as needed
-
-                // My Cards Section
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -57,10 +54,9 @@ fun WalletScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Eye Icon Button for toggling visibility (left)
                     IconButton(
                         onClick = { viewModel.toggleHidden() },
-                        modifier = Modifier.size(48.dp) // Optional: Adjust size if needed
+                        modifier = Modifier.size(48.dp)
                     ) {
                         Icon(
                             if (uiState.isHidden) Icons.Default.VisibilityOff else Icons.Default.Visibility,
@@ -69,7 +65,7 @@ fun WalletScreen(
                     }
 
                     Button(
-                        onClick = { navController.navigate("add_card") }, // Navigate to AddCardScreen
+                        onClick = { navController.navigate("add_card") },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null)
@@ -78,43 +74,41 @@ fun WalletScreen(
                     }
                 }
 
-                // Spacer between buttons and cards
-                Spacer(modifier = Modifier.height(16.dp)) // Adds space between buttons and cards
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Credit Card Display Section
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(cards) { card ->
                         Box(
                             modifier = Modifier
-                                .width(350.dp) // Ensure consistent card width
+                                .width(350.dp)
                                 .padding(8.dp),
                             contentAlignment = Alignment.TopCenter
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                // Credit Card Component
                                 CreditCard(
-                                    cardNumber = card.cardNumber,
-                                    cardName = card.cardName,
-                                    cardExpiry = card.cardExpiry,
-                                    cvv = card.cvv,
+                                    cardNumber = card.number,
+                                    cardName = card.fullName,
+                                    cardExpiry = card.expirationDate,
+                                    cvv = card.cvv ?: "",
                                     isHidden = uiState.isHidden,
                                     modifier = Modifier
                                 )
 
-                                // Spacer between the card and the delete button
-                                Spacer(modifier = Modifier.height(16.dp)) // Adjust the height as needed
+                                Spacer(modifier = Modifier.height(16.dp))
 
-                                // Circular Red Delete Button
                                 IconButton(
-                                    onClick = { selectedCardId = card.id ; delete = true}, // Call deleteCard method
+                                    onClick = {
+                                        selectedCardId = card.id
+                                        delete = true
+                                    },
                                     modifier = Modifier
-                                        .size(48.dp) // Ensures the button is a circle
-                                        .clip(CircleShape) // Clips the button into a circle
-                                        .background(Color.Red) // Background color red
+                                        .size(48.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.Red)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Delete,
@@ -129,18 +123,18 @@ fun WalletScreen(
                 if(delete){
                     ConfirmationDialog(
                         onConfirm = {
-                            viewModel.deleteCard(selectedCardId)
-                            delete = false // Close dialog on confirmation
+                            selectedCardId?.let { viewModel.deleteCard(it) }
+                            delete = false
                         },
                         onDismiss = {
                             delete = false
                         },
                         title = "Eliminar tarjeta",
                         message = "¿Estás seguro de eliminar la tarjeta?"
-
                     )
                 }
             }
         }
     }
 }
+

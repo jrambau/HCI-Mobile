@@ -35,7 +35,7 @@ suspend fun getInvestment() : NetworkInvestInfo {
     suspend fun getWalletDetails() : NetworkWalletInfo {
         return handleApiResponse { walletApiService.getWalletDetails() }
     }
-    suspend fun getCards() : Array<NetworkCard> {
+    suspend fun getCards() : List<NetworkCard> {
         return handleApiResponse { walletApiService.getCards() }
     }
     suspend fun addCard(card: NetworkCard) : NetworkCard {
@@ -44,7 +44,7 @@ suspend fun getInvestment() : NetworkInvestInfo {
     suspend fun deleteCard(cardId: Int) {
         handleApiResponse { walletApiService.deleteCard(cardId) }
     }
-    suspend fun getDailyReturns(page: Int) : Array<NetworkInvestInfo> {
+    suspend fun getDailyReturns(page: Int) : List<NetworkInvestInfo> {
         return handleApiResponse { walletApiService.getDailyReturns(page) }
     }
     suspend fun getDailyInterest() : NetworkInterest {

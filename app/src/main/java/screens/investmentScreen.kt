@@ -1,11 +1,6 @@
 package com.example.lupay.ui.screens
 
-import Components.ConfirmationDialog
 import InvestmentViewModel
-import android.app.Activity
-import android.content.pm.ActivityInfo
-import android.util.Log
-import android.view.OrientationEventListener
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,12 +17,7 @@ import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import com.patrykandpatrick.vico.core.entry.FloatEntry
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
