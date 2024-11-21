@@ -93,6 +93,35 @@ class ProfileViewModel(
             }
         }
     }
+    // In ProfileViewModel
+    fun setError(message: String) {
+        _uiState.value = _uiState.value.copy(error = message)
+    }
+
+    fun resetPassword(email: String, newPassword: String, resetCode: String) {
+        if (newPassword.length <= 6) {
+            _uiState.value = _uiState.value.copy(
+                error = "Password must be longer than 6 characters"
+            )
+            return
+        }
+
+        _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+        viewModelScope.launch {
+            try {
+                userRepository.resetPassword(email, newPassword, resetCode)
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false
+                )
+                // Optionally, handle success, e.g., show a success message or navigate to login screen
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = e.message ?: "Failed to reset password"
+                )
+            }
+        }
+    }
 
     companion object {
         fun provideFactory(application: MyApplication): ViewModelProvider.Factory =

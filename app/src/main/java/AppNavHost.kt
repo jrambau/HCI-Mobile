@@ -3,6 +3,7 @@ package com.example.lupay.ui
 import HomeScreen
 import ProfileScreen
 import RegisterScreen
+import SecurityScreen
 import components.TopBarComponent
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
@@ -234,6 +235,12 @@ fun AppNavHost(
 
         composable("account_info") {
             AccountInfoScreen(
+                navController = navController,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        composable("security_screen") {
+            SecurityScreen(
                 navController = navController,
                 modifier = Modifier.fillMaxSize()
             )

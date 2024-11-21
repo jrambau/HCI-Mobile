@@ -97,10 +97,11 @@ fun ProfileScreen(
         ProfileMenuItem(
             title = "Seguridad",
             description = "Configura la seguridad de tu cuenta.",
-            onClick = { /* TODO: Navigate to security settings */ }
+            onClick = { navController.navigate("security_screen") } // Navigate to Seguridad screen
         )
     }
 }
+
 
 @Composable
 fun ProfileMenuItem(
