@@ -45,6 +45,45 @@ private fun TabletScreenWrapper(
     }
 }
 
+@Composable
+private fun TopBarScaffoldWrapper(
+    username: String = "john doe",
+    title: String,
+    navController: NavHostController,
+    deviceType: DeviceType,
+    currentRoute: String,
+    content: @Composable (PaddingValues) -> Unit
+) {
+    if (deviceType == DeviceType.TABLET) {
+        TabletLayout(
+            navigationRail = {
+                NavigationRail(
+                    currentRoute = currentRoute,
+                    onNavigate = { route -> 
+                        navController.navigate(route) {
+                            popUpTo("main")
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
+        ) {
+            Scaffold(
+                topBar = { TopBarComponent(username, title, navController) }
+            ) { paddingValues ->
+                content(paddingValues)
+            }
+        }
+    } else {
+        Scaffold(
+            topBar = { TopBarComponent(username, title, navController) },
+            bottomBar = { BottomBar(navController) }
+        ) { paddingValues ->
+            content(paddingValues)
+        }
+    }
+}
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AppNavHost(
@@ -112,150 +151,76 @@ fun AppNavHost(
         }
 
         composable("main") {
-            if (deviceType == DeviceType.TABLET) {
-                TabletLayout(
-                    navigationRail = {
-                        NavigationRail(
-                            currentRoute = currentRoute,
-                            onNavigate = { route -> 
-                                navController.navigate(route) {
-                                    popUpTo("main")
-                                    launchSingleTop = true
-                                }
-                            }
-                        )
-                    }
-                ) {
-                    HomeScreen()
-                }
-            } else {
-                Scaffold(
-                    bottomBar = { BottomBar(navController) }
-                ) { paddingValues ->
-                    HomeScreen()
-                }
+            TopBarScaffoldWrapper(
+                title = "Panel",
+                navController = navController,
+                deviceType = deviceType,
+                currentRoute = currentRoute
+            ) { paddingValues ->
+                HomeScreen(
+                    modifier = Modifier.padding(paddingValues)
+                )
             }
         }
 
         composable("wallet") {
-            if (deviceType == DeviceType.TABLET) {
-                TabletLayout(
-                    navigationRail = {
-                        NavigationRail(
-                            currentRoute = currentRoute,
-                            onNavigate = { route -> 
-                                navController.navigate(route) {
-                                    popUpTo("main")
-                                    launchSingleTop = true
-                                }
-                            }
-                        )
-                    }
-                ) {
-                    WalletScreen(navController)
-                }
-            } else {
-                Scaffold(
-                    bottomBar = { BottomBar(navController) }
-                ) { paddingValues ->
-                    WalletScreen(navController)
-                }
+            TopBarScaffoldWrapper(
+                title = "Tarjetas",
+                navController = navController,
+                deviceType = deviceType,
+                currentRoute = currentRoute
+            ) { paddingValues ->
+                WalletScreen(
+                    navController = navController,
+                    modifier = Modifier.padding(paddingValues)
+                )
             }
         }
 
         composable("analytics") {
-            if (deviceType == DeviceType.TABLET) {
-                TabletLayout(
-                    navigationRail = {
-                        NavigationRail(
-                            currentRoute = currentRoute,
-                            onNavigate = { route -> 
-                                navController.navigate(route) {
-                                    popUpTo("main")
-                                    launchSingleTop = true
-                                }
-                            }
-                        )
-                    }
-                ) {
-                    InvestmentScreen()
-                }
-            } else {
-                Scaffold(
-                    bottomBar = { BottomBar(navController) },
-                    topBar = { TopBarComponent("john doe", "Inversiones", navController) }
-                ) { paddingValues ->
-                    InvestmentScreen()
-                }
+            TopBarScaffoldWrapper(
+                title = "Inversiones",
+                navController = navController,
+                deviceType = deviceType,
+                currentRoute = currentRoute
+            ) { paddingValues ->
+                InvestmentScreen(
+                    modifier = Modifier.padding(paddingValues)
+                )
             }
         }
 
         composable("qr") {
-            if (deviceType == DeviceType.TABLET) {
-                TabletLayout(
-                    navigationRail = {
-                        NavigationRail(
-                            currentRoute = currentRoute,
-                            onNavigate = { route -> 
-                                navController.navigate(route) {
-                                    popUpTo("main")
-                                    launchSingleTop = true
-                                }
-                            }
-                        )
-                    }
+            TopBarScaffoldWrapper(
+                title = "QR",
+                navController = navController,
+                deviceType = deviceType,
+                currentRoute = currentRoute
+            ) { paddingValues ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("QR Screen")
-                    }
-                }
-            } else {
-                Scaffold(
-                    bottomBar = { BottomBar(navController) }
-                ) { paddingValues ->
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("QR Screen")
-                    }
+                    Text("QR Screen")
                 }
             }
         }
 
         composable("profile") {
-            if (deviceType == DeviceType.TABLET) {
-                TabletLayout(
-                    navigationRail = {
-                        NavigationRail(
-                            currentRoute = currentRoute,
-                            onNavigate = { route -> 
-                                navController.navigate(route) {
-                                    popUpTo("main")
-                                    launchSingleTop = true
-                                }
-                            }
-                        )
-                    }
-                ) {
-                    ProfileScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        navController = navController
-                    )
-                }
-            } else {
-                Scaffold(
-                    bottomBar = { BottomBar(navController) },
-                    topBar = { TopBarComponent("john doe", "Perfil", navController) }
-                ) { paddingValues ->
-                    ProfileScreen(
-                        modifier = Modifier.padding(paddingValues),
-                        navController = navController
-                    )
-                }
+            TopBarScaffoldWrapper(
+                title = "Perfil",
+                navController = navController,
+                deviceType = deviceType,
+                currentRoute = currentRoute
+            ) { paddingValues ->
+                ProfileScreen(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    navController = navController
+                )
             }
         }
 

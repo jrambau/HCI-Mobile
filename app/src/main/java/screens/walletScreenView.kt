@@ -29,6 +29,7 @@ import components.CreditCard
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WalletScreen(
+    modifier: Modifier = Modifier,
     navController: NavHostController,
     viewModel: CreditCardViewModel = viewModel(factory = CreditCardViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
 ) {

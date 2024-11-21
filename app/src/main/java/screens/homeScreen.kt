@@ -45,11 +45,11 @@ fun HomeScreen(
                 .padding(16.dp)
         ) {
             item {
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 PanelSection(
                     availableBalance = uiState.availableBalance,
                 )
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             item {

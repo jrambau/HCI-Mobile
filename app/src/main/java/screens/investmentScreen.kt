@@ -26,6 +26,7 @@ import theme.CustomTheme
 
 @Composable
 fun InvestmentScreen(
+    modifier: Modifier = Modifier,
     viewModel: InvestmentViewModel = viewModel(factory = InvestmentViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication) )
 ) {
     val uiState by viewModel.uiState.collectAsState()
