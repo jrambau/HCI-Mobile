@@ -4,6 +4,9 @@ import kotlinx.coroutines.sync.Mutex
 import network.PaymentRemoteDataSource
 import network.model.NetworkError
 import network.model.NetworkPaymentInfo
+import network.model.NetworkPaymentInfoResponse
+import network.model.NetworkPaymentLink
+import network.model.NetworkSinglePayment
 import network.model.NetworkSuccess
 
 class PaymentRepository(
@@ -13,17 +16,25 @@ class PaymentRepository(
     suspend fun makePayment(amount: Double, type: String, description: String, cardId: Int?, receiverEmail: String?) {
         remoteDataSource.makePayment(amount, type, description, cardId, receiverEmail)
     }
-    suspend fun getPaymentsInfo(page: Int? = 1, direction: String? = "ASC", pending: Boolean? = null, type: String? = null, range: String? = null, source: String? = null, cardId: Int? = null) : Array<NetworkPaymentInfo> {
+    suspend fun getPaymentsInfo(page: Int? = 1, direction: String? = "ASC", pending: Boolean? = null, type: String? = null, range: String? = null, source: String? = null, cardId: Int? = null) : NetworkPaymentInfoResponse {
       return  remoteDataSource.getPaymentsInfo(page, direction, pending, type, range, source, cardId)
     }
     suspend fun getPaymentDetails(paymentId: Int) : NetworkPaymentInfo {
       return  remoteDataSource.getPaymentDetails(paymentId)
     }
-    suspend fun payByLink(linkUuid: String) {
-        remoteDataSource.payByLink(linkUuid)
+
+    suspend fun getLinkDetails(linkUuid: String) : NetworkSinglePayment {
+      return  remoteDataSource.getLinkDetails(linkUuid)
     }
-    suspend fun generatePaymentLink(linkUuid: String) : NetworkSuccess {
-       return remoteDataSource.generatePaymentLink(linkUuid)
+    suspend fun generateLink(amount: Double,description: String) : NetworkPaymentLink {
+      return  remoteDataSource.generateLink(amount,description)
+    }
+    suspend fun payByLink(linkUuid: String) : NetworkPaymentInfo {
+        return remoteDataSource.payByLink(linkUuid)
+    }
+
+    suspend fun payByLinkWithCard(linkUuid: String, cardId: Int) : NetworkPaymentInfo {
+        return remoteDataSource.payByLinkWithCard(linkUuid, cardId)
     }
 
 }

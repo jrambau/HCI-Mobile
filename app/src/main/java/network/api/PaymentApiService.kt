@@ -2,6 +2,9 @@ package network.api
 import network.model.NetworkAlias
 import network.model.NetworkError
 import network.model.NetworkPaymentInfo
+import network.model.NetworkPaymentInfoResponse
+import network.model.NetworkPaymentLink
+import network.model.NetworkSinglePayment
 import network.model.NetworkSuccess
 import network.model.NetworkToken
 import network.model.NetworkUser
@@ -19,20 +22,22 @@ import retrofit2.http.Query
 interface PaymentApiService {
     @POST("payment")
     suspend fun makePayment(@Body request: NetworkPaymentInfo): Response<Unit>
+    @POST("payment")
+    suspend fun generateLink(@Body request: NetworkPaymentInfo): Response<NetworkPaymentLink>
     @GET("payment")
     suspend fun getPaymentsInfo(
         @Query("page") page: Int? = 1,
-        @Query("direction") direction: String? = "ASC",
+        @Query("direction") direction: String? = "DESC",
         @Query("pending") pending: Boolean? = null,
         @Query("type") type: String? = null,
         @Query("range") range: String? = null,
         @Query("source") source: String? = null,
         @Query("cardId") cardId: Int? = null
-    ): Response<Array<NetworkPaymentInfo>>
+    ): Response<NetworkPaymentInfoResponse>
     @GET("payment/{paymentId}")
     suspend fun getPaymentDetails(@Path("paymentId") paymentId: Int): Response<NetworkPaymentInfo>
     @GET("payment/link/{linkUuid}")
-    suspend fun payByLink(@Path("linkUuid") linkUuid: String): Response<NetworkPaymentInfo>
+    suspend fun getLinkDetails(@Path("linkUuid") linkUuid: String): Response<NetworkSinglePayment>
     @POST("payment/link/{linkUuid}")
-    suspend fun generatePaymentLink(@Path("linkUuid") linkUuid: String): Response<NetworkSuccess>
+    suspend fun payByLink(@Path("linkUuid") linkUuid: String,@Body request: NetworkPaymentInfo): Response<NetworkPaymentInfo>
 }
