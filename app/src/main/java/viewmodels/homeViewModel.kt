@@ -42,10 +42,12 @@ class HomeViewModel(
 
     init {
         if (generalUiState.isAuthenticated) {
-            fetchWalletInfo()
-            fetchTransactions()
-            fetchMonthlyExpenses()
-            fetchCards()
+            viewModelScope.launch {
+                fetchWalletInfo()
+                fetchTransactions()
+                fetchMonthlyExpenses()
+                fetchCards()
+            }
         }
     }
 

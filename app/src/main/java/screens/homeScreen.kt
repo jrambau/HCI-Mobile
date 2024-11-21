@@ -37,16 +37,28 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var generalUiState = viewModel.generalUiState
-
+    var isLoading by remember { mutableStateOf(true) }
     var showTransferDialog by remember { mutableStateOf(false) }
     var showPaymentLinkDialog by remember { mutableStateOf(false) }
     var showRechargeDialog by remember { mutableStateOf(false) }
     var selectedTransaction by remember { mutableStateOf<Transaction?>(null) }
     var showPaymentLinkDetailsDialog by remember { mutableStateOf(false) }
-
+    LaunchedEffect(uiState) {
+        isLoading = uiState.transactions.isEmpty() ||
+                uiState.monthlyExpenses.isEmpty() ||
+                uiState.availableBalance == 0
+    }
     Scaffold(
         modifier = modifier.fillMaxSize(),
     ) { paddingValues ->
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -167,7 +179,7 @@ fun HomeScreen(
                     viewModel.clearSuccessMessage()
                 }
             )
-        }
+        }}
     }
 }
 
