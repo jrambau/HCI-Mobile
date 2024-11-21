@@ -7,6 +7,7 @@ import network.WalletRemoteDataSource
 import network.model.NetworkCard
 import network.model.NetworkInterest
 import network.model.NetworkInvestInfo
+import network.model.NetworkInvestInfoList
 import network.model.NetworkWalletInfo
 
 class WalletRepository(
@@ -74,7 +75,7 @@ class WalletRepository(
     suspend fun getWalletDetails() : NetworkWalletInfo {
         return remoteDataSource.getWalletDetails()
     }
-    suspend fun getDailyReturns(page: Int) : List<NetworkInvestInfo> {
+    suspend fun getDailyReturns(page: Int) : NetworkInvestInfoList {
         return remoteDataSource.getDailyReturns(page)
     }
     suspend fun getDailyInterest() : NetworkInterest {

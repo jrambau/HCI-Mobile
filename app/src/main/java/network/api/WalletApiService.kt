@@ -3,6 +3,7 @@ package network.api
 import network.model.NetworkCard
 import network.model.NetworkInterest
 import network.model.NetworkInvestInfo
+import network.model.NetworkInvestInfoList
 import network.model.NetworkWalletInfo
 import retrofit2.Response
 import retrofit2.http.Body
@@ -30,7 +31,7 @@ interface WalletApiService {
     @DELETE("wallet/cards/{cardId}")
     suspend fun deleteCard(@Path("cardId") cardId: Int): Response<Unit>
     @GET("wallet/daily-returns")
-    suspend fun getDailyReturns(@Query("page") page: Int): Response<List<NetworkInvestInfo>>
+    suspend fun getDailyReturns(@Query("page") page: Int): Response<NetworkInvestInfoList>
     @GET("wallet/daily-interest")
     suspend fun getDailyInterest(): Response<NetworkInterest>
     @GET("wallet/details")

@@ -34,7 +34,8 @@ class HomeViewModel(
         private set
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
-
+    private val _hasAttemptedToLoadTransactions = MutableStateFlow(false)
+    val hasAttemptedToLoadTransactions: StateFlow<Boolean> = _hasAttemptedToLoadTransactions.asStateFlow()
     var selectedPaymentMethod by mutableStateOf<PaymentMethod>(PaymentMethod.WALLET)
     var selectedCard by mutableStateOf<NetworkCard?>(null)
     var cards by mutableStateOf<List<NetworkCard>>(emptyList())
@@ -129,6 +130,8 @@ class HomeViewModel(
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error fetching transactions", e)
                 generalUiState = generalUiState.copy(error = Error(e.message ?: "Error fetching transactions"))
+            } finally {
+                _hasAttemptedToLoadTransactions.value = true
             }
         }
     }

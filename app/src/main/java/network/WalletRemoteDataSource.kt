@@ -10,6 +10,7 @@ import network.api.WalletApiService
 import network.model.NetworkCard
 import network.model.NetworkInterest
 import network.model.NetworkInvestInfo
+import network.model.NetworkInvestInfoList
 import network.model.asModel
 import network.model.NetworkWalletInfo
 
@@ -44,7 +45,7 @@ suspend fun getInvestment() : NetworkInvestInfo {
     suspend fun deleteCard(cardId: Int) {
         handleApiResponse { walletApiService.deleteCard(cardId) }
     }
-    suspend fun getDailyReturns(page: Int) : List<NetworkInvestInfo> {
+    suspend fun getDailyReturns(page: Int) : NetworkInvestInfoList {
         return handleApiResponse { walletApiService.getDailyReturns(page) }
     }
     suspend fun getDailyInterest() : NetworkInterest {

@@ -39,41 +39,221 @@ fun InvestmentScreen(
     var showWithdrawConfirmation by remember { mutableStateOf(false) }
     var isInvestAction by remember { mutableStateOf(true) }
     val deviceType = rememberDeviceType()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.error, uiState.successMessage) {
+        uiState.error?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearMessages()
+        }
+        uiState.successMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearMessages()
+        }
+    }
 
     CustomTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            if (deviceType == DeviceType.TABLET) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.investment),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    // Top row: Investment cards and chart
-                    Row(
+            Box(modifier = Modifier.fillMaxSize()) {
+                if (deviceType == DeviceType.TABLET) {
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.5f),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(24.dp)
                     ) {
-                        // Left side: Investment cards in a column
-                        Column(
+                        Text(
+                            text = stringResource(R.string.investment),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Row(
                             modifier = Modifier
-                                .weight(0.4f)
-                                .fillMaxHeight(),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                                .fillMaxWidth()
+                                .weight(0.5f),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .weight(0.4f)
+                                    .fillMaxHeight(),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                InvestmentCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    title = stringResource(R.string.Invested),
+                                    amount = uiState.myInvestment,
+                                    subtitle = {
+                                        val percentageGain = if (uiState.myInvestment > 0) {
+                                            ((uiState.currentValue - uiState.myInvestment) / uiState.myInvestment * 100).toInt()
+                                        } else 0
+                                        Text(
+                                            text = "+$percentageGain%",
+                                            color = Color(0xFF4CAF50),
+                                            fontSize = 14.sp
+                                        )
+                                    }
+                                )
+
+                                InvestmentCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    title = stringResource(R.string.current_inve),
+                                    amount = uiState.currentValue,
+                                    subtitle = {
+                                        Text(
+                                            text = "Daily Interest Rate: ${String.format("%.2f", uiState.dailyInterestRate)}%",
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontSize = 14.sp
+                                        )
+                                    }
+                                )
+                            }
+
+                            Card(
+                                modifier = Modifier
+                                    .weight(0.6f)
+                                    .fillMaxHeight(),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    Text(
+                                        text = "Investment History",
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+
+                                    Chart(
+                                        chart = lineChart(),
+                                        model = entryModelOf(uiState.chartData.map { FloatEntry(it.x, it.y) }),
+                                        startAxis = rememberStartAxis(),
+                                        bottomAxis = rememberBottomAxis(),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .weight(1f)
+                                    )
+                                }
+                            }
+                        }
+
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.5f),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(24.dp)
+                                    .fillMaxSize(),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.current_money),
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Text(
+                                    text = "$${String.format("%.2f", uiState.currentBalance)}", // Formateamos a 2 decimales
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+
+                                OutlinedTextField(
+                                    value = if (isInvestAction) uiState.investmentAmount else uiState.withdrawalAmount,
+                                    onValueChange = {
+                                        if (isInvestAction) {
+                                            viewModel.onInvestmentAmountChanged(it)
+                                        } else {
+                                            viewModel.onWithdrawalAmountChanged(it)
+                                        }
+                                    },
+                                    label = {
+                                        Text(
+                                            if (isInvestAction)
+                                                stringResource(R.string.to_invest)
+                                            else
+                                                stringResource(R.string.to_withdraw)
+                                        )
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                                )
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Button(
+                                        onClick = {
+                                            isInvestAction = true
+                                            showInvestConfirmation = true
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(12.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = if (isInvestAction)
+                                                MaterialTheme.colorScheme.primary
+                                            else
+                                                MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                                        )
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.invest),
+                                            color = Color.White
+                                        )
+                                    }
+
+                                    Button(
+                                        onClick = {
+                                            isInvestAction = false
+                                            showWithdrawConfirmation = true
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(12.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = if (!isInvestAction)
+                                                Color.Red
+                                            else
+                                                Color.Red.copy(alpha = 0.6f)
+                                        )
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.withdraw),
+                                            color = Color.White
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(24.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.investment),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             InvestmentCard(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.weight(1f),
                                 title = stringResource(R.string.Invested),
                                 amount = uiState.myInvestment,
                                 subtitle = {
@@ -87,22 +267,23 @@ fun InvestmentScreen(
                                     )
                                 }
                             )
-                            
+
                             InvestmentCard(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.weight(1f),
                                 title = stringResource(R.string.current_inve),
                                 amount = uiState.currentValue,
                                 subtitle = {
-                                    Spacer(modifier = Modifier.height(20.dp))
+                                    Text(
+                                        text = "Daily Interest Rate: ${String.format("%.2f", uiState.dailyInterestRate)}%",
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontSize = 14.sp
+                                    )
                                 }
                             )
                         }
 
-                        // Right side: Chart
                         Card(
-                            modifier = Modifier
-                                .weight(0.6f)
-                                .fillMaxHeight(),
+                            modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp)
                         ) {
                             Column(
@@ -110,11 +291,11 @@ fun InvestmentScreen(
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 Text(
-                                    text = "Historial de inversiones",
+                                    text = "Investment History",
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Medium
                                 )
-                                
+
                                 Chart(
                                     chart = lineChart(),
                                     model = entryModelOf(uiState.chartData.map { FloatEntry(it.x, it.y) }),
@@ -122,297 +303,129 @@ fun InvestmentScreen(
                                     bottomAxis = rememberBottomAxis(),
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .weight(1f)
+                                        .height(200.dp)
                                 )
                             }
                         }
-                    }
 
-                    // Bottom section: Investment actions
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.5f),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .padding(24.dp)
-                                .fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp)
                         ) {
-                            Text(
-                                text = stringResource(R.string.current_money),
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                            Text(
-                                text = "$${uiState.currentBalance}",
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-
-                            OutlinedTextField(
-                                value = if (isInvestAction) uiState.investmentAmount else uiState.withdrawalAmount,
-                                onValueChange = { 
-                                    if (isInvestAction) {
-                                        viewModel.onInvestmentAmountChanged(it)
-                                    } else {
-                                        viewModel.onWithdrawalAmountChanged(it)
-                                    }
-                                },
-                                label = { 
-                                    Text(
-                                        if (isInvestAction) 
-                                            stringResource(R.string.to_invest)
-                                        else 
-                                            stringResource(R.string.to_withdraw)
-                                    ) 
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                            )
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                Button(
-                                    onClick = { 
-                                        isInvestAction = true
-                                        showInvestConfirmation = true 
-                                    },
-                                    modifier = Modifier.weight(1f),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isInvestAction) 
-                                            MaterialTheme.colorScheme.primary 
-                                        else 
-                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
-                                    )
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.invest),
-                                        color = Color.White
-                                    )
-                                }
-
-                                Button(
-                                    onClick = { 
-                                        isInvestAction = false
-                                        showWithdrawConfirmation = true 
-                                    },
-                                    modifier = Modifier.weight(1f),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (!isInvestAction) 
-                                            Color.Red 
-                                        else 
-                                            Color.Red.copy(alpha = 0.6f)
-                                    )
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.withdraw),
-                                        color = Color.White
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                // Original phone layout
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.investment),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    // Investment Summary Cards
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        // Invested Card
-                        InvestmentCard(
-                            modifier = Modifier.weight(1f),
-                            title = stringResource(R.string.Invested),
-                            amount = uiState.myInvestment,
-                            subtitle = {
-                                val percentageGain = if (uiState.myInvestment > 0) {
-                                    ((uiState.currentValue - uiState.myInvestment) / uiState.myInvestment * 100).toInt()
-                                } else 0
                                 Text(
-                                    text = "+$percentageGain%",
-                                    color = Color(0xFF4CAF50),
-                                    fontSize = 14.sp
+                                    text = stringResource(R.string.current_money),
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Medium
                                 )
-                            }
-                        )
-                        
-                        InvestmentCard(
-                            modifier = Modifier.weight(1f),
-                            title = stringResource(R.string.current_inve),
-                            amount = uiState.currentValue,
-                            subtitle = {
-                                // Espacio vacío para mantener la misma altura
-                                Spacer(modifier = Modifier.height(20.dp))
-                            }
-                        )
-                    }
+                                Text(
+                                    text = "$${String.format("%.2f", uiState.currentBalance)}", // Formateamos a 2 decimales
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
 
-                    // Chart Section
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            Text(
-                                text = "Historial de inversiones",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                            
-                            Chart(
-                                chart = lineChart(),
-                                model = entryModelOf(uiState.chartData.map { FloatEntry(it.x, it.y) }),
-                                startAxis = rememberStartAxis(),
-                                bottomAxis = rememberBottomAxis(),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp)
-                            )
-                        }
-                    }
+                                OutlinedTextField(
+                                    value = if (isInvestAction) uiState.investmentAmount else uiState.withdrawalAmount,
+                                    onValueChange = {
+                                        if (isInvestAction) {
+                                            viewModel.onInvestmentAmountChanged(it)
+                                        } else {
+                                            viewModel.onWithdrawalAmountChanged(it)
+                                        }
+                                    },
+                                    label = {
+                                        Text(
+                                            if (isInvestAction)
+                                                stringResource(R.string.to_invest)
+                                            else
+                                                stringResource(R.string.to_withdraw)
+                                        )
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                                )
 
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.current_money),
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                            Text(
-                                text = "$${uiState.currentBalance}",
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-
-                            // Shared Input Field
-                            OutlinedTextField(
-                                value = if (isInvestAction) uiState.investmentAmount else uiState.withdrawalAmount,
-                                onValueChange = { 
-                                    if (isInvestAction) {
-                                        viewModel.onInvestmentAmountChanged(it)
-                                    } else {
-                                        viewModel.onWithdrawalAmountChanged(it)
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Button(
+                                        onClick = {
+                                            isInvestAction = true
+                                            showInvestConfirmation = true
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(12.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = if (isInvestAction)
+                                                MaterialTheme.colorScheme.primary
+                                            else
+                                                MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                                        )
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.invest),
+                                            color = Color.White
+                                        )
                                     }
-                                },
-                                label = { 
-                                    Text(
-                                        if (isInvestAction) 
-                                            stringResource(R.string.to_invest)
-                                        else 
-                                            stringResource(R.string.to_withdraw)
-                                    ) 
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                            )
 
-                            // Action Buttons Row
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                // Invest Button
-                                Button(
-                                    onClick = { 
-                                        isInvestAction = true
-                                        showInvestConfirmation = true 
-                                    },
-                                    modifier = Modifier.weight(1f),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isInvestAction) 
-                                            MaterialTheme.colorScheme.primary 
-                                        else 
-                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
-                                    )
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.invest),
-                                        color = Color.White
-                                    )
-                                }
-
-                                // Withdraw Button
-                                Button(
-                                    onClick = { 
-                                        isInvestAction = false
-                                        showWithdrawConfirmation = true 
-                                    },
-                                    modifier = Modifier.weight(1f),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (!isInvestAction) 
-                                            Color.Red 
-                                        else 
-                                            Color.Red.copy(alpha = 0.6f)
-                                    )
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.withdraw),
-                                        color = Color.White
-                                    )
+                                    Button(
+                                        onClick = {
+                                            isInvestAction = false
+                                            showWithdrawConfirmation = true
+                                        },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(12.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = if (!isInvestAction)
+                                                Color.Red
+                                            else
+                                                Color.Red.copy(alpha = 0.6f)
+                                        )
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.withdraw),
+                                            color = Color.White
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            // Confirmation Dialogs
-            if (showInvestConfirmation) {
-                ConfirmationDialog(
-                    onConfirm = {
-                        showInvestConfirmation = false
-                        viewModel.onInvest()
-                    },
-                    onDismiss = { showInvestConfirmation = false },
-                    title = stringResource(R.string.confirm_investment),
-                    message = stringResource(R.string.confirm_invest_desc) + " $${uiState.investmentAmount}?"
-                )
-            }
+                if (showInvestConfirmation) {
+                    ConfirmationDialog(
+                        onConfirm = {
+                            showInvestConfirmation = false
+                            viewModel.onInvest()
+                        },
+                        onDismiss = { showInvestConfirmation = false },
+                        title = stringResource(R.string.confirm_investment),
+                        message = stringResource(R.string.confirm_invest_desc) + " $${uiState.investmentAmount}?"
+                    )
+                }
 
-            if (showWithdrawConfirmation) {
-                ConfirmationDialog(
-                    onConfirm = {
-                        showWithdrawConfirmation = false
-                        viewModel.onWithdraw()
-                    },
-                    onDismiss = { showWithdrawConfirmation = false },
-                    title = stringResource(R.string.confirm_withdraw),
-                    message = stringResource(R.string.confirm_withdraw_desc) + " $${uiState.withdrawalAmount}?"
+                if (showWithdrawConfirmation) {
+                    ConfirmationDialog(
+                        onConfirm = {
+                            showWithdrawConfirmation = false
+                            viewModel.onWithdraw()
+                        },
+                        onDismiss = { showWithdrawConfirmation = false },
+                        title = stringResource(R.string.confirm_withdraw),
+                        message = stringResource(R.string.confirm_withdraw_desc) + " $${uiState.withdrawalAmount}?"
+                    )
+                }
+
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.align(Alignment.BottomCenter)
                 )
             }
         }
@@ -451,3 +464,4 @@ private fun InvestmentCard(
         }
     }
 }
+

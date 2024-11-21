@@ -43,10 +43,11 @@ fun HomeScreen(
     var showRechargeDialog by remember { mutableStateOf(false) }
     var selectedTransaction by remember { mutableStateOf<Transaction?>(null) }
     var showPaymentLinkDetailsDialog by remember { mutableStateOf(false) }
-    LaunchedEffect(uiState) {
-        isLoading = uiState.transactions.isEmpty() ||
-                uiState.monthlyExpenses.isEmpty() ||
-                uiState.availableBalance == 0
+    LaunchedEffect(uiState, viewModel.hasAttemptedToLoadTransactions.collectAsState().value) {
+        isLoading = !viewModel.hasAttemptedToLoadTransactions.value ||
+                (uiState.transactions.isEmpty() &&
+                        uiState.monthlyExpenses.isEmpty() &&
+                        uiState.availableBalance == 0)
     }
     Scaffold(
         modifier = modifier.fillMaxSize(),
