@@ -90,7 +90,7 @@ fun ProfileScreen(
         // Fix: Show email data in account info
         ProfileMenuItem(
             title = "Datos de tu cuenta",
-            description = "Email: ${if (uiState.email.isNotBlank()) uiState.email else "No especificado"}",
+            description = "Email, CBU y alias de tu cuenta.",
             onClick = { navController.navigate("account_info") }
         )
 

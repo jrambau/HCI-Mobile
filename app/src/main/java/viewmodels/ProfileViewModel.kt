@@ -54,7 +54,6 @@ class ProfileViewModel(
                 val walletInfo = walletRepository.getWalletDetails()
                 val aux1 = walletInfo.cbu
                 val aux2 = walletInfo.alias
-                Log.d("ProfileViewModel", "Fetched wallet info: $aux1 $aux2")
                 _uiState.value = _uiState.value.copy(
                     userName = "${user.firstName} ${user.lastName}",
                     firstName = user.firstName,

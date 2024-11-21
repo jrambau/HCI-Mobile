@@ -1,5 +1,6 @@
 package com.example.lupay.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -18,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.lupay.MyApplication
 import components.ReadOnlyInfoField
 import components.PersonalInfoField
+import androidx.compose.runtime.LaunchedEffect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,7 +28,16 @@ fun AccountInfoScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
 ) {
+    // Observe the UI state from the ViewModel
     val uiState by viewModel.uiState.collectAsState()
+
+    // Log the uiState data for debugging purposes
+    Log.d("AccountInfoScreen", "uiState: $uiState")
+
+    // Trigger fetchUserData when the screen is first loaded
+    LaunchedEffect(Unit) {
+        viewModel.fetchUserData()
+    }
 
     Column(
         modifier = modifier
@@ -59,46 +70,67 @@ fun AccountInfoScreen(
             )
         }
 
-        // Account Information Fields
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Column(
+        // Show a loading indicator if data is still being fetched
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else if (uiState.error != null) {
+            // Display an error message if there was an error fetching the data
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Error: ${uiState.error}",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        } else {
+            // Account Information Fields
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(vertical = 8.dp),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                // Display user information
-                ReadOnlyInfoField(
-                    label = "Usuario",
-                    value = uiState.userName.ifBlank { "No especificado" }
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    // Display user information
+                    ReadOnlyInfoField(
+                        label = "Usuario",
+                        value = uiState.userName.ifBlank { "No especificado" }
+                    )
 
-                Divider(modifier = Modifier.padding(vertical = 12.dp))
+                    Divider(modifier = Modifier.padding(vertical = 12.dp))
 
-                ReadOnlyInfoField(
-                    label = "Email",
-                    value = uiState.email.ifBlank { "No especificado" }
-                )
+                    ReadOnlyInfoField(
+                        label = "Email",
+                        value = uiState.email.ifBlank { "No especificado" }
+                    )
 
-                Divider(modifier = Modifier.padding(vertical = 12.dp))
+                    Divider(modifier = Modifier.padding(vertical = 12.dp))
 
-                ReadOnlyInfoField(
-                    label = "CBU",
-                    value = uiState.cbu?.ifBlank { "No especificado" } ?: "No especificado"
-                )
+                    ReadOnlyInfoField(
+                        label = "CBU",
+                        value = uiState.cbu.ifBlank { "No especificado" }
+                    )
 
-                Divider(modifier = Modifier.padding(vertical = 12.dp))
+                    Divider(modifier = Modifier.padding(vertical = 12.dp))
 
-                // Alias - This can be edited, so using PersonalInfoField instead of ReadOnlyInfoField
-                PersonalInfoField(
-                    label = "Alias",
-                    value = uiState.alias.ifBlank { "No especificado" },
-                    onEditClick = { /* Handle alias edit */ }
-                )
+                    // Alias - This can be edited, so using PersonalInfoField instead of ReadOnlyInfoField
+                    PersonalInfoField(
+                        label = "Alias",
+                        value = uiState.alias.ifBlank { "No especificado" },
+                        onEditClick = { /* Handle alias edit */ }
+                    )
+                }
             }
         }
     }
