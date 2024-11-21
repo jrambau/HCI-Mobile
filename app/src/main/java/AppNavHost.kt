@@ -49,7 +49,6 @@ private fun TabletScreenWrapper(
 
 @Composable
 private fun TopBarScaffoldWrapper(
-    username: String = "john doe",
     title: String,
     navController: NavHostController,
     deviceType: DeviceType,
@@ -61,7 +60,7 @@ private fun TopBarScaffoldWrapper(
             navigationRail = {
                 NavigationRail(
                     currentRoute = currentRoute,
-                    onNavigate = { route -> 
+                    onNavigate = { route ->
                         navController.navigate(route) {
                             popUpTo("main")
                             launchSingleTop = true
@@ -71,14 +70,14 @@ private fun TopBarScaffoldWrapper(
             }
         ) {
             Scaffold(
-                topBar = { TopBarComponent(username, title, navController) }
+                topBar = { TopBarComponent(title = title, navController = navController) }
             ) { paddingValues ->
                 content(paddingValues)
             }
         }
     } else {
         Scaffold(
-            topBar = { TopBarComponent(username, title, navController) },
+            topBar = { TopBarComponent(title = title, navController = navController) },
             bottomBar = { BottomBar(navController) }
         ) { paddingValues ->
             content(paddingValues)
@@ -239,6 +238,7 @@ fun AppNavHost(
                 modifier = Modifier.fillMaxSize()
             )
         }
+
         composable("security_screen") {
             SecurityScreen(
                 navController = navController,
