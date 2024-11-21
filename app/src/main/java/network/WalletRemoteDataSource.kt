@@ -11,7 +11,6 @@ import network.model.NetworkCard
 import network.model.NetworkInterest
 import network.model.NetworkInvestInfo
 import network.model.asModel
-import network.model.NetworkUserResponse
 import network.model.NetworkWalletInfo
 
 class WalletRemoteDataSource (

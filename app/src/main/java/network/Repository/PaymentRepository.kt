@@ -4,6 +4,7 @@ import kotlinx.coroutines.sync.Mutex
 import network.PaymentRemoteDataSource
 import network.model.NetworkError
 import network.model.NetworkPaymentInfo
+import network.model.NetworkSuccess
 
 class PaymentRepository(
     private val remoteDataSource: PaymentRemoteDataSource
@@ -21,7 +22,7 @@ class PaymentRepository(
     suspend fun payByLink(linkUuid: String) {
         remoteDataSource.payByLink(linkUuid)
     }
-    suspend fun generatePaymentLink(linkUuid: String) : NetworkError {
+    suspend fun generatePaymentLink(linkUuid: String) : NetworkSuccess {
        return remoteDataSource.generatePaymentLink(linkUuid)
     }
 

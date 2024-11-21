@@ -198,6 +198,7 @@ fun RegisterScreen(
                 if (uiState.error != null) {
                     Text(text = "Error: ${uiState.error.message}")
                 } else if (uiState.success) {
+                    uiState.success=false
                     onNavigateToLogin()
                 }
             }

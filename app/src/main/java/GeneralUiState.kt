@@ -1,3 +1,4 @@
+import androidx.core.app.NotificationCompat.MessagingStyle.Message
 import model.Card
 import model.User
 
@@ -8,7 +9,8 @@ data class GeneralUiState (
     val cards: List<Card>? = null,
     val error: Error? = null,
     val currentCard: Card? = null,
-    val success: Boolean = false
+    var success: Boolean = false,
+    var successMessage: String? = null
 ) {
 
 }

@@ -8,8 +8,9 @@ import network.api.UserApiService
 import network.api.WalletApiService
 import network.model.NetworkError
 import network.model.NetworkPaymentInfo
+import network.model.NetworkSuccess
 import network.model.asModel
-import network.model.NetworkUserResponse
+
 import org.hamcrest.Description
 
 class PaymentRemoteDataSource (
@@ -31,7 +32,7 @@ suspend fun makePayment(amount: Double, type: String,description: String, cardId
         val response = handleApiResponse { paymentApiService.payByLink(linkUuid) }
         return response
     }
-    suspend fun generatePaymentLink(linkUuid: String): NetworkError {
+    suspend fun generatePaymentLink(linkUuid: String): NetworkSuccess {
         val response = handleApiResponse { paymentApiService.generatePaymentLink(linkUuid) }
         return response
     }

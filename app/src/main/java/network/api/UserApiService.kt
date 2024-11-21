@@ -6,6 +6,7 @@ import network.model.NetworkAlias
 import network.model.NetworkToken
 import network.model.NetworkUser
 import network.model.NetworkUserCredentials
+import network.model.NetworkUserResponse
 import network.model.NetworkVerificationCode
 import network.model.NetworkWalletInfo
 import retrofit2.Response
@@ -16,7 +17,7 @@ import retrofit2.http.PUT
 
 interface UserApiService {
     @POST("user")
-    suspend fun registerUser(@Body request: NetworkUser): Response<NetworkUser>
+    suspend fun registerUser(@Body request: NetworkUser): Response<NetworkUserResponse>
     @PUT("wallet/update-alias")
     suspend fun updateAlias(@Body request: NetworkAlias): Response<NetworkWalletInfo>
     @GET("user")

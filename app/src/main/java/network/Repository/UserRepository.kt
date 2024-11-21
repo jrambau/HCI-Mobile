@@ -54,7 +54,7 @@ class UserRepository (
     suspend fun updateAlias(alias: String) : NetworkWalletInfo {
         return remoteDataSource.updateAlias(alias)
     }
-    suspend fun verifyUser(email: String, password: String, code: String) : NetworkToken {
+    suspend fun verifyUser(email: String?, password: String?, code: String) : NetworkToken {
         return remoteDataSource.verifyUser(email,password,code)
     }
 }

@@ -2,6 +2,7 @@ package network.api
 import network.model.NetworkAlias
 import network.model.NetworkError
 import network.model.NetworkPaymentInfo
+import network.model.NetworkSuccess
 import network.model.NetworkToken
 import network.model.NetworkUser
 import network.model.NetworkUserCredentials
@@ -33,5 +34,5 @@ interface PaymentApiService {
     @GET("payment/link/{linkUuid}")
     suspend fun payByLink(@Path("linkUuid") linkUuid: String): Response<NetworkPaymentInfo>
     @POST("payment/link/{linkUuid}")
-    suspend fun generatePaymentLink(@Path("linkUuid") linkUuid: String): Response<NetworkError>
+    suspend fun generatePaymentLink(@Path("linkUuid") linkUuid: String): Response<NetworkSuccess>
 }

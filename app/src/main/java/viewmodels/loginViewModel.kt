@@ -6,26 +6,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.lupay.MyApplication
-import com.example.lupay.ui.network.ApiManager
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.Period
-import java.time.format.DateTimeFormatter
-import kotlinx.serialization.Serializable
 import model.User
 import network.Repository.UserRepository
-import java.sql.Date
-
 
 class LoginViewModel(
     private val sessionManager: SessionManager,
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    var uiState by mutableStateOf(GeneralUiState(isAuthenticated = sessionManager.loadAuthToken() != null))
+    var uiState by mutableStateOf(GeneralUiState())
         private set
-    val loginResult: Any = false
     var name by mutableStateOf("")
         private set
     var email by mutableStateOf("")
@@ -61,20 +54,6 @@ class LoginViewModel(
         confirmPassword = newConfirmPassword
     }
 
-    fun onLoginClicked() {
-        viewModelScope.launch {
-            isLoading = true
-            // Simulate a login operation
-            kotlinx.coroutines.delay(2000)
-            val loginResult = if (email == "usuario@ejemplo.com" && password == "contraseña123") {
-                LoginResult.Success
-            } else {
-                LoginResult.Error("Credenciales inválidas")
-            }
-            isLoading = false
-        }
-    }
-
     fun onBirthDateChanged(newDate: LocalDate?) {
         birthDate = newDate
         birthDateError = validateBirthDate(newDate)
@@ -92,12 +71,54 @@ class LoginViewModel(
         }
     }
 
-    fun onForgotPasswordClicked() {
-        // Implement password recovery logic
+    fun onLoginClicked() {
+        if (email.isBlank() || password.isBlank()) {
+            uiState = uiState.copy(error = Error("Por favor, complete todos los campos."))
+            return
+        }
+        runOnViewModelScope(
+            { userRepository.loginUser(email, password) },
+            { state, token ->
+                sessionManager.saveAuthToken(token.token)
+                state.copy(isAuthenticated = true, successMessage = "Inicio de sesión exitoso")
+            }
+        )
     }
 
+    fun onConfirmAccount(email: String, code: String) {
+        if (code.isBlank()) {
+            uiState = uiState.copy(error = Error("Por favor, complete todos los campos."))
+            return
+        }
+        runOnViewModelScope(
+            { userRepository.verifyUser(code=code, email=null, password=null) },
+            { state, _ ->
+                state.copy(successMessage = "Cuenta confirmada exitosamente")
+            }
+        )
+    }
 
+    fun onForgotPasswordClicked(email: String) {
+        if (email.isBlank()) {
+            uiState = uiState.copy(error = Error("Por favor, ingrese su correo electrónico."))
+            return
+        }
+        runOnViewModelScope(
+            { userRepository.recoverPassword(email) },
+            { state, _ -> state.copy(successMessage = "Se ha enviado un código de recuperación a su correo electrónico") }
+        )
+    }
 
+    fun onResetPassword(email: String, code: String, newPassword: String) {
+        if (email.isBlank() || code.isBlank() || newPassword.isBlank()) {
+            uiState = uiState.copy(error = Error("Por favor, complete todos los campos."))
+            return
+        }
+        runOnViewModelScope(
+            { userRepository.resetPassword(email, newPassword, code) },
+            { state, _ -> state.copy(successMessage = "Contraseña restablecida exitosamente") }
+        )
+    }
 
     fun onRegisterClicked() {
         if (name.isBlank() || lastname.isBlank() || birthDate == null || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
@@ -109,41 +130,39 @@ class LoginViewModel(
             uiState = uiState.copy(error = Error("Las contraseñas no coinciden."))
             return
         }
-         val user = User(
+        val user = User(
             firstName = name,
             lastName = lastname,
             birthDate = birthDate!!,
             email = email,
-             id = null,
+            id = null,
             password = password
         )
         runOnViewModelScope(
-        {userRepository.registerUser(user)},
-            {state, _ -> state.copy(isAuthenticated = false)}
-    )
-}
-
-sealed class LoginResult {
-    object Success : LoginResult()
-    data class Error(val message: String) : LoginResult()
-}
-
-private fun<R> runOnViewModelScope(
-    block: suspend () -> R,
-    updateState: (GeneralUiState, R) -> GeneralUiState
-): Job = viewModelScope.launch {
-    uiState = uiState.copy(isFetching = true, error = null)
-    runCatching { block()
-    }.onSuccess { response ->
-        uiState = updateState(uiState, response).copy(isFetching = false,success = true)
-    }.onFailure {e->
-        uiState = uiState.copy(isFetching = false, error = Error(e.message))
-        Log.e("LoginViewModel", "Error", e)
+            { userRepository.registerUser(user) },
+            { state, _ -> state.copy(successMessage = "Registro exitoso. Por favor, confirme su cuenta.") }
+        )
     }
-}
+
+    private fun<R> runOnViewModelScope(
+        block: suspend () -> R,
+        updateState: (GeneralUiState, R) -> GeneralUiState
+    ) {
+        viewModelScope.launch {
+            uiState = uiState.copy(isFetching = true, error = null, successMessage = null)
+            runCatching { block() }
+                .onSuccess { response ->
+                    uiState = updateState(uiState, response).copy(isFetching = false)
+                }
+                .onFailure { e ->
+                    uiState = uiState.copy(isFetching = false, error = Error(e.message ?: "Error desconocido"))
+                    Log.e("LoginViewModel", "Error", e)
+                }
+        }
+    }
+
     companion object {
-        fun provideFactory(application: MyApplication
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+        fun provideFactory(application: MyApplication): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return LoginViewModel(
@@ -154,3 +173,4 @@ private fun<R> runOnViewModelScope(
         }
     }
 }
+

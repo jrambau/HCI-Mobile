@@ -1,6 +1,7 @@
 package network
 
 import SessionManager
+import android.util.Log
 import model.User
 import model.asNetworkModel
 import network.api.UserApiService
@@ -18,14 +19,15 @@ class UserRemoteDataSource (
 ): RemoteDataSource(){
     suspend fun registerUser(user: User) : User {
         val response = handleApiResponse { userApiService.registerUser(asNetworkModel(user)) }
-        return asModel(NetworkUserResponse(user = response))
+        Log.e("UserRemoteDataSource", "registerUser: $response")
+        return asModel(response)
     }
     suspend fun loginUser(email: String, password: String) : NetworkToken {
         val response = handleApiResponse { userApiService.loginUser(NetworkUserCredentials(email,password,code = null)) }
         sessionManager.saveAuthToken(response.token)
         return response
     }
-    suspend fun verifyUser(email: String, password: String, code: String) : NetworkToken {
+    suspend fun verifyUser(email: String?, password: String?, code: String) : NetworkToken {
         val response = handleApiResponse { userApiService.loginUser(NetworkUserCredentials(email,password,code)) }
         return response
     }
