@@ -28,11 +28,7 @@ fun AccountInfoScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
 ) {
-    // Observe the UI state from the ViewModel
     val uiState by viewModel.uiState.collectAsState()
-
-    // Log the uiState data for debugging purposes
-    Log.d("AccountInfoScreen", "uiState: $uiState")
 
     // Trigger fetchUserData when the screen is first loaded
     LaunchedEffect(Unit) {
@@ -102,7 +98,7 @@ fun AccountInfoScreen(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    // Display user information
+                    // Read-only user information fields
                     ReadOnlyInfoField(
                         label = "Usuario",
                         value = uiState.userName.ifBlank { "No especificado" }
@@ -124,11 +120,14 @@ fun AccountInfoScreen(
 
                     Divider(modifier = Modifier.padding(vertical = 12.dp))
 
-                    // Alias - This can be edited, so using PersonalInfoField instead of ReadOnlyInfoField
+                    // Editable Alias Field
+                    // Assuming the PersonalInfoField expects a String value on click
                     PersonalInfoField(
                         label = "Alias",
                         value = uiState.alias.ifBlank { "No especificado" },
-                        onEditClick = { /* Handle alias edit */ }
+                        onEditClick = { alias: String -> // Make sure alias is a String
+                            viewModel.updateAlias(alias)
+                        }
                     )
                 }
             }
