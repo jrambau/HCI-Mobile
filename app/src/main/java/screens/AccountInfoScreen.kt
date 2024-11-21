@@ -1,8 +1,9 @@
 package com.example.lupay.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -13,13 +14,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lupay.ui.viewmodels.ProfileViewModel
-import androidx.compose.foundation.shape.RoundedCornerShape
-import components.ReadOnlyInfoField
-import components.PersonalInfoField
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.platform.LocalContext
 import com.example.lupay.MyApplication
-
+import components.ReadOnlyInfoField
+import components.PersonalInfoField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +33,7 @@ fun AccountInfoScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        // Back Button and Title
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -51,15 +50,16 @@ fun AccountInfoScreen(
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(8.dp))
-            
+
             Text(
                 text = "Datos de tu cuenta",
                 style = MaterialTheme.typography.headlineMedium
             )
         }
-        // Personal Information Fields
+
+        // Account Information Fields
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -71,41 +71,35 @@ fun AccountInfoScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
+                // Display user information
                 ReadOnlyInfoField(
                     label = "Usuario",
-                    value = uiState.userName
+                    value = uiState.userName.ifBlank { "No especificado" }
                 )
-                
+
                 Divider(modifier = Modifier.padding(vertical = 12.dp))
-                
+
                 ReadOnlyInfoField(
                     label = "Email",
-                    value = uiState.email
+                    value = uiState.email.ifBlank { "No especificado" }
                 )
-                
+
                 Divider(modifier = Modifier.padding(vertical = 12.dp))
-                
-                PersonalInfoField(
-                    label = "Teléfono",
-                    value = uiState.phone ?: "No especificado",
-                    onEditClick = { /* Handle edit */ }
-                )
-                
-                Divider(modifier = Modifier.padding(vertical = 12.dp))
-                
+
                 ReadOnlyInfoField(
-                    label = "CVU",
-                    value = uiState.cvu
+                    label = "CBU",
+                    value = uiState.cbu?.ifBlank { "No especificado" } ?: "No especificado"
                 )
-                
+
                 Divider(modifier = Modifier.padding(vertical = 12.dp))
-                
+
+                // Alias - This can be edited, so using PersonalInfoField instead of ReadOnlyInfoField
                 PersonalInfoField(
                     label = "Alias",
-                    value = uiState.alias,
-                    onEditClick = { /* Handle edit */ }
+                    value = uiState.alias.ifBlank { "No especificado" },
+                    onEditClick = { /* Handle alias edit */ }
                 )
             }
         }
     }
-} 
+}

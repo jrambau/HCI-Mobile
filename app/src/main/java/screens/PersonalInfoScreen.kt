@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,8 +12,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.lupay.ui.viewmodels.ProfileViewModel
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.example.lupay.MyApplication
 import components.ReadOnlyInfoField
@@ -28,6 +25,11 @@ fun PersonalInfoScreen(
     viewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // Fetch personal data when screen loads
+    LaunchedEffect(Unit) {
+        viewModel.fetchUserData()
+    }
 
     Column(
         modifier = modifier
@@ -50,13 +52,39 @@ fun PersonalInfoScreen(
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(8.dp))
-            
+
             Text(
                 text = "Información personal",
                 style = MaterialTheme.typography.headlineMedium
             )
+        }
+
+        // Handle loading state
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+            return@Column
+        }
+
+        // Handle error state
+        if (uiState.error != null) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Error: ${uiState.error}",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+            return@Column
         }
 
         // Personal Information Fields
@@ -73,31 +101,28 @@ fun PersonalInfoScreen(
             ) {
                 ReadOnlyInfoField(
                     label = "Nombre",
-                    value = uiState.firstName
+                    value = uiState.firstName.ifBlank { "No especificado" }
                 )
-                
+
                 Divider(modifier = Modifier.padding(vertical = 12.dp))
-                
+
                 ReadOnlyInfoField(
                     label = "Apellido",
-                    value = uiState.lastName
+                    value = uiState.lastName.ifBlank { "No especificado" }
                 )
-                
+
                 Divider(modifier = Modifier.padding(vertical = 12.dp))
-                
+
                 ReadOnlyInfoField(
                     label = "Fecha de Nacimiento",
                     value = uiState.birthDate ?: "No especificado"
                 )
-                
+
                 Divider(modifier = Modifier.padding(vertical = 12.dp))
-                
-                PersonalInfoField(
-                    label = "Actividad Fiscal",
-                    value = uiState.fiscalActivity ?: "No especificado",
-                    onEditClick = { /* Handle edit */ }
-                )
             }
         }
+
+        // Optionally, add fields for additional personal information if available
+        // You can add more fields below based on the available data, like address, gender, etc.
     }
 }

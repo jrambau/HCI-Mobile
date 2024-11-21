@@ -1,10 +1,8 @@
-package com.example.lupay.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,32 +25,72 @@ fun ProfileScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    // Fetch user data on screen load
+    LaunchedEffect(Unit) {
+        viewModel.fetchUserData()
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Profile Title
+        // Show loading indicator if data is being fetched
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+            return@Column
+        }
+
+        // Show error if fetching failed
+        if (uiState.error != null) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Error: ${uiState.error}",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+            return@Column
+        }
+
+        // Profile Title: Capitalize the first letter of the first name and surname
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = 15.dp).padding(top = 10.dp)
+            modifier = Modifier
+                .padding(bottom = 15.dp)
+                .padding(top = 10.dp)
         ) {
             Text(
-                text = uiState.userName,
+                text = if (uiState.userName.isNotBlank()) {
+                    val names = uiState.userName.split(" ")
+                    names.joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
+                } else {
+                    "Cargando..."
+                },
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onBackground
             )
         }
 
+        // Profile menu items
         ProfileMenuItem(
             title = "Información personal",
             description = "Información de tu documento de identidad y tu actividad fiscal.",
-            onClick = { navController.navigate("personal_info")},
+            onClick = { navController.navigate("personal_info") },
         )
 
+        // Fix: Show email data in account info
         ProfileMenuItem(
             title = "Datos de tu cuenta",
-            description = "Email, teléfono, nombre de usuario, CVU y Alias.",
+            description = "Email: ${if (uiState.email.isNotBlank()) uiState.email else "No especificado"}",
             onClick = { navController.navigate("account_info") }
         )
 
@@ -73,9 +111,7 @@ fun ProfileMenuItem(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .padding(top = 4.dp)
-            .padding(bottom = 4.dp),
+            .padding(vertical = 4.dp),
         onClick = onClick,
         color = MaterialTheme.colorScheme.surfaceVariant,
         shape = RoundedCornerShape(8.dp)
