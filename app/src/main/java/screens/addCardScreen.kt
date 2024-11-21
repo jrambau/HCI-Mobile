@@ -20,11 +20,48 @@ import components.CreditCard
 import network.model.NetworkCard
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.lupay.ui.utils.DeviceType
+import com.example.lupay.ui.utils.rememberDeviceType
 
 @Composable
 fun AddCardScreen(
     navController: NavHostController,
     viewModel: CreditCardViewModel = viewModel(factory = CreditCardViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
+) {
+    val deviceType = rememberDeviceType()
+
+    if (deviceType == DeviceType.TABLET) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                modifier = Modifier
+                    .width(600.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AddCardContent(
+                    navController = navController,
+                    viewModel = viewModel,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+    } else {
+        AddCardContent(
+            navController = navController,
+            viewModel = viewModel
+        )
+    }
+}
+
+@Composable
+private fun AddCardContent(
+    navController: NavHostController,
+    viewModel: CreditCardViewModel,
+    modifier: Modifier = Modifier
 ) {
     var cardNumber by remember { mutableStateOf("") }
     var cardName by remember { mutableStateOf("") }
@@ -103,7 +140,7 @@ fun AddCardScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -120,14 +157,12 @@ fun AddCardScreen(
         Text(text = "Número de Tarjeta", style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(
             value = cardNumber,
-            onValueChange = {
-                cardNumber = it.take(16)
-            },
+            onValueChange = { cardNumber = it.take(16) },
             label = { Text("Ingresar...") },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp),
+                .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(24.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
@@ -142,7 +177,7 @@ fun AddCardScreen(
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp),
+                .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(24.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -163,7 +198,7 @@ fun AddCardScreen(
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp),
+                .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(24.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
@@ -178,7 +213,7 @@ fun AddCardScreen(
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp),
+                .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(24.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
@@ -193,7 +228,7 @@ fun AddCardScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp),
+                .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(24.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
         ) {
