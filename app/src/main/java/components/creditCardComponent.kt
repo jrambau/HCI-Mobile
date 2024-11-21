@@ -1,4 +1,5 @@
 package components
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -13,8 +14,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.lupay.R
 import theme.CustomTheme
+import com.example.lupay.R
 
 enum class CardType {
     VISA, MASTERCARD, AMEX, UNKNOWN
@@ -167,7 +168,7 @@ fun CreditCard(
     }
 }
 
-// The helper functions remain unchanged
+// Updated helper functions
 fun getCardType(cardNumber: String): CardType {
     return when {
         cardNumber.startsWith("4") -> CardType.VISA
@@ -178,17 +179,28 @@ fun getCardType(cardNumber: String): CardType {
 }
 
 fun formatCardNumber(number: String, isHidden: Boolean): String {
+    val limitedNumber = number.take(16)
     return if (isHidden) {
         "•••• •••• •••• ••••"
     } else {
-        number.chunked(4).joinToString(" ")
+        limitedNumber.chunked(4).joinToString(" ")
     }
 }
 
 fun formatExpiry(expiry: String, isHidden: Boolean): String {
-    return if (isHidden) "••/••" else expiry
+    return if (isHidden) {
+        "••/••"
+    } else {
+        val cleanExpiry = expiry.replace(Regex("[^0-9]"), "")
+        if (cleanExpiry.length >= 4) {
+            "${cleanExpiry.substring(0, 2)}/${cleanExpiry.substring(2, 4)}"
+        } else {
+            expiry
+        }
+    }
 }
 
 fun formatCVV(cvv: String, isHidden: Boolean): String {
     return if (isHidden) "•••" else cvv
 }
+

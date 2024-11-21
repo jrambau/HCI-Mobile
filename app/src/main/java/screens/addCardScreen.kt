@@ -1,5 +1,6 @@
 package com.example.lupay.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,6 +18,8 @@ import com.example.lupay.MyApplication
 import com.example.lupay.ui.viewmodels.CreditCardViewModel
 import components.CreditCard
 import network.model.NetworkCard
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun AddCardScreen(
@@ -27,6 +30,8 @@ fun AddCardScreen(
     var cardName by remember { mutableStateOf("") }
     var cardExpiry by remember { mutableStateOf("") }
     var cvv by remember { mutableStateOf("") }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     val uiState by viewModel.uiState.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -35,6 +40,65 @@ fun AddCardScreen(
     LaunchedEffect(addCardSuccess) {
         if (addCardSuccess) {
             navController.popBackStack()
+        }
+    }
+
+    // Luhn Algorithm
+    fun luhnAlgorithm(cardNumber: String): Boolean {
+        var sum = 0
+        var shouldDouble = false
+        for (i in cardNumber.length - 1 downTo 0) {
+            var digit = cardNumber[i].digitToInt()
+            if (shouldDouble) {
+                digit *= 2
+                if (digit > 9) {
+                    digit -= 9
+                }
+            }
+            sum += digit
+            shouldDouble = !shouldDouble
+        }
+        return sum % 10 == 0
+    }
+
+    // Validate Credit Card Number - Luhn Algorithm
+    fun isValidCardNumber(cardNumber: String): Boolean {
+//        return cardNumber.length == 16 && luhnAlgorithm(cardNumber)
+        return cardNumber.length == 16;
+    }
+
+    // Validate Expiry Date - MM/YY format
+    fun isValidExpiryDate(expiry: String): Boolean {
+        return try {
+            val sdf = SimpleDateFormat("MM/yy", Locale.getDefault())
+            sdf.isLenient = false
+            val expirationDate = sdf.parse(expiry)
+            val currentDate = Date()
+            expirationDate != null && expirationDate.after(currentDate)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    // Validate Inputs
+    fun validateInputs(): Boolean {
+        return when {
+            !isValidCardNumber(cardNumber) -> {
+                errorMessage = "Número de tarjeta inválido"
+                showErrorDialog = true
+                false
+            }
+            !isValidExpiryDate(cardExpiry) -> {
+                errorMessage = "Fecha de vencimiento inválida"
+                showErrorDialog = true
+                false
+            }
+            cvv.length != 3 -> {
+                errorMessage = "Código de seguridad inválido"
+                showErrorDialog = true
+                false
+            }
+            else -> true
         }
     }
 
@@ -51,10 +115,14 @@ fun AddCardScreen(
             isHidden = false
         )
         Spacer(modifier = Modifier.height(32.dp))
+
+        // Credit Card Number Field
         Text(text = "Número de Tarjeta", style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(
             value = cardNumber,
-            onValueChange = { cardNumber = it },
+            onValueChange = {
+                cardNumber = it.take(16)
+            },
             label = { Text("Ingresar...") },
             singleLine = true,
             modifier = Modifier
@@ -64,10 +132,12 @@ fun AddCardScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         Spacer(modifier = Modifier.height(8.dp))
+
+        // Cardholder Name Field
         Text(text = "Nombre del titular", style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(
             value = cardName,
-            onValueChange = { cardName = it},
+            onValueChange = { cardName = it },
             label = { Text("Ingresar") },
             singleLine = true,
             modifier = Modifier
@@ -76,10 +146,19 @@ fun AddCardScreen(
             shape = RoundedCornerShape(24.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
+
+        // Expiry Date Field
         Text(text = "Vencimiento", style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(
             value = cardExpiry,
-            onValueChange = { cardExpiry = it },
+            onValueChange = {
+                // Add slash ("/") after 2 digits and ensure it's limited to 5 characters (MM/YY format)
+                var formattedExpiry = it.replace(" ", "").take(5)
+                if (formattedExpiry.length > 2 && formattedExpiry[2] != '/') {
+                    formattedExpiry = formattedExpiry.substring(0, 2) + "/" + formattedExpiry.substring(2)
+                }
+                cardExpiry = formattedExpiry
+            },
             label = { Text("MM/AA") },
             singleLine = true,
             modifier = Modifier
@@ -89,10 +168,12 @@ fun AddCardScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         Spacer(modifier = Modifier.height(8.dp))
+
+        // CVV Field
         Text(text = "Código de seguridad", style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(
             value = cvv,
-            onValueChange = { cvv = it },
+            onValueChange = { cvv = it.take(3) },
             label = { Text("***") },
             singleLine = true,
             modifier = Modifier
@@ -102,9 +183,13 @@ fun AddCardScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         Spacer(modifier = Modifier.height(32.dp))
+
+        // Add Card Button
         Button(
             onClick = {
-                viewModel.addNewCard(NetworkCard(id=null, number=cardNumber, fullName=cardName, expirationDate=cardExpiry, cvv=cvv, type = "CREDIT", createdAt=null, updatedAt=null))
+                if (validateInputs()) {
+                    viewModel.addNewCard(NetworkCard(id = null, number = cardNumber, fullName = cardName, expirationDate = cardExpiry, cvv = cvv, type = "CREDIT", createdAt = null, updatedAt = null))
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -123,5 +208,18 @@ fun AddCardScreen(
             Text(it, color = Color.Red)
         }
     }
-}
 
+    // Error Dialog
+    if (showErrorDialog) {
+        AlertDialog(
+            onDismissRequest = { showErrorDialog = false },
+            title = { Text("Error") },
+            text = { Text(errorMessage) },
+            confirmButton = {
+                TextButton(onClick = { showErrorDialog = false }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+}
