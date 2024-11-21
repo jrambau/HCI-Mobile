@@ -24,60 +24,119 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import com.example.lupay.MyApplication
+import com.example.lupay.ui.utils.DeviceType
+import com.example.lupay.ui.utils.rememberDeviceType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel(factory = HomeViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication
-    ))
+    viewModel: HomeViewModel = viewModel(factory = HomeViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val deviceType = rememberDeviceType()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
+        if (deviceType == DeviceType.TABLET) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+            ) {
                 PanelSection(
                     availableBalance = uiState.availableBalance,
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+                Spacer(modifier = Modifier.height(60.dp))
 
-            item {
-                ExpensesSection(
-                    expenses = uiState.expenses,
-                    monthlyExpenses = uiState.monthlyExpenses
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            item {
-                Text(
-                    text = "Transacciones",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                SearchBar(
-                    onSearchQueryChange = { query ->
-                        viewModel.updateSearchQuery(query)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.8f)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp)
+                    ) {
+                        ExpensesSection(
+                            expenses = uiState.expenses,
+                            monthlyExpenses = uiState.monthlyExpenses
+                        )
                     }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
 
-            items(uiState.filteredTransactions) { transaction ->
-                TransactionItem(transaction = transaction)
-                Spacer(modifier = Modifier.height(8.dp))
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
+                    ) {
+                        Text(
+                            text = "Transacciones",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        SearchBar(
+                            onSearchQueryChange = { query ->
+                                viewModel.updateSearchQuery(query)
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        LazyColumn {
+                            items(uiState.filteredTransactions) { transaction ->
+                                TransactionItem(transaction = transaction)
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+            ) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    PanelSection(
+                        availableBalance = uiState.availableBalance,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                item {
+                    ExpensesSection(
+                        expenses = uiState.expenses,
+                        monthlyExpenses = uiState.monthlyExpenses
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                item {
+                    Text(
+                        text = "Transacciones",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    SearchBar(
+                        onSearchQueryChange = { query ->
+                            viewModel.updateSearchQuery(query)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                items(uiState.filteredTransactions) { transaction ->
+                    TransactionItem(transaction = transaction)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }
@@ -92,10 +151,10 @@ fun PanelSection(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(3.dp) // Add padding to the Card
+            .padding(3.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp) // Adjust padding inside the Column
+            modifier = Modifier.padding(16.dp) 
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -187,39 +246,45 @@ fun ExpensesSection(
     expenses: Int,
     monthlyExpenses: List<MonthlyExpense>
 ) {
-    Text(
-        text = "Gastos",
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold
-    )
-    Text(
-        text = "$$expenses",
-        style = MaterialTheme.typography.headlineSmall,
-        fontWeight = FontWeight.Bold
-    )
-    Text(
-        text = "últimos 6 meses",
-        style = MaterialTheme.typography.bodySmall,
-        color = Color.Gray
-    )
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    val maxExpense = monthlyExpenses.maxOf { it.amount }
-
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Bottom
+            .padding(horizontal = 16.dp)
     ) {
-        monthlyExpenses.takeLast(6).forEach { expense ->
-            ExpenseBar(
-                height = (expense.amount / maxExpense),
-                month = expense.month,
-                amount = expense.amount.toInt()
-            )
+        Text(
+            text = "Gastos",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "$$expenses",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "últimos 6 meses",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color.Gray
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        val maxExpense = monthlyExpenses.maxOf { it.amount }
+        
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            monthlyExpenses.take(6).forEach { monthlyExpense ->
+                val height = monthlyExpense.amount / maxExpense
+                ExpenseBar(
+                    height = height,
+                    month = monthlyExpense.month,
+                    amount = monthlyExpense.amount.toInt(),
+                    barWidth = 40.dp
+                )
+            }
         }
     }
 }
@@ -228,24 +293,27 @@ fun ExpensesSection(
 fun ExpenseBar(
     height: Float,
     month: String,
-    amount: Int
+    amount: Int,
+    barWidth: Dp
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(barWidth)
     ) {
         Box(
             modifier = Modifier
-                .width(30.dp)
-                .height(80.dp * height)
+                .fillMaxWidth(0.8f)
+                .height(100.dp * height)
                 .background(Color(0xFF4CAF50), RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
                 .clickable { showDialog = true }
         )
         Text(
             text = month,
             style = MaterialTheme.typography.bodySmall,
-            color = Color.Gray
+            color = Color.Gray,
+            modifier = Modifier.padding(top = 4.dp)
         )
     }
 
@@ -254,7 +322,7 @@ fun ExpenseBar(
             Card(
                 modifier = Modifier
                     .padding(16.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth(0.8f), // Make dialog smaller on tablets
                 shape = RoundedCornerShape(16.dp),
             ) {
                 Column(
