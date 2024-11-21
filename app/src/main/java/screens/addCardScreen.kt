@@ -30,6 +30,13 @@ fun AddCardScreen(
 
     val uiState by viewModel.uiState.collectAsState()
     val error by viewModel.error.collectAsState()
+    val addCardSuccess by viewModel.addCardSuccess.collectAsState()
+
+    LaunchedEffect(addCardSuccess) {
+        if (addCardSuccess) {
+            navController.popBackStack()
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -98,7 +105,6 @@ fun AddCardScreen(
         Button(
             onClick = {
                 viewModel.addNewCard(NetworkCard(id=null, number=cardNumber, fullName=cardName, expirationDate=cardExpiry, cvv=cvv, type = "CREDIT", createdAt=null, updatedAt=null))
-                navController.popBackStack()
             },
             modifier = Modifier
                 .fillMaxWidth()
