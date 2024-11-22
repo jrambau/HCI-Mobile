@@ -27,6 +27,8 @@ import com.example.lupay.ui.screens.*
 import com.example.lupay.ui.utils.DeviceType
 import com.example.lupay.ui.utils.rememberDeviceType
 import components.BottomBar
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
 private fun TabletScreenWrapper(
@@ -58,32 +60,59 @@ private fun TopBarScaffoldWrapper(
     currentRoute: String,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    if (deviceType == DeviceType.TABLET) {
-        TabletLayout(
-            navigationRail = {
-                NavigationRail(
-                    currentRoute = currentRoute,
-                    onNavigate = { route ->
-                        navController.navigate(route) {
-                            popUpTo("main")
-                            launchSingleTop = true
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    when {
+        deviceType == DeviceType.TABLET -> {
+            TabletLayout(
+                navigationRail = {
+                    NavigationRail(
+                        currentRoute = currentRoute,
+                        onNavigate = { route ->
+                            navController.navigate(route) {
+                                popUpTo("main")
+                                launchSingleTop = true
+                            }
                         }
-                    }
-                )
+                    )
+                }
+            ) {
+                Scaffold(
+                    topBar = { TopBarComponent(title = title, navController = navController) }
+                ) { paddingValues ->
+                    content(paddingValues)
+                }
             }
-        ) {
+        }
+        isLandscape -> {
+            TabletLayout(
+                navigationRail = {
+                    NavigationRail(
+                        currentRoute = currentRoute,
+                        onNavigate = { route ->
+                            navController.navigate(route) {
+                                popUpTo("main")
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+            ) {
+                Scaffold(
+                    topBar = { TopBarComponent(title = title, navController = navController) }
+                ) { paddingValues ->
+                    content(paddingValues)
+                }
+            }
+        }
+        else -> {
             Scaffold(
-                topBar = { TopBarComponent(title = title, navController = navController) }
+                topBar = { TopBarComponent(title = title, navController = navController) },
+                bottomBar = { BottomBar(navController) }
             ) { paddingValues ->
                 content(paddingValues)
             }
-        }
-    } else {
-        Scaffold(
-            topBar = { TopBarComponent(title = title, navController = navController) },
-            bottomBar = { BottomBar(navController) }
-        ) { paddingValues ->
-            content(paddingValues)
         }
     }
 }

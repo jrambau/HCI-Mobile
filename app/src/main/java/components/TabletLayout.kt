@@ -27,6 +27,9 @@ import androidx.compose.ui.res.stringResource
 import com.example.lupay.R
 import android.content.res.Configuration
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.foundation.layout.Spacer
+import com.example.lupay.ui.utils.DeviceType
+import com.example.lupay.ui.utils.rememberDeviceType
 
 @Composable
 fun TabletLayout(
@@ -54,11 +57,13 @@ fun NavigationRail(
 ) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val deviceType = rememberDeviceType()
+    val isTablet = deviceType == DeviceType.TABLET
 
     NavigationRail(
         modifier = Modifier
             .fillMaxHeight()
-            .width(if (isLandscape) 80.dp else 200.dp),
+            .width(if (isTablet) 200.dp else if (isLandscape) 80.dp else 200.dp),
         containerColor = MaterialTheme.colorScheme.background
     ) {
         val items = listOf(
@@ -74,38 +79,45 @@ fun NavigationRail(
                 selected = currentRoute == route,
                 onClick = { onNavigate(route) },
                 icon = {
-                    if (isLandscape) {
-                        Icon(
-                            icon,
-                            contentDescription = title,
-                            tint = if (currentRoute == route) 
-                                MaterialTheme.colorScheme.primary 
-                            else MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    } else {
+                    if (isTablet) {
                         Row(
-                            modifier = Modifier
-                                .width(160.dp)
-                                .padding(horizontal = 8.dp),
+                            horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start
+                            modifier = Modifier
+                                .width(180.dp)
+                                .padding(start = 12.dp)
                         ) {
                             Icon(
                                 icon,
                                 contentDescription = title,
                                 tint = if (currentRoute == route) 
                                     MaterialTheme.colorScheme.primary 
-                                else MaterialTheme.colorScheme.onSurfaceVariant,
+                                else MaterialTheme.colorScheme.onSurfaceVariant
                             )
+                            Spacer(modifier = Modifier.width(12.dp))
                             Text(
                                 text = title,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(start = 16.dp)
+                                style = MaterialTheme.typography.labelLarge,
+                                color = if (currentRoute == route) 
+                                    MaterialTheme.colorScheme.primary 
+                                else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
+                    } else {
+                        Icon(
+                            icon,
+                            contentDescription = title,
+                            tint = if (currentRoute == route) 
+                                MaterialTheme.colorScheme.primary 
+                            else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 },
-                label = if (isLandscape) { { Text(text = title) } } else null
+                label = if (!isTablet && isLandscape) {
+                    { Text(title) }
+                } else {
+                    null
+                }
             )
         }
     }
