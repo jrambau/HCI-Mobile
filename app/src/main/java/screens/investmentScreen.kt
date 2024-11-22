@@ -1,6 +1,7 @@
 package com.example.lupay.ui.screens
 
 import InvestmentViewModel
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -31,6 +32,7 @@ import com.example.lupay.ui.utils.rememberDeviceType
 import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
 
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun InvestmentScreen(
     modifier: Modifier = Modifier,
@@ -340,7 +342,7 @@ fun InvestmentScreen(
                                             valueFormatter = AxisValueFormatter { value, _ ->
                                                 uiState.chartData.getOrNull(value.toInt())?.label ?: ""
                                             },
-                                            labelRotationDegrees = -45f
+                                            labelRotationDegrees = 0f
                                         ),
                                         modifier = Modifier
                                             .fillMaxWidth()

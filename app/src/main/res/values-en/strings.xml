@@ -169,4 +169,9 @@
     <string name="error_updating_alias">Error updating alias</string>
     <string name="password_length_error">Password must be at least 6 characters long</string>
     <string name="error_reset_password">Error changing password</string>
+    <string name="qr_code">QR code</string>
+    <string name="qr_scanner">QR scanner</string>
+    <string name="back">Back</string>
+    <string name="scan_qr">Scan QR</string>
+    <string name="show_my_qr">Show Qr</string>
 </resources>

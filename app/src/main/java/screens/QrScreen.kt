@@ -9,16 +9,21 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -27,6 +32,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.lupay.MyApplication
+import com.example.lupay.R
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import com.google.zxing.BarcodeFormat
@@ -75,7 +81,12 @@ fun QRScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("QR Scanner") },
+                title = { Text(stringResource(id = R.string.qr_scanner)) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -86,52 +97,73 @@ fun QRScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (hasCameraPermission && isCameraActive) {
-                AndroidView(
-                    factory = { ctx ->
-                        val previewView = PreviewView(ctx)
-                        val preview = Preview.Builder().build()
-                        val selector = CameraSelector.Builder()
-                            .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                            .build()
-                        preview.setSurfaceProvider(previewView.surfaceProvider)
-                        val imageAnalysis = ImageAnalysis.Builder()
-                            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                            .build()
-                        imageAnalysis.setAnalyzer(
-                            Executors.newSingleThreadExecutor(),
-                            QRCodeAnalyzer { result ->
-                                scannedResult = result
-                                showTransferDialog = true
-                                isCameraActive = false
-                            }
-                        )
-                        try {
-                            cameraProviderFuture.get().bindToLifecycle(
-                                lifecycleOwner,
-                                selector,
-                                preview,
-                                imageAnalysis
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
+                    AndroidView(
+                        factory = { ctx ->
+                            val previewView = PreviewView(ctx)
+                            val preview = Preview.Builder().build()
+                            val selector = CameraSelector.Builder()
+                                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                                .build()
+                            preview.setSurfaceProvider(previewView.surfaceProvider)
+                            val imageAnalysis = ImageAnalysis.Builder()
+                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                                .build()
+                            imageAnalysis.setAnalyzer(
+                                Executors.newSingleThreadExecutor(),
+                                QRCodeAnalyzer { result ->
+                                    scannedResult = result
+                                    showTransferDialog = true
+                                    isCameraActive = false
+                                }
                             )
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                        previewView
-                    },
-                    modifier = Modifier.weight(1f)
-                )
+                            try {
+                                cameraProviderFuture.get().bindToLifecycle(
+                                    lifecycleOwner,
+                                    selector,
+                                    preview,
+                                    imageAnalysis
+                                )
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                            previewView
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    Box(
+                        modifier = Modifier
+                            .size(200.dp)
+                            .align(Alignment.Center)
+                            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
+                    )
+                }
             } else {
                 userEmail?.let { email ->
                     val bitmap = generateQRCode(email)
-                    Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = "QR Code",
+                    Box(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(16.dp)
-                    )
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = stringResource(id = R.string.qr_code),
+                            modifier = Modifier
+                                .size(300.dp)
+                                .padding(16.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
                 }
             }
 
@@ -141,7 +173,7 @@ fun QRScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text(if (isCameraActive) "Show My QR" else "Scan QR")
+                Text(if (isCameraActive) stringResource(id = R.string.show_my_qr) else stringResource(id = R.string.scan_qr))
             }
         }
 
@@ -182,25 +214,25 @@ fun TransferDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Transfer",
+                    text = stringResource(id = R.string.tranfer),
                     style = MaterialTheme.typography.titleLarge
                 )
                 OutlinedTextField(
                     value = receiverEmail,
                     onValueChange = { },
-                    label = { Text("Recipient's email") },
+                    label = { Text(stringResource(id = R.string.dest_mail)) },
                     readOnly = true
                 )
                 OutlinedTextField(
                     value = amount,
                     onValueChange = { amount = it },
-                    label = { Text("Amount") },
+                    label = { Text(stringResource(id = R.string.amount)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Description") }
+                    label = { Text(stringResource(id = R.string.desc)) }
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -213,7 +245,7 @@ fun TransferDialog(
                                 MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                         )
                     ) {
-                        Text("Account")
+                        Text(stringResource(id = R.string.account))
                     }
                     Button(
                         onClick = { viewModel.setPaymentMethod(QrViewModel.PaymentMethod.CARD) },
@@ -222,7 +254,7 @@ fun TransferDialog(
                                 MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                         )
                     ) {
-                        Text("Card")
+                        Text(stringResource(id = R.string.card))
                     }
                 }
                 if (viewModel.selectedPaymentMethod == QrViewModel.PaymentMethod.CARD) {
@@ -232,7 +264,7 @@ fun TransferDialog(
                         onExpandedChange = { expanded = !expanded }
                     ) {
                         OutlinedTextField(
-                            value = viewModel.selectedCard?.number ?: "Select a card",
+                            value = viewModel.selectedCard?.number ?: stringResource(id = R.string.select_card),
                             onValueChange = { },
                             readOnly = true,
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -259,7 +291,7 @@ fun TransferDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel")
+                        Text(stringResource(id = R.string.cancel))
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
@@ -271,13 +303,14 @@ fun TransferDialog(
                             }
                         }
                     ) {
-                        Text("Transfer")
+                        Text(stringResource(id = R.string.transfer2))
                     }
                 }
             }
         }
     }
 }
+
 
 class QRCodeAnalyzer(private val onQrCodeScanned: (String) -> Unit) : ImageAnalysis.Analyzer {
     private val scanner = BarcodeScanning.getClient()
