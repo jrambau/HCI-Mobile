@@ -4,9 +4,9 @@
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
     <string name="unkown_error">Unknown error</string>
-    <string name="enter">Enter...</string>
-    <string name="no_specified">Not specifed</string>
-    <string name="login_title">Log In</string>
+    <string name="enter">Sign In...</string>
+    <string name="no_specified">Not specified</string>
+    <string name="login_title">Sign In</string>
     <string name="enter_mail">Enter you email</string>
     <string name="enter_pass">Enter your password</string>
     <string name="validate">Validate account</string>
@@ -20,7 +20,7 @@
     <string name="reset">Reset</string>
     <string name="register_title">Sign up</string>
     <string name="enter_name">Enter you name</string>
-    <string name="enter_lastname">Enter you r lastname</string>
+    <string name="enter_lastname">Enter your lastname</string>
     <string name="enter_bday">Birthdate</string>
     <string name="enter_day">Select date</string>
     <string name="reenter_pass">Re-enter password</string>
@@ -38,7 +38,7 @@
     <string name="confirm_delete">Are you sure you want to delete this card?</string>
     <string name="card_number">Card number</string>
     <string name="card_owner">Name of the owner</string>
-    <string name="expiration">Expiracy date</string>
+    <string name="expiration">Expiry date</string>
     <string name="date">MM/YY</string>
     <string name="cvv">Security code</string>
     <string name="investment">Investments</string>
@@ -49,7 +49,7 @@
     <string name="invest">Invest</string>
     <string name="to_withdraw">Amount to withdraw</string>
     <string name="withdraw">Withdraw</string>
-    <string name="confirm_investment">Confrim investment</string>
+    <string name="confirm_investment">Confirm investment</string>
     <string name="confirm_invest_desc">Are you sure you want to invest?</string>
     <string name="confirm_withdraw">Confirm withdraw</string>
     <string name="confirm_withdraw_desc">Are you sure you want to withdraw?</string>
@@ -74,7 +74,7 @@
     <string name="success_pass">Password changed successfully</string>
     <string name="add_card">Add card</string>
     <string name="invalid_card_num">Invalid card number</string>
-    <string name="invalid_date">Invalid expiracy date</string>
+    <string name="invalid_date">Invalid expiry date</string>
     <string name="cvv_invalid">Invalid security code</string>
     <string name="transactions">Transactions</string>
     <string name="no_data">No data available</string>
@@ -101,7 +101,7 @@
     <string name="success">Success</string>
     <string name="cards">Cards</string>
     <string name="profile">Profile</string>
-    <string name="expiration_cap">EXPIRACY DATE</string>
+    <string name="expiration_cap">EXPIRY DATE</string>
     <string name="save">Save</string>
     <string name="edit">Edit</string>
 </resources>

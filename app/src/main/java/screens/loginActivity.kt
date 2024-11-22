@@ -96,7 +96,7 @@ fun LoginScreen(
                         Text(
                             text = stringResource(id = R.string.validate),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                     TextButton(
@@ -106,11 +106,10 @@ fun LoginScreen(
                         Text(
                             text = stringResource(id = R.string.forgot_pass),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
-
 
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
@@ -119,7 +118,7 @@ fun LoginScreen(
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                 ) {
-                    Text(stringResource(id = R.string.enter2))
+                    Text(stringResource(id = R.string.login_title), color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -186,21 +185,29 @@ fun LoginScreen(
                                 color = Color.Green,
                                 modifier = Modifier.padding(top = 8.dp)
                             )
-
-                    }}
+                        }
+                    }
                 },
                 confirmButton = {
                     Button(
                         onClick = {
                             viewModel.onConfirmAccount(confirmationCode)
                         },
-                        enabled = !uiState.isFetching
+                        enabled = !uiState.isFetching,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
                     ) {
                         Text(stringResource(id = R.string.confirm))
                     }
                 },
                 dismissButton = {
-                    Button(onClick = { showConfirmationDialog = false }) {
+                    Button(
+                        onClick = { showConfirmationDialog = false },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red
+                        )
+                    ) {
                         Text(stringResource(id = R.string.cancel))
                     }
                 }
@@ -282,16 +289,24 @@ fun LoginScreen(
                                 }
                             }
                         },
-                        enabled = !uiState.isFetching
+                        enabled = !uiState.isFetching,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
                     ) {
                         Text(if (resetStep == 0) stringResource(id = R.string.send_code) else stringResource(id = R.string.reset))
                     }
                 },
                 dismissButton = {
-                    Button(onClick = {
-                        showResetPasswordDialog = false
-                        resetStep = 0
-                    }) {
+                    Button(
+                        onClick = {
+                            showResetPasswordDialog = false
+                            resetStep = 0
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red
+                        )
+                    ) {
                         Text(stringResource(id = R.string.cancel))
                     }
                 }
@@ -311,3 +326,8 @@ fun LoginScreen(
         }
     }
 }
+
+
+
+
+
