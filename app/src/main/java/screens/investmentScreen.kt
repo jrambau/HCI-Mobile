@@ -1,7 +1,6 @@
 package com.example.lupay.ui.screens
 
 import InvestmentViewModel
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -109,7 +108,7 @@ fun InvestmentScreen(
                                     amount = uiState.currentValue,
                                     subtitle = {
                                         Text(
-                                            text = "Daily Interest Rate: ${String.format("%.8f", uiState.dailyInterestRate)}%",
+                                            text = stringResource(id = R.string.daily_interest) + ": ${String.format("%.2f", uiState.dailyInterestRate)}%",
                                             color = MaterialTheme.colorScheme.primary,
                                             fontSize = 14.sp
                                         )
@@ -129,7 +128,7 @@ fun InvestmentScreen(
                                     verticalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
                                     Text(
-                                        text = "Investment History",
+                                        text = stringResource(id = R.string.inv_history),
                                         style = MaterialTheme.typography.titleMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )

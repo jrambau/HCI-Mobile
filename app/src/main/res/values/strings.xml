@@ -140,7 +140,7 @@
     <string name="log_out">Cerrar sesión</string>
     <string name="log_out_confirm">Confirmar cierre de sesión</string>
     <string name="log_out_desc">¿Estás seguro de que deseas cerrar sesión?</string>
-    <string name="expenses_in">Gastos en</string>
+    <string name="expenses_in">Gasto en</string>
     <string name="date_date">Fecha</string>
     <string name="type">Tipo</string>
     <string name="generated_link">Link generado</string>
