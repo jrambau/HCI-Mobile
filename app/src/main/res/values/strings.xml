@@ -83,7 +83,7 @@
     <string name="personal_info_desc">Información de tu documento de identidad y tu actividad fiscal.</string>
 
     <string name="user_info">Datos de tu cuenta</string>
-    <string name="user_info_desc">Email, teléfono, nombre de usuario, CVU y alias.</string>
+    <string name="user_info_desc">Email, teléfono, nombre de usuario, CBU y alias.</string>
     <string name="mail">Correo electrónico</string>
     <string name="cbu" translatable="false">CBU</string>
     <string name="alias" translatable="false">Alias</string>
@@ -199,6 +199,8 @@
     <string name="qr_scanner">QR escaner</string>
     <string name="back">Volver</string>
     <string name="scan_qr">Escanear QR</string>
+    <string name="error_fetch_wallwt">Error al cargar información de la billetera</string>
+    <string name="error_feching_cards">Error al cargar tarjetas</string>
 
 
 </resources>

@@ -174,4 +174,6 @@
     <string name="back">Back</string>
     <string name="scan_qr">Scan QR</string>
     <string name="show_my_qr">Show Qr</string>
+    <string name="error_fetch_wallwt">Error fetching wallet info</string>
+    <string name="error_feching_cards">Error fetching cards</string>
 </resources>
