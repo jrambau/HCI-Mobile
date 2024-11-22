@@ -9,6 +9,8 @@ import kotlinx.coroutines.launch
 import network.Repository.WalletRepository
 import network.model.NetworkInvestInfo
 import network.model.NetworkInterest
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class InvestmentViewModel(
     private val sessionManager: SessionManager,
@@ -19,7 +21,7 @@ class InvestmentViewModel(
 
     init {
         loadInvestmentData()
-        loadDailyReturns()
+        loadAllDailyReturns()
         loadDailyInterest()
     }
 
@@ -34,9 +36,9 @@ class InvestmentViewModel(
                         currentState.copy(
                             myInvestment = investment.investment ?: 0.0,
                             currentValue = investment.balanceAfter ?: investment.investment ?: 0.0,
-                            currentBalance = it // Asegúrate de que esto viene correctamente de walletInfo
+                            currentBalance = it
                         )
-                    }!!
+                    } ?: currentState
                 }
             } catch (e: Exception) {
                 _uiState.update { currentState ->
@@ -46,18 +48,24 @@ class InvestmentViewModel(
         }
     }
 
-    private fun loadDailyReturns(page: Int = 1) {
+    private fun loadAllDailyReturns() {
         viewModelScope.launch {
             try {
-                val returns = walletRepository.getDailyReturns(page)
-                val chartData = returns.dailyReturns.mapIndexed { index, info ->
-                    ChartData(
-                        x = index.toFloat(),
-                        y = info.investment?.toFloat() ?: 0f
-                    )
+                val allReturns = mutableListOf<NetworkInvestInfo>()
+                var page = 1
+                var hasMoreData = true
+
+                while (hasMoreData) {
+                    val returns = walletRepository.getDailyReturns(page)
+                    allReturns.addAll(returns.dailyReturns)
+                    hasMoreData = returns.dailyReturns.isNotEmpty()
+                    page++
                 }
-                _uiState.update { currentState ->
-                    currentState.copy(chartData = chartData)
+
+                if (allReturns.isEmpty()) {
+                    _uiState.update { it.copy(noDataMessage = "No daily returns available") }
+                } else {
+                    processAndUpdateChartData(allReturns)
                 }
             } catch (e: Exception) {
                 _uiState.update { currentState ->
@@ -67,12 +75,35 @@ class InvestmentViewModel(
         }
     }
 
+    private fun processAndUpdateChartData(allReturns: List<NetworkInvestInfo>) {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val today = LocalDate.now()
+
+        val chartData = allReturns
+            .sortedByDescending { it.createdAt }
+            .take(30)
+            .reversed()
+            .mapIndexed { index, info ->
+                val date = LocalDate.parse(info.createdAt?.split("T")?.get(0), formatter)
+                val daysAgo = today.toEpochDay() - date.toEpochDay()
+                ChartData(
+                    x = daysAgo.toFloat(),
+                    y = info.balanceAfter?.toFloat() ?: 0f,
+                    label = "${30 - index} days ago"
+                )
+            }
+
+        _uiState.update { currentState ->
+            currentState.copy(chartData = chartData)
+        }
+    }
+
     private fun loadDailyInterest() {
         viewModelScope.launch {
             try {
                 val interest = walletRepository.getDailyInterest()
                 _uiState.update { currentState ->
-                    currentState.copy(dailyInterestRate = interest.interest)
+                    currentState.copy(dailyInterestRate = interest.interest * 100)
                 }
             } catch (e: Exception) {
                 _uiState.update { currentState ->
@@ -97,7 +128,7 @@ class InvestmentViewModel(
                 val result = walletRepository.invest(amount)
 
                 loadInvestmentData()
-                loadDailyReturns()
+                updateChartWithNewInvestment(amount)
 
                 _uiState.update { it.copy(
                     investmentAmount = "",
@@ -111,6 +142,20 @@ class InvestmentViewModel(
         }
     }
 
+    private fun updateChartWithNewInvestment(amount: Double) {
+        val currentChartData = _uiState.value.chartData.toMutableList()
+        if (currentChartData.isNotEmpty()) {
+            val lastEntry = currentChartData.last()
+            val newEntry = ChartData(
+                x = lastEntry.x,
+                y = lastEntry.y + amount.toFloat(),
+                label = "Today"
+            )
+            currentChartData[currentChartData.lastIndex] = newEntry
+            _uiState.update { it.copy(chartData = currentChartData) }
+        }
+    }
+
     fun onWithdraw() {
         viewModelScope.launch {
             try {
@@ -118,7 +163,7 @@ class InvestmentViewModel(
                 val result = walletRepository.divest(amount)
 
                 loadInvestmentData()
-                loadDailyReturns()
+                updateChartWithWithdrawal(amount)
 
                 _uiState.update { it.copy(
                     withdrawalAmount = "",
@@ -132,10 +177,25 @@ class InvestmentViewModel(
         }
     }
 
+    private fun updateChartWithWithdrawal(amount: Double) {
+        val currentChartData = _uiState.value.chartData.toMutableList()
+        if (currentChartData.isNotEmpty()) {
+            val lastEntry = currentChartData.last()
+            val newEntry = ChartData(
+                x = lastEntry.x,
+                y = (lastEntry.y - amount.toFloat()).coerceAtLeast(0f),
+                label = "Today"
+            )
+            currentChartData[currentChartData.lastIndex] = newEntry
+            _uiState.update { it.copy(chartData = currentChartData) }
+        }
+    }
+
     fun clearMessages() {
         _uiState.update { it.copy(
             error = null,
-            successMessage = null
+            successMessage = null,
+            noDataMessage = null
         ) }
     }
 
@@ -157,18 +217,20 @@ class InvestmentViewModel(
 data class InvestmentUiState(
     val myInvestment: Double = 0.0,
     val currentValue: Double = 0.0,
-    val currentBalance: Double = 0.0, // Asegúrate de que esto está correctamente definido
+    val currentBalance: Double = 0.0,
     val investmentAmount: String = "",
     val withdrawalAmount: String = "",
     val isChartExpanded: Boolean = false,
     val chartData: List<ChartData> = emptyList(),
     val dailyInterestRate: Double = 0.0,
     val error: String? = null,
-    val successMessage: String? = null
+    val successMessage: String? = null,
+    val noDataMessage: String? = null
 )
 
 data class ChartData(
     val x: Float,
-    val y: Float
+    val y: Float,
+    val label: String
 )
 

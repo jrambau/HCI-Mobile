@@ -1,6 +1,7 @@
 package com.example.lupay.ui.screens
 
 import InvestmentViewModel
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,7 +29,9 @@ import com.example.lupay.R
 import components.ConfirmationDialog
 import com.example.lupay.ui.utils.DeviceType
 import com.example.lupay.ui.utils.rememberDeviceType
+import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun InvestmentScreen(
     modifier: Modifier = Modifier,
@@ -106,7 +109,7 @@ fun InvestmentScreen(
                                     amount = uiState.currentValue,
                                     subtitle = {
                                         Text(
-                                            text = "Daily Interest Rate: ${String.format("%.2f", uiState.dailyInterestRate)}%",
+                                            text = "Daily Interest Rate: ${String.format("%.8f", uiState.dailyInterestRate)}%",
                                             color = MaterialTheme.colorScheme.primary,
                                             fontSize = 14.sp
                                         )
@@ -131,15 +134,30 @@ fun InvestmentScreen(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
 
-                                    Chart(
-                                        chart = lineChart(),
-                                        model = entryModelOf(uiState.chartData.map { FloatEntry(it.x, it.y) }),
-                                        startAxis = rememberStartAxis(),
-                                        bottomAxis = rememberBottomAxis(),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .weight(1f)
-                                    )
+                                    if (uiState.chartData.isEmpty()) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .weight(1f),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.no_daily_returns),
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    } else {
+                                        Chart(
+                                            chart = lineChart(),
+                                            model = entryModelOf(uiState.chartData.map { FloatEntry(it.x, it.y) }),
+                                            startAxis = rememberStartAxis(),
+                                            bottomAxis = rememberBottomAxis(),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .weight(1f)
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -278,7 +296,7 @@ fun InvestmentScreen(
                                 amount = uiState.currentValue,
                                 subtitle = {
                                     Text(
-                                        text = stringResource(R.string.daily_interest)+ ": ${String.format("%.2f", uiState.dailyInterestRate)}%",
+                                        text = stringResource(R.string.daily_interest) + ": ${String.format("%.8f", uiState.dailyInterestRate)}%",
                                         color = MaterialTheme.colorScheme.primary,
                                         fontSize = 14.sp
                                     )
@@ -301,15 +319,35 @@ fun InvestmentScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
 
-                                Chart(
-                                    chart = lineChart(),
-                                    model = entryModelOf(uiState.chartData.map { FloatEntry(it.x, it.y) }),
-                                    startAxis = rememberStartAxis(),
-                                    bottomAxis = rememberBottomAxis(),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(200.dp)
-                                )
+                                if (uiState.chartData.isEmpty()) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.no_daily_returns),
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                } else {
+                                    Chart(
+                                        chart = lineChart(),
+                                        model = entryModelOf(uiState.chartData.map { FloatEntry(it.x, it.y) }),
+                                        startAxis = rememberStartAxis(),
+                                        bottomAxis = rememberBottomAxis(
+                                            valueFormatter = AxisValueFormatter { value, _ ->
+                                                uiState.chartData.getOrNull(value.toInt())?.label ?: ""
+                                            },
+                                            labelRotationDegrees = -45f
+                                        ),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp)
+                                    )
+                                }
                             }
                         }
 
@@ -391,7 +429,7 @@ fun InvestmentScreen(
                                             containerColor = if (!isInvestAction)
                                                 Color.Red
                                             else
-                                                Color.Red.copy(alpha = 0.6f)
+                                                Color.Red
                                         )
                                     ) {
                                         Text(
@@ -470,4 +508,3 @@ private fun InvestmentCard(
         }
     }
 }
-

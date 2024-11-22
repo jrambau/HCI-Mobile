@@ -148,6 +148,7 @@
     <string name="scanned_result">Resultado escaneado:</string>
     <string name="api_result">Resultado de la API:</string>
     <string name="info_qr">Información para el contenido del QR:</string>
+    <string name="no_daily_returns">Sin devoluciones diarias\n</string>
 
 
 </resources>
