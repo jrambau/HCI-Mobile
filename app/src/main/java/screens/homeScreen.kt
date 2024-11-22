@@ -843,8 +843,8 @@ fun PaymentLinkDetailsDialog(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 paymentInfo?.let {
-                    Text("Monto: $${it.amount}")
-                    Text("Pagar a: ${it.receiver?.firstName} ${it.receiver?.lastName}")
+                    Text(stringResource(R.string.amount) + ": $${it.amount}")
+                    Text(stringResource(R.string.pay_to) + ": ${it.receiver?.firstName} ${it.receiver?.lastName}")
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Row(

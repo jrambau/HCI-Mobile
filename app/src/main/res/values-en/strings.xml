@@ -50,9 +50,9 @@
     <string name="to_withdraw">Amount to withdraw</string>
     <string name="withdraw">Withdraw</string>
     <string name="confirm_investment">Confirm investment</string>
-    <string name="confirm_invest_desc">Are you sure you want to invest?</string>
+    <string name="confirm_invest_desc">Are you sure you want to invest</string>
     <string name="confirm_withdraw">Confirm withdraw</string>
-    <string name="confirm_withdraw_desc">Are you sure you want to withdraw?</string>
+    <string name="confirm_withdraw_desc">Are you sure you want to withdraw</string>
     <string name="personal_info">Personal information</string>
     <string name="name">Name</string>
     <string name="lastname">Lastname</string>
@@ -104,4 +104,8 @@
     <string name="expiration_cap">EXPIRY DATE</string>
     <string name="save">Save</string>
     <string name="edit">Edit</string>
+    <string name="inv_history">Investment history</string>
+    <string name="daily_interest">Daily interest rate</string>
+    <string name="pay_to">Pay  to</string>
+    <string name="fail_fetch">Failed to fetch cards</string>
 </resources>

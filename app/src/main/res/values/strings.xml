@@ -67,9 +67,9 @@
     <string name="to_withdraw">Monto a rescatar</string>
     <string name="withdraw">Rescatar</string>
     <string name="confirm_investment">Confirmar inversión</string>
-    <string name="confirm_invest_desc">¿Estás seguro de que deseas invertir?</string>
+    <string name="confirm_invest_desc">¿Estás seguro de que deseas invertir</string>
     <string name="confirm_withdraw">Confirmar rescate</string>
-    <string name="confirm_withdraw_desc">¿Estás seguro de que deseas rescatar?</string>
+    <string name="confirm_withdraw_desc">¿Estás seguro de que deseas rescatar</string>
 
     <!-- ajustes -->
 
@@ -130,6 +130,10 @@
     <string name="expiration_cap">VENCIMIENTO</string>
     <string name="save">Guardar</string>
     <string name="edit">Editar</string>
+    <string name="inv_history">Historial de inversiones</string>
+    <string name="daily_interest">Tasa de interés diaria</string>
+    <string name="pay_to">Pagar a</string>
+    <string name="fail_fetch">No se pudieron obtener tarjetas</string>
 
 
 </resources>
