@@ -1,5 +1,5 @@
 import android.Manifest
-import android.content.Context
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -9,38 +9,33 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.wear.compose.material.ExperimentalWearMaterialApi
-import androidx.wear.compose.material.rememberSwipeableState
-import androidx.wear.compose.material.swipeable
 import com.example.lupay.MyApplication
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
+import kotlinx.coroutines.launch
 import viewmodels.QrViewModel
 import java.util.concurrent.Executors
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalWearMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QRScreen(
     navController: NavController,
@@ -60,10 +55,7 @@ fun QRScreen(
     }
     var scannedResult by remember { mutableStateOf<String?>(null) }
     var isCameraActive by remember { mutableStateOf(true) }
-    var previewView: PreviewView? by remember { mutableStateOf(null) }
-
-    val swipeableState = rememberSwipeableState(initialValue = 1)
-    val anchors = mapOf(0f to 1, 1f to 0)
+    var showTransferDialog by remember { mutableStateOf(false) }
 
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -71,265 +63,235 @@ fun QRScreen(
         hasCameraPermission = granted
     }
 
-    var showTransferDialog by remember { mutableStateOf(false) }
-    var amount by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var isAccount by remember { mutableStateOf(true) }
-
     val userEmail by viewModel.userEmail.collectAsState()
-    val paymentResult by viewModel.paymentResult.collectAsState()
+    val cards by viewModel.cards.collectAsState()
 
-    LaunchedEffect(key1 = cameraProviderFuture, key2 = isCameraActive) {
-        if (hasCameraPermission && isCameraActive) {
-            val cameraProvider = cameraProviderFuture.get()
-            cameraProvider.unbindAll()
-
-            val preview = Preview.Builder().build().apply {
-                previewView?.surfaceProvider?.let { setSurfaceProvider(it) }
-            }
-
-            val cameraSelector = CameraSelector.Builder()
-                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                .build()
-
-            val imageAnalysis = ImageAnalysis.Builder()
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build()
-
-            imageAnalysis.setAnalyzer(
-                Executors.newSingleThreadExecutor(),
-                QRCodeAnalyzer(context) { result ->
-                    scannedResult = result
-                    showTransferDialog = true
-                    isCameraActive = false
-                }
-            )
-
-            cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageAnalysis)
+    LaunchedEffect(key1 = Unit) {
+        if (!hasCameraPermission) {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
-    }
-
-    LaunchedEffect(key1 = swipeableState.currentValue) {
-        if (swipeableState.currentValue == 1 && isCameraActive) {
-            val cameraProvider = cameraProviderFuture.get()
-            cameraProvider.unbindAll()
-
-            val preview = Preview.Builder().build().apply {
-                previewView?.surfaceProvider?.let { setSurfaceProvider(it) }
-            }
-
-            val cameraSelector = CameraSelector.Builder()
-                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                .build()
-
-            val imageAnalysis = ImageAnalysis.Builder()
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build()
-
-            imageAnalysis.setAnalyzer(
-                Executors.newSingleThreadExecutor(),
-                QRCodeAnalyzer(context) { result ->
-                    scannedResult = result
-                    showTransferDialog = true
-                    isCameraActive = false
-                }
-            )
-
-            cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageAnalysis)
-        }
-    }
-
-    if (showTransferDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                showTransferDialog = false
-                isCameraActive = true
-            },
-            title = { Text("Transfer") },
-            text = {
-                Column {
-                    TextField(
-                        value = scannedResult ?: "",
-                        onValueChange = { /* Read-only */ },
-                        label = { Text("Recipient's email") },
-                        readOnly = true
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    TextField(
-                        value = amount,
-                        onValueChange = { amount = it },
-                        label = { Text("Amount") }
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    TextField(
-                        value = description,
-                        onValueChange = { description = it },
-                        label = { Text("Description") }
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        FilterChip(
-                            selected = isAccount,
-                            onClick = { isAccount = true },
-                            label = { Text("Account") }
-                        )
-                        FilterChip(
-                            selected = !isAccount,
-                            onClick = { isAccount = false },
-                            label = { Text("Card") }
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val amountDouble = amount.toDoubleOrNull()
-                        if (amountDouble != null && scannedResult != null) {
-                            viewModel.makePayment(scannedResult!!, amountDouble, description, isAccount, null) // Assuming no card selection for now
-                            showTransferDialog = false
-                            isCameraActive = true
-                        }
-                    },
-                    enabled = amount.isNotEmpty() && amount.toDoubleOrNull() != null && scannedResult != null
-                ) {
-                    Text("Transfer")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showTransferDialog = false
-                    isCameraActive = true
-                }) {
-                    Text("Cancel")
-                }
-            }
-        )
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "QR Scanner") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Go Back"
-                        )
-                    }
-                },
+                title = { Text("QR Scanner") },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
-        },
-        content = { padding ->
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .swipeable(
-                        state = swipeableState,
-                        anchors = anchors,
-                        orientation = Orientation.Vertical
-                    )
-            ) {
-                if (swipeableState.currentValue == 1 && isCameraActive && hasCameraPermission) {
-                    AndroidView(
-                        factory = { ctx ->
-                            val previewViewInstance = PreviewView(ctx)
-                            previewView = previewViewInstance
-                            previewViewInstance
-                        },
-                        modifier = Modifier.fillMaxSize()
-                    )
-
-                    Icon(
-                        Icons.Default.ArrowUpward,
-                        contentDescription = "Swipe to QR Code",
-                        tint = Color.White,
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(16.dp)
-                            .size(40.dp)
-                    )
-                }
-
-                if (swipeableState.currentValue == 0) {
-                    Column(
-                        Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.background),
-                        verticalArrangement = Arrangement.SpaceBetween,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .padding(32.dp)
-                                .background(MaterialTheme.colorScheme.background, MaterialTheme.shapes.medium)
-                                .padding(16.dp)
-                        ) {
-                            userEmail?.let {
-                                val bitmap = generateQRCode(it)
-                                Image(bitmap = bitmap.asImageBitmap(), contentDescription = null)
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            if (hasCameraPermission && isCameraActive) {
+                AndroidView(
+                    factory = { ctx ->
+                        val previewView = PreviewView(ctx)
+                        val preview = Preview.Builder().build()
+                        val selector = CameraSelector.Builder()
+                            .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                            .build()
+                        preview.setSurfaceProvider(previewView.surfaceProvider)
+                        val imageAnalysis = ImageAnalysis.Builder()
+                            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                            .build()
+                        imageAnalysis.setAnalyzer(
+                            Executors.newSingleThreadExecutor(),
+                            QRCodeAnalyzer { result ->
+                                scannedResult = result
+                                showTransferDialog = true
+                                isCameraActive = false
                             }
-                        }
-
-                        Icon(
-                            Icons.Default.ArrowDownward,
-                            contentDescription = "Swipe to Camera",
-                            tint = if (isSystemInDarkTheme()) Color.White else Color.Black,
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(16.dp)
-                                .size(40.dp)
                         )
-                    }
+                        try {
+                            cameraProviderFuture.get().bindToLifecycle(
+                                lifecycleOwner,
+                                selector,
+                                preview,
+                                imageAnalysis
+                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                        previewView
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            } else {
+                userEmail?.let { email ->
+                    val bitmap = generateQRCode(email)
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = "QR Code",
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(16.dp)
+                    )
                 }
             }
-        }
-    )
 
-    LaunchedEffect(viewModel.uiState) {
-        val uiState = viewModel.uiState
-        if (!uiState.isFetching) {
-            if (uiState.successMessage != null) {
-                // Show success message
-                // You can use a Snackbar or another AlertDialog here
-            } else if (uiState.error != null) {
-                // Show error message
-                // You can use a Snackbar or another AlertDialog here
+            Button(
+                onClick = { isCameraActive = !isCameraActive },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(if (isCameraActive) "Show My QR" else "Scan QR")
+            }
+        }
+
+        if (showTransferDialog) {
+            TransferDialog(
+                receiverEmail = scannedResult ?: "",
+                onDismiss = {
+                    showTransferDialog = false
+                    isCameraActive = true
+                    scannedResult = null
+                },
+                viewModel = viewModel
+            )
+        }
+    }
+}
+
+@SuppressLint("StateFlowValueCalledInComposition")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TransferDialog(
+    receiverEmail: String,
+    onDismiss: () -> Unit,
+    viewModel: QrViewModel
+) {
+    var amount by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Transfer",
+                    style = MaterialTheme.typography.titleLarge
+                )
+                OutlinedTextField(
+                    value = receiverEmail,
+                    onValueChange = { },
+                    label = { Text("Recipient's email") },
+                    readOnly = true
+                )
+                OutlinedTextField(
+                    value = amount,
+                    onValueChange = { amount = it },
+                    label = { Text("Amount") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Description") }
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Button(
+                        onClick = { viewModel.setPaymentMethod(QrViewModel.PaymentMethod.WALLET) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (viewModel.selectedPaymentMethod == QrViewModel.PaymentMethod.WALLET)
+                                MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                        )
+                    ) {
+                        Text("Account")
+                    }
+                    Button(
+                        onClick = { viewModel.setPaymentMethod(QrViewModel.PaymentMethod.CARD) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (viewModel.selectedPaymentMethod == QrViewModel.PaymentMethod.CARD)
+                                MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                        )
+                    ) {
+                        Text("Card")
+                    }
+                }
+                if (viewModel.selectedPaymentMethod == QrViewModel.PaymentMethod.CARD) {
+                    var expanded by remember { mutableStateOf(false) }
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = !expanded }
+                    ) {
+                        OutlinedTextField(
+                            value = viewModel.selectedCard?.number ?: "Select a card",
+                            onValueChange = { },
+                            readOnly = true,
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                            modifier = Modifier.menuAnchor()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            viewModel.cards.value.forEach { card ->
+                                DropdownMenuItem(
+                                    text = { Text(card.number) },
+                                    onClick = {
+                                        viewModel.updateSelectedCard(card)
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            val amountDouble = amount.toDoubleOrNull()
+                            if (amountDouble != null) {
+                                viewModel.makePayment(receiverEmail, amountDouble, description)
+                                onDismiss()
+                            }
+                        }
+                    ) {
+                        Text("Transfer")
+                    }
+                }
             }
         }
     }
 }
 
-// QRCodeAnalyzer and generateQRCode functions remain unchanged
-class QRCodeAnalyzer(
-    private val context: Context,
-    private val onQrCodeScanned: (String) -> Unit
-) : ImageAnalysis.Analyzer {
+class QRCodeAnalyzer(private val onQrCodeScanned: (String) -> Unit) : ImageAnalysis.Analyzer {
     private val scanner = BarcodeScanning.getClient()
 
     @androidx.camera.core.ExperimentalGetImage
     override fun analyze(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
-            val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-
-            scanner.process(inputImage)
+            val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+            scanner.process(image)
                 .addOnSuccessListener { barcodes ->
-                    barcodes.firstOrNull()?.rawValue?.let { result ->
-                        onQrCodeScanned(result)
+                    for (barcode in barcodes) {
+                        barcode.rawValue?.let { onQrCodeScanned(it) }
                     }
-                }
-                .addOnFailureListener {
-                    // Handle failure if needed
                 }
                 .addOnCompleteListener {
                     imageProxy.close()
@@ -341,11 +303,14 @@ class QRCodeAnalyzer(
 fun generateQRCode(content: String): Bitmap {
     val writer = QRCodeWriter()
     val bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, 512, 512)
-    val bitmap = Bitmap.createBitmap(512, 512, Bitmap.Config.RGB_565)
-    for (x in 0 until 512) {
-        for (y in 0 until 512) {
+    val width = bitMatrix.width
+    val height = bitMatrix.height
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+    for (x in 0 until width) {
+        for (y in 0 until height) {
             bitmap.setPixel(x, y, if (bitMatrix[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
         }
     }
     return bitmap
 }
+

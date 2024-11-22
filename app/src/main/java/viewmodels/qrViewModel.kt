@@ -1,6 +1,5 @@
 package viewmodels
 
-
 import GeneralUiState
 import SessionManager
 import androidx.compose.runtime.getValue
@@ -17,12 +16,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import network.Repository.UserRepository
 import network.Repository.PaymentRepository
-import network.model.NetworkPaymentInfo
+import network.Repository.WalletRepository
+import network.model.NetworkCard
 
 class QrViewModel(
     private val sessionManager: SessionManager,
     private val userRepository: UserRepository,
-    private val paymentRepository: PaymentRepository
+    private val paymentRepository: PaymentRepository,
+    private val walletRepository: WalletRepository
 ) : ViewModel() {
     var uiState by mutableStateOf(GeneralUiState())
         private set
@@ -30,11 +31,15 @@ class QrViewModel(
     private val _userEmail = MutableStateFlow<String?>(null)
     val userEmail: StateFlow<String?> = _userEmail.asStateFlow()
 
-    private val _paymentResult = MutableStateFlow<NetworkPaymentInfo?>(null)
-    val paymentResult: StateFlow<NetworkPaymentInfo?> = _paymentResult.asStateFlow()
+    private val _cards = MutableStateFlow<List<NetworkCard>>(emptyList())
+    val cards: StateFlow<List<NetworkCard>> = _cards.asStateFlow()
+
+    var selectedPaymentMethod by mutableStateOf<PaymentMethod>(PaymentMethod.WALLET)
+    var selectedCard by mutableStateOf<NetworkCard?>(null)
 
     init {
         getUserEmail()
+        getCards()
     }
 
     private fun getUserEmail() {
@@ -51,27 +56,50 @@ class QrViewModel(
         }
     }
 
-    fun makePayment(receiverEmail: String, amount: Double, description: String, isAccount: Boolean, cardId: Int?) {
+    private fun getCards() {
+        viewModelScope.launch {
+            runCatching { walletRepository.getCards() }
+                .onSuccess { cardList ->
+                    _cards.value = cardList
+                }
+                .onFailure { e ->
+                    uiState = uiState.copy(error = Error(e.message ?: MyApplication.instance.getString(R.string.error_fetching_cards)))
+                }
+        }
+    }
+
+    fun makePayment(receiverEmail: String, amount: Double, description: String) {
         viewModelScope.launch {
             uiState = uiState.copy(isFetching = true, error = null, successMessage = null)
             runCatching {
-                paymentRepository.makePayment(
-                    amount = amount,
-                    type = if (isAccount) "ACCOUNT" else "CARD",
-                    description = description,
-                    cardId = cardId,
-                    receiverEmail = receiverEmail
-                )
+                when (selectedPaymentMethod) {
+                    PaymentMethod.WALLET -> paymentRepository.makePayment(amount, "BALANCE", description, null, receiverEmail)
+                    PaymentMethod.CARD -> {
+                        selectedCard?.let { card ->
+                            paymentRepository.makePayment(amount, "CARD", description, card.id, receiverEmail)
+                        } ?: throw IllegalStateException(MyApplication.instance.getString(R.string.error_no_card_selected))
+                    }
+                }
             }
                 .onSuccess {
-                    uiState = uiState.copy(isFetching = false, successMessage = "Payment successful")
-                    // Fetch payment details if needed
-                    // _paymentResult.value = paymentRepository.getPaymentDetails(paymentId)
+                    uiState = uiState.copy(isFetching = false, successMessage = MyApplication.instance.getString(R.string.payment_successful))
                 }
                 .onFailure { e ->
-                    uiState = uiState.copy(isFetching = false, error = Error(e.message ?: MyApplication.instance.getString(R.string.error_generic)))
+                    uiState = uiState.copy(isFetching = false, error = Error(e.message ?: MyApplication.instance.getString(R.string.error_transfering_money)))
                 }
         }
+    }
+
+    fun setPaymentMethod(method: PaymentMethod) {
+        selectedPaymentMethod = method
+    }
+
+    fun updateSelectedCard(card: NetworkCard) {
+        selectedCard = card
+    }
+
+    enum class PaymentMethod {
+        WALLET, CARD
     }
 
     companion object {
@@ -82,9 +110,11 @@ class QrViewModel(
                     return QrViewModel(
                         application.sessionManager,
                         application.userRepository,
-                        application.paymentRepository
+                        application.paymentRepository,
+                        application.walletRepository
                     ) as T
                 }
             }
     }
 }
+
