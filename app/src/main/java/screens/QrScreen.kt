@@ -1,6 +1,7 @@
 package com.example.lupay.ui.screens
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,7 +12,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +46,14 @@ fun QRScreen() {
     var apiResult by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
+    val savedData = remember { mutableStateOf<String?>(null) }
+
+    // Retrieve the last scanned QR code
+    LaunchedEffect(key1 = true) {
+        savedData.value = getScannedData(context)
+    }
+
+    // Request camera permission
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { granted ->
@@ -60,11 +69,24 @@ fun QRScreen() {
 
     Column(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
+        // Placeholder for the top bar
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp), // Assuming the height of the top bar
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Top Bar")
+        }
+
         if (hasCameraPermission) {
-            Box(modifier = Modifier.size(300.dp)) {
+            // Camera Preview
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f), // Occupy all available space
+            ) {
                 AndroidView(
                     factory = { ctx ->
                         val previewView = PreviewView(ctx)
@@ -78,7 +100,7 @@ fun QRScreen() {
                             .build()
                         imageAnalysis.setAnalyzer(
                             Executors.newSingleThreadExecutor(),
-                            QRCodeAnalyzer { result ->
+                            QRCodeAnalyzer(context) { result ->
                                 scannedResult = result
                                 coroutineScope.launch {
                                     apiResult = fetchDataFromApi(result)
@@ -101,24 +123,32 @@ fun QRScreen() {
                 )
             }
         } else {
-            Text("Camera permission is required to scan QR codes")
+            Text(
+                "Camera permission is required to scan QR codes",
+                modifier = Modifier
+                    .weight(1f)
+                    .wrapContentHeight(align = Alignment.CenterVertically)
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (scannedResult != null) {
-            Text("Scanned Result: $scannedResult")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (apiResult != null) {
-            Text("API Result: $apiResult")
+        // Placeholder for the bottom bar
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp), // Assuming the height of the bottom bar
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Bottom Bar")
         }
     }
 }
 
-class QRCodeAnalyzer(private val onQrCodeScanned: (String) -> Unit) : ImageAnalysis.Analyzer {
+
+
+class QRCodeAnalyzer(
+    private val context: Context,
+    private val onQrCodeScanned: (String) -> Unit
+) : ImageAnalysis.Analyzer {
     private val scanner = BarcodeScanning.getClient()
 
     @androidx.camera.core.ExperimentalGetImage
@@ -129,7 +159,10 @@ class QRCodeAnalyzer(private val onQrCodeScanned: (String) -> Unit) : ImageAnaly
             scanner.process(image)
                 .addOnSuccessListener { barcodes ->
                     for (barcode in barcodes) {
-                        barcode.rawValue?.let { onQrCodeScanned(it) }
+                        barcode.rawValue?.let { result ->
+                            saveScannedData(context, result) // Save the result locally
+                            onQrCodeScanned(result)
+                        }
                     }
                 }
                 .addOnFailureListener {
@@ -144,8 +177,19 @@ class QRCodeAnalyzer(private val onQrCodeScanned: (String) -> Unit) : ImageAnaly
 
 suspend fun fetchDataFromApi(qrContent: String): String {
     return withContext(Dispatchers.IO) {
-        // Simulating API call delay
-        kotlinx.coroutines.delay(1000)
+        kotlinx.coroutines.delay(1000) // Simulating API call delay
         "Info for QR content: $qrContent"
     }
+}
+
+fun saveScannedData(context: Context, data: String) {
+    val sharedPreferences = context.getSharedPreferences("QRData", Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putString("last_scanned_qr", data)
+    editor.apply()
+}
+
+fun getScannedData(context: Context): String? {
+    val sharedPreferences = context.getSharedPreferences("QRData", Context.MODE_PRIVATE)
+    return sharedPreferences.getString("last_scanned_qr", null)
 }

@@ -140,6 +140,14 @@
     <string name="log_out">Cerrar sesión</string>
     <string name="log_out_confirm">Confirmar cierre de sesión</string>
     <string name="log_out_desc">¿Estás seguro de que deseas cerrar sesión?</string>
+    <string name="expenses_in">Gastos en</string>
+    <string name="date_date">Fecha</string>
+    <string name="type">Tipo</string>
+    <string name="generated_link">Link generado</string>
+    <string name="camara_permission">Se requiere permiso de la cámara para escanear un código QR</string>
+    <string name="scanned_result">Resultado escaneado:</string>
+    <string name="api_result">Resultado de la API:</string>
+    <string name="info_qr">Información para el contenido del QR:</string>
 
 
 </resources>
