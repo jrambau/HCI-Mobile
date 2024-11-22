@@ -12,7 +12,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,15 +43,10 @@ fun QRScreen() {
         )
     }
     var scannedResult by remember { mutableStateOf<String?>(null) }
-    var apiResult by remember { mutableStateOf<String?>(null) }
+    var isCameraActive by remember { mutableStateOf(true) } // To control the camera
+    var cameraProvider: ProcessCameraProvider? by remember { mutableStateOf(null) }
+    var previewView: PreviewView? by remember { mutableStateOf(null) }
     val coroutineScope = rememberCoroutineScope()
-
-    val savedData = remember { mutableStateOf<String?>(null) }
-
-    // Retrieve the last scanned QR code
-    LaunchedEffect(key1 = true) {
-        savedData.value = getScannedData(context)
-    }
 
     // Request camera permission
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
@@ -67,81 +62,95 @@ fun QRScreen() {
         }
     }
 
+    // Show Dialog when QR code is scanned
+    val showDialog = scannedResult != null
+
+    // Initialize camera
+    LaunchedEffect(key1 = isCameraActive) {
+        if (isCameraActive) {
+            val cameraProvider = cameraProviderFuture.get()
+            this@LaunchedEffect.runCatching {
+                val preview = Preview.Builder().build()
+                previewView?.let {
+                    preview.setSurfaceProvider(it.surfaceProvider)
+                }
+                val cameraSelector = CameraSelector.Builder()
+                    .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                    .build()
+
+                val imageAnalysis = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build()
+
+                val onQrCodeScanned: (String) -> Unit = { result ->
+                    scannedResult = result
+                    isCameraActive = false // Pause the camera immediately after scan
+                    cameraProvider.unbindAll() // Unbind the camera to pause it
+                    println("Scanned QR Code: $result")
+                }
+
+                imageAnalysis.setAnalyzer(
+                    Executors.newSingleThreadExecutor(),
+                    QRCodeAnalyzer(context, onQrCodeScanned)
+                )
+
+                // Bind the camera to the lifecycle
+                cameraProvider.bindToLifecycle(
+                    lifecycleOwner,
+                    cameraSelector,
+                    preview,
+                    imageAnalysis
+                )
+            }
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
-        // Placeholder for the top bar
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp), // Assuming the height of the top bar
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Top Bar")
-        }
-
-        if (hasCameraPermission) {
-            // Camera Preview
+        if (hasCameraPermission && isCameraActive) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f), // Occupy all available space
+                    .weight(1f)
             ) {
                 AndroidView(
                     factory = { ctx ->
-                        val previewView = PreviewView(ctx)
-                        val preview = Preview.Builder().build()
-                        val selector = CameraSelector.Builder()
-                            .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                            .build()
-                        preview.setSurfaceProvider(previewView.surfaceProvider)
-                        val imageAnalysis = ImageAnalysis.Builder()
-                            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                            .build()
-                        imageAnalysis.setAnalyzer(
-                            Executors.newSingleThreadExecutor(),
-                            QRCodeAnalyzer(context) { result ->
-                                scannedResult = result
-                                coroutineScope.launch {
-                                    apiResult = fetchDataFromApi(result)
-                                }
-                            }
-                        )
-                        try {
-                            cameraProviderFuture.get().bindToLifecycle(
-                                lifecycleOwner,
-                                selector,
-                                preview,
-                                imageAnalysis
-                            )
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                        previewView
+                        val previewViewInstance = PreviewView(ctx)
+                        previewView = previewViewInstance // Save the previewView for later use
+                        previewViewInstance
                     },
                     modifier = Modifier.fillMaxSize()
                 )
             }
-        } else {
-            Text(
-                "Camera permission is required to scan QR codes",
-                modifier = Modifier
-                    .weight(1f)
-                    .wrapContentHeight(align = Alignment.CenterVertically)
-            )
-        }
-
-        // Placeholder for the bottom bar
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp), // Assuming the height of the bottom bar
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Bottom Bar")
         }
     }
+
+    // Show Dialog with the scanned data
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { scannedResult = null }, // Dismiss dialog
+            title = { Text("Scanned QR Code") },
+            text = { Text("Scanned Data: $scannedResult") },
+            confirmButton = {
+                Button(onClick = {
+                    // Close dialog and resume the camera
+                    scannedResult = null
+                    isCameraActive = true // Resume the camera after confirmation
+                }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 }
+
+
+
+
+
+
+
 
 
 
@@ -156,17 +165,23 @@ class QRCodeAnalyzer(
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
             val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+
+            // Start scanning the image
             scanner.process(image)
                 .addOnSuccessListener { barcodes ->
                     for (barcode in barcodes) {
                         barcode.rawValue?.let { result ->
-                            saveScannedData(context, result) // Save the result locally
+                            // Save the result locally
+                            saveScannedData(context, result)
+
+                            // Log and pass the result to the Composable function
                             onQrCodeScanned(result)
                         }
                     }
                 }
                 .addOnFailureListener {
-                    // Handle any errors
+                    // Handle any failure (e.g., logging or error handling)
+                    println("QR Code Scan Failed")
                 }
                 .addOnCompleteListener {
                     imageProxy.close()
@@ -175,21 +190,9 @@ class QRCodeAnalyzer(
     }
 }
 
-suspend fun fetchDataFromApi(qrContent: String): String {
-    return withContext(Dispatchers.IO) {
-        kotlinx.coroutines.delay(1000) // Simulating API call delay
-        "Info for QR content: $qrContent"
-    }
-}
-
 fun saveScannedData(context: Context, data: String) {
     val sharedPreferences = context.getSharedPreferences("QRData", Context.MODE_PRIVATE)
     val editor = sharedPreferences.edit()
     editor.putString("last_scanned_qr", data)
     editor.apply()
-}
-
-fun getScannedData(context: Context): String? {
-    val sharedPreferences = context.getSharedPreferences("QRData", Context.MODE_PRIVATE)
-    return sharedPreferences.getString("last_scanned_qr", null)
 }
