@@ -81,7 +81,7 @@ fun SecurityScreen(
         OutlinedTextField(
             value = newPassword,
             onValueChange = { newPassword = it },
-            label = { Text(stringResource(id = R.string.enter)) },
+            label = { Text(stringResource(id = R.string.n_pass)) },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
@@ -105,7 +105,7 @@ fun SecurityScreen(
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text(stringResource(id = R.string.enter)) },
+            label = { Text(stringResource(id = R.string.confirm_pass)) },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
