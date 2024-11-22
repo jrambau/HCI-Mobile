@@ -19,8 +19,11 @@ fun rememberDeviceType(): DeviceType {
     val configuration = LocalConfiguration.current
     val windowInfo = rememberWindowInfo()
     
+    val isTablet = windowInfo.screenWidthInfo is WindowInfo.WindowType.Expanded &&
+                   windowInfo.screenHeightInfo != WindowInfo.WindowType.Compact
+    
     return when {
-        windowInfo.screenWidthInfo is WindowInfo.WindowType.Expanded -> DeviceType.TABLET
+        isTablet -> DeviceType.TABLET
         configuration.orientation == Configuration.ORIENTATION_LANDSCAPE -> DeviceType.LANDSCAPE
         else -> DeviceType.PHONE
     }

@@ -24,6 +24,8 @@ import com.example.lupay.R
 import theme.CustomTheme
 import androidx.compose.ui.platform.LocalConfiguration
 import android.content.res.Configuration
+import com.example.lupay.ui.utils.DeviceType
+import com.example.lupay.ui.utils.rememberDeviceType
 
 @Composable
 fun LoginScreen(
@@ -39,22 +41,25 @@ fun LoginScreen(
     var confirmationEmail by remember { mutableStateOf("") }
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val deviceType = rememberDeviceType()
+
     LaunchedEffect(Unit) {
         if (viewModel.checkSavedToken()) {
             onNavigateToMain()
         }
     }
+    
     CustomTheme {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            if (isLandscape) {
+            if (isLandscape && deviceType != DeviceType.TABLET) {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .padding(start = 32.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Column(
@@ -64,6 +69,7 @@ fun LoginScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.Start
                     ) {
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = stringResource(id = R.string.login_title),
                             style = MaterialTheme.typography.headlineLarge,
@@ -105,7 +111,8 @@ fun LoginScreen(
                     Column(
                         modifier = Modifier
                             .weight(0.6f)
-                            .fillMaxHeight(),
+                            .fillMaxHeight()
+                            .padding(horizontal = 24.dp),
                         verticalArrangement = Arrangement.spacedBy((-6).dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
