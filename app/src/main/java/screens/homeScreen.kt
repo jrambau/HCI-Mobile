@@ -62,127 +62,128 @@ fun HomeScreen(
                 CircularProgressIndicator()
             }
         } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-                PanelSection(
-                    availableBalance = uiState.availableBalance,
-                    onTransferClick = { showTransferDialog = true },
-                    onPaymentLinkClick = { showPaymentLinkDialog = true },
-                    onRechargeClick = { showRechargeDialog = true },
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+            ) {
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    PanelSection(
+                        availableBalance = uiState.availableBalance,
+                        onTransferClick = { showTransferDialog = true },
+                        onPaymentLinkClick = { showPaymentLinkDialog = true },
+                        onRechargeClick = { showRechargeDialog = true },
+                        viewModel = viewModel
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+
+                item {
+                    ExpensesSection(
+                        expenses = uiState.expenses,
+                        monthlyExpenses = uiState.monthlyExpenses
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+
+                item {
+                    Text(
+                        text = stringResource(id = R.string.transactions),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    SearchBar(
+                        onSearchQueryChange = { query ->
+                            viewModel.updateSearchQuery(query)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                items(uiState.filteredTransactions) { transaction ->
+                    TransactionItem(
+                        transaction = transaction,
+                        onClick = { selectedTransaction = transaction }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+
+            if (showTransferDialog) {
+                TransferDialog(
+                    onDismiss = { showTransferDialog = false },
+                    onTransfer = { amount, email, description ->
+                        viewModel.transferMoney(amount, email, description)
+                        showTransferDialog = false
+                    },
                     viewModel = viewModel
                 )
-                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            item {
-                ExpensesSection(
-                    expenses = uiState.expenses,
-                    monthlyExpenses = uiState.monthlyExpenses
+            if (showPaymentLinkDialog) {
+                PaymentLinkDialog(
+                    onDismiss = { showPaymentLinkDialog = false },
+                    onGenerate = { amount, description ->
+                        viewModel.generatePaymentLink(amount, description)
+                    },
+                    onPay = { linkUuid ->
+                        viewModel.getPaymentLinkDetails(linkUuid)
+                        showPaymentLinkDetailsDialog = true
+                    },
+                    generatedLink = uiState.generatedPaymentLink
                 )
-                Spacer(modifier = Modifier.height(24.dp))
             }
 
-            item {
-                Text(
-                    text = stringResource(id = R.string.transactions),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+            if (showPaymentLinkDetailsDialog) {
+                PaymentLinkDetailsDialog(
+                    paymentInfo = viewModel.paymentLinkDetails,
+                    onDismiss = { showPaymentLinkDetailsDialog = false },
+                    onPay = { linkUuid, paymentMetod, cardId ->
+                        viewModel.payByLink(linkUuid, paymentMetod, cardId)
+                        showPaymentLinkDetailsDialog = false
+                    },
+                    viewModel = viewModel
                 )
-                Spacer(modifier = Modifier.height(12.dp))
-                SearchBar(
-                    onSearchQueryChange = { query ->
-                        viewModel.updateSearchQuery(query)
+            }
+
+            if (showRechargeDialog) {
+                RechargeDialog(
+                    onDismiss = { showRechargeDialog = false },
+                    onRecharge = { amount ->
+                        viewModel.rechargeMoney(amount)
+                        showRechargeDialog = false
                     }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            items(uiState.filteredTransactions) { transaction ->
-                TransactionItem(
-                    transaction = transaction,
-                    onClick = { selectedTransaction = transaction }
+            if (selectedTransaction != null) {
+                TransactionDetailsDialog(
+                    transaction = selectedTransaction!!,
+                    onDismiss = { selectedTransaction = null }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            if (generalUiState.error != null) {
+                ErrorDialog(
+                    error = generalUiState.error!!,
+                    onDismiss = {
+                        viewModel.clearError()
+                    }
+                )
+            }
+
+            if (generalUiState.successMessage != null) {
+                SuccessDialog(
+                    message = generalUiState.successMessage!!,
+                    onDismiss = {
+                        viewModel.clearSuccessMessage()
+                    }
+                )
             }
         }
-
-        if (showTransferDialog) {
-            TransferDialog(
-                onDismiss = { showTransferDialog = false },
-                onTransfer = { amount, email, description ->
-                    viewModel.transferMoney(amount, email, description)
-                    showTransferDialog = false
-                },
-                viewModel = viewModel
-            )
-        }
-
-        if (showPaymentLinkDialog) {
-            PaymentLinkDialog(
-                onDismiss = { showPaymentLinkDialog = false },
-                onGenerate = { amount, description ->
-                    viewModel.generatePaymentLink(amount, description)
-                },
-                onPay = { linkUuid ->
-                    viewModel.getPaymentLinkDetails(linkUuid)
-                    showPaymentLinkDetailsDialog = true
-                },
-                generatedLink = uiState.generatedPaymentLink
-            )
-        }
-
-        if (showPaymentLinkDetailsDialog) {
-            PaymentLinkDetailsDialog(
-                paymentInfo = viewModel.paymentLinkDetails,
-                onDismiss = { showPaymentLinkDetailsDialog = false },
-                onPay = { linkUuid, paymentMetod, cardId ->
-                    viewModel.payByLink(linkUuid,paymentMetod,cardId)
-                    showPaymentLinkDetailsDialog = false
-                },
-                viewModel = viewModel
-            )
-        }
-
-        if (showRechargeDialog) {
-            RechargeDialog(
-                onDismiss = { showRechargeDialog = false },
-                onRecharge = { amount ->
-                    viewModel.rechargeMoney(amount)
-                    showRechargeDialog = false
-                }
-            )
-        }
-
-        if (selectedTransaction != null) {
-            TransactionDetailsDialog(
-                transaction = selectedTransaction!!,
-                onDismiss = { selectedTransaction = null }
-            )
-        }
-
-        if (generalUiState.error != null) {
-            ErrorDialog(
-                error = generalUiState.error!!,
-                onDismiss = {
-                    viewModel.clearError()
-                }
-            )
-        }
-
-        if (generalUiState.successMessage != null) {
-            SuccessDialog(
-                message = generalUiState.successMessage!!,
-                onDismiss = {
-                    viewModel.clearSuccessMessage()
-                }
-            )
-        }}
     }
 }
 
@@ -297,18 +298,21 @@ fun ExpensesSection(
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold
     )
+    Spacer(modifier = Modifier.height(4.dp))
     Text(
         text = "$$expenses",
         style = MaterialTheme.typography.headlineSmall,
         fontWeight = FontWeight.Bold
     )
+    Spacer(modifier = Modifier.height(4.dp))
+
     Text(
         text = stringResource(id = R.string.last_months),
         style = MaterialTheme.typography.bodySmall,
         color = Color.Gray
     )
 
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(20.dp))
 
     if (monthlyExpenses.isEmpty()) {
         Text(
