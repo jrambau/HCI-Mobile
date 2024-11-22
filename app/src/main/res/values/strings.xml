@@ -19,7 +19,7 @@
     <string name="validate">Confirmar cuenta</string>
     <string name="val_code">Ingrese el código de confirmación:</string>
     <string name="forgot_pass">¿Olvido su contraseña?</string>
-    <string name="reset_pass">Restablecer contraseña</string>
+    <string name="reset_pass">Recuperar contraseña</string>
     <string name="got_code">Ya tengo mi código</string>
     <string name="write_code">Ingrese el código recibido por correo: </string>
     <string name="new_pass">Ingrese la nueva contraseña</string>
