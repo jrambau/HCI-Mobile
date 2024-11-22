@@ -45,7 +45,7 @@ fun RegisterScreen(
                     title = {
                         Text(
                             text = stringResource(id = R.string.register_title),
-                            color = MaterialTheme.colorScheme.background // Changed to onSurface for better visibility in dark mode
+                            color = MaterialTheme.colorScheme.onSurface // Changed to onSurface for better visibility in dark mode
                         )
                     },
                     navigationIcon = {
@@ -58,7 +58,7 @@ fun RegisterScreen(
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface // Changed to surface for better contrast
+                        containerColor = MaterialTheme.colorScheme.background // Changed to surface for better contrast
                     )
                 )
             }
