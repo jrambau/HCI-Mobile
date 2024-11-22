@@ -113,7 +113,7 @@ fun LoginScreen(
                             .weight(0.6f)
                             .fillMaxHeight()
                             .padding(horizontal = 24.dp),
-                        verticalArrangement = Arrangement.spacedBy((-6).dp),
+                        verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         InputField(
