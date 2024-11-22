@@ -117,7 +117,7 @@
     <string name="transfer2">Trasferir</string>
     <string name="generate_link">Generar link de pago</string>
     <string name="pay_link">Pagar con link</string>
-    <string name="copy">Copiar al portapapeles</string>
+    <string name="copy">"Copiar "</string>
     <string name="uuid">UUID del link de pago</string>
     <string name="generate">Generar</string>
     <string name="pay">Pagar</string>
