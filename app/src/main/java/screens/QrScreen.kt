@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
 import viewmodels.QrViewModel
 import java.util.concurrent.Executors
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QRScreen(
@@ -71,6 +72,7 @@ fun QRScreen(
 
     val userEmail by viewModel.userEmail.collectAsState()
     val cards by viewModel.cards.collectAsState()
+    val transferResult by viewModel.transferResult.collectAsState()
 
     LaunchedEffect(key1 = Unit) {
         if (!hasCameraPermission) {
@@ -88,90 +90,56 @@ fun QRScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(paddingValues)
         ) {
             if (hasCameraPermission && isCameraActive) {
+                CameraPreview(
+                    onQrCodeScanned = { result ->
+                        scannedResult = result
+                        showTransferDialog = true
+                        isCameraActive = false
+                    }
+                )
                 Box(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                ) {
-                    AndroidView(
-                        factory = { ctx ->
-                            val previewView = PreviewView(ctx)
-                            val preview = Preview.Builder().build()
-                            val selector = CameraSelector.Builder()
-                                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                                .build()
-                            preview.setSurfaceProvider(previewView.surfaceProvider)
-                            val imageAnalysis = ImageAnalysis.Builder()
-                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                                .build()
-                            imageAnalysis.setAnalyzer(
-                                Executors.newSingleThreadExecutor(),
-                                QRCodeAnalyzer { result ->
-                                    scannedResult = result
-                                    showTransferDialog = true
-                                    isCameraActive = false
-                                }
-                            )
-                            try {
-                                cameraProviderFuture.get().bindToLifecycle(
-                                    lifecycleOwner,
-                                    selector,
-                                    preview,
-                                    imageAnalysis
-                                )
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                            previewView
-                        },
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(200.dp)
-                            .align(Alignment.Center)
-                            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
-                    )
-                }
+                        .size(200.dp)
+                        .align(Alignment.Center)
+                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
+                )
             } else {
                 userEmail?.let { email ->
                     val bitmap = generateQRCode(email)
-                    Box(
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = stringResource(id = R.string.qr_code),
                         modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = stringResource(id = R.string.qr_code),
-                            modifier = Modifier
-                                .size(300.dp)
-                                .padding(16.dp),
-                            contentScale = ContentScale.Fit
-                        )
-                    }
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        contentScale = ContentScale.Fit
+                    )
                 }
             }
 
             Button(
                 onClick = { isCameraActive = !isCameraActive },
                 modifier = Modifier
+                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
             ) {
                 Text(if (isCameraActive) stringResource(id = R.string.show_my_qr) else stringResource(id = R.string.scan_qr))
             }
@@ -188,8 +156,26 @@ fun QRScreen(
                 viewModel = viewModel
             )
         }
+
+        transferResult?.let { result ->
+            AlertDialog(
+                onDismissRequest = { viewModel.clearTransferResult() },
+                title = { Text(if (result.success) stringResource(R.string.transfer_successful) else stringResource(R.string.error_transfering_money)) },
+                text = { Text(result.message) },
+                confirmButton = {
+                    TextButton(onClick = { viewModel.clearTransferResult() }) {
+                        Text(stringResource(R.string.ok))
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
+                textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
+
+
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -347,3 +333,44 @@ fun generateQRCode(content: String): Bitmap {
     return bitmap
 }
 
+@Composable
+fun CameraPreview(
+    onQrCodeScanned: (String) -> Unit
+) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
+    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
+
+    AndroidView(
+        factory = { ctx ->
+            val previewView = PreviewView(ctx)
+            val preview = Preview.Builder().build()
+            val selector = CameraSelector.Builder()
+                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                .build()
+            preview.setSurfaceProvider(previewView.surfaceProvider)
+            val imageAnalysis = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
+            imageAnalysis.setAnalyzer(
+                Executors.newSingleThreadExecutor(),
+                QRCodeAnalyzer { result ->
+                    onQrCodeScanned(result)
+                }
+            )
+            try {
+                cameraProviderFuture.get().unbindAll()
+                cameraProviderFuture.get().bindToLifecycle(
+                    lifecycleOwner,
+                    selector,
+                    preview,
+                    imageAnalysis
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            previewView
+        },
+        modifier = Modifier.fillMaxSize()
+    )
+}

@@ -37,6 +37,9 @@ class QrViewModel(
     var selectedPaymentMethod by mutableStateOf<PaymentMethod>(PaymentMethod.WALLET)
     var selectedCard by mutableStateOf<NetworkCard?>(null)
 
+    private val _transferResult = MutableStateFlow<TransferResult?>(null)
+    val transferResult: StateFlow<TransferResult?> = _transferResult.asStateFlow()
+
     init {
         getUserEmail()
         getCards()
@@ -83,11 +86,17 @@ class QrViewModel(
             }
                 .onSuccess {
                     uiState = uiState.copy(isFetching = false, successMessage = MyApplication.instance.getString(R.string.payment_successful))
+                    _transferResult.value = TransferResult(true, MyApplication.instance.getString(R.string.payment_successful))
                 }
                 .onFailure { e ->
                     uiState = uiState.copy(isFetching = false, error = Error(e.message ?: MyApplication.instance.getString(R.string.error_transfering_money)))
+                    _transferResult.value = TransferResult(false, e.message ?: MyApplication.instance.getString(R.string.error_transfering_money))
                 }
         }
+    }
+
+    fun clearTransferResult() {
+        _transferResult.value = null
     }
 
     fun setPaymentMethod(method: PaymentMethod) {
@@ -101,6 +110,8 @@ class QrViewModel(
     enum class PaymentMethod {
         WALLET, CARD
     }
+
+    data class TransferResult(val success: Boolean, val message: String)
 
     companion object {
         fun provideFactory(application: MyApplication): ViewModelProvider.Factory =
