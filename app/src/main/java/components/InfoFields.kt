@@ -19,7 +19,7 @@ fun ReadOnlyInfoField(
     value: String
 ) {
     val configuration = LocalConfiguration.current
-    val verticalPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 0.dp else 4.dp
+    val verticalPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 0.dp else 2.dp
     
     Column(
         modifier = Modifier
@@ -45,19 +45,15 @@ fun PersonalInfoField(
     onEditClick: () -> Unit,
 ) {
     val configuration = LocalConfiguration.current
-    val verticalPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 0.dp else 4.dp
+    val verticalPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 0.dp else 2.dp
     
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = verticalPadding),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
             modifier = Modifier
-                .weight(1f)
-                .padding(end = 8.dp)
         ) {
             Text(
                 text = label,
@@ -70,8 +66,7 @@ fun PersonalInfoField(
             )
         }
         IconButton(
-            onClick = onEditClick,
-            modifier = Modifier.padding(0.dp)
+            onClick = onEditClick
         ) {
             Icon(
                 imageVector = Icons.Default.Edit,

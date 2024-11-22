@@ -33,6 +33,7 @@ fun AccountInfoScreen(
     viewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val configuration = LocalConfiguration.current
 
     // Trigger fetchUserData when the screen is first loaded
     LaunchedEffect(Unit) {
@@ -90,20 +91,19 @@ fun AccountInfoScreen(
                 )
             }
         } else {
-            // Account Information Fields
             Card(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 10.dp else 16.dp)
                 ) {
-                    val configuration = LocalConfiguration.current
-                    val dividerPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 4.dp else 12.dp
+                    val dividerPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 2.dp else 12.dp
+                    val dividerPaddingPersonal = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 0.dp else 12.dp
+
 
                     ReadOnlyInfoField(
                         label = stringResource(id = R.string.user),
@@ -124,7 +124,7 @@ fun AccountInfoScreen(
                         value = uiState.cbu.ifBlank { stringResource(id = R.string.no_specified) }
                     )
 
-                    Divider(modifier = Modifier.padding(vertical = dividerPadding))
+                    Divider(modifier = Modifier.padding(vertical = dividerPaddingPersonal))
 
                     PersonalInfoField(
                         label = stringResource(id = R.string.alias),
