@@ -177,6 +177,17 @@
     <string name="recharge_successful">Deposito exitoso</string>
     <string name="error_recharging_wallet">Error al depositar</string>
     <string name="unknown_description">Sin descripcion</string>
+    <string name="failed_to_delete_card">Error al borrar la tarjeta</string>
+    <string name="failed_to_add_card">Error al agregar tarjeta</string>
+    <string name="withdraw_succesful">Retiro exitoso $</string>
+    <string name="error_withdraw">Error al retirar</string>
+    <string name="today">Hoy</string>
+    <string name="error_invest">Error al invertir</string>
+    <string name="investment_succesful">Inversion exitosa $</string>
+    <string name="error_interest">Error al cargar el interes diario</string>
+    <string name="days_ago">Ultimos dias</string>
+    <string name="error_daily_returns">Error al cargar los retornos diarios</string>
+    <string name="error_investment">Error al cargar datos de inversion</string>
 
 
 </resources>

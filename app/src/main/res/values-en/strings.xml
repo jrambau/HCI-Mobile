@@ -152,4 +152,15 @@
     <string name="error_paying_by_link">Error paying by link</string>
     <string name="recharge_successful">Successful recharge</string>
     <string name="error_recharging_wallet">Error recharging wallet</string>
+    <string name="failed_to_delete_card">Error deleting card</string>
+    <string name="withdraw_succesful">Successful withdrawal $</string>
+    <string name="error_withdraw">Error withdrawing</string>
+    <string name="today">Today</string>
+    <string name="error_invest">Error investing</string>
+    <string name="investment_succesful">Successful investment $</string>
+    <string name="error_investment">Error fetching investment data</string>
+    <string name="failed_to_add_card">Error adding card</string>
+    <string name="error_interest">Error fetching daily interest rate</string>
+    <string name="days_ago">Days ago</string>
+    <string name="error_daily_returns">Error fetching daily returns</string>
 </resources>

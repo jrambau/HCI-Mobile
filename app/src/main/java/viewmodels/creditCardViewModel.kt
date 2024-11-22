@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.lupay.MyApplication
+import com.example.lupay.R
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import network.Repository.PaymentRepository
@@ -52,7 +53,7 @@ class CreditCardViewModel(
                 val fetchedCards = walletRepository.getCards().toList()
                 _cards.emit(fetchedCards)
             } catch (e: Exception) {
-                _error.value = "Failed to fetch cards: ${e.message}"
+                _error.value = "${MyApplication.instance.getString(R.string.error_fetching_cards)} ${e.message}"
             } finally {
                 _uiState.value = _uiState.value.copy(isLoading = false)
             }
@@ -67,7 +68,7 @@ class CreditCardViewModel(
                 fetchCards() // Actualiza la lista de tarjetas después de agregar una nueva
                 _addCardSuccess.value = true
             } catch (e: Exception) {
-                _error.value = "Failed to add new card: ${e.message}"
+                _error.value = "${MyApplication.instance.getString(R.string.failed_to_add_card)} ${e.message}"
                 _addCardSuccess.value = false
             } finally {
                 _uiState.value = _uiState.value.copy(isLoading = false)
@@ -81,7 +82,7 @@ class CreditCardViewModel(
                 walletRepository.deleteCard(cardId)
                 fetchCards() // Actualiza la lista de tarjetas después de eliminar una
             } catch (e: Exception) {
-                _error.value = "Failed to delete card: ${e.message}"
+                _error.value = "${MyApplication.instance.getString(R.string.failed_to_delete_card)} ${e.message}"
             }
         }
     }

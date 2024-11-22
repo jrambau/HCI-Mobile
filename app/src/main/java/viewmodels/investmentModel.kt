@@ -2,6 +2,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.lupay.MyApplication
+import com.example.lupay.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -42,7 +43,8 @@ class InvestmentViewModel(
                 }
             } catch (e: Exception) {
                 _uiState.update { currentState ->
-                    currentState.copy(error = e.message ?: "Error loading investment data")
+                    currentState.copy(error = e.message ?: MyApplication.instance.getString(R.string.error_investment)
+                    )
                 }
             }
         }
@@ -63,13 +65,14 @@ class InvestmentViewModel(
                 }
 
                 if (allReturns.isEmpty()) {
-                    _uiState.update { it.copy(noDataMessage = "No daily returns available") }
+                    _uiState.update { it.copy(noDataMessage = MyApplication.instance.getString(R.string.no_daily_returns)) }
                 } else {
                     processAndUpdateChartData(allReturns)
                 }
             } catch (e: Exception) {
                 _uiState.update { currentState ->
-                    currentState.copy(error = e.message ?: "Error loading daily returns")
+                    currentState.copy(error = e.message ?: MyApplication.instance.getString(R.string.error_daily_returns)
+                    )
                 }
             }
         }
@@ -89,7 +92,7 @@ class InvestmentViewModel(
                 ChartData(
                     x = daysAgo.toFloat(),
                     y = info.balanceAfter?.toFloat() ?: 0f,
-                    label = "${30 - index} days ago"
+                    label = "${30 - index} ${MyApplication.instance.getString(R.string.days_ago)}"
                 )
             }
 
@@ -107,7 +110,8 @@ class InvestmentViewModel(
                 }
             } catch (e: Exception) {
                 _uiState.update { currentState ->
-                    currentState.copy(error = e.message ?: "Error loading daily interest")
+                    currentState.copy(error = e.message ?: MyApplication.instance.getString(R.string.error_interest)
+                    )
                 }
             }
         }
@@ -132,11 +136,11 @@ class InvestmentViewModel(
 
                 _uiState.update { it.copy(
                     investmentAmount = "",
-                    successMessage = "Successfully invested $${amount}"
+                    successMessage = "${MyApplication.instance.getString(R.string.investment_succesful)}${amount}"
                 ) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(
-                    error = e.message ?: "Error processing investment"
+                    error = e.message ?: MyApplication.instance.getString(R.string.error_invest)
                 ) }
             }
         }
@@ -149,7 +153,7 @@ class InvestmentViewModel(
             val newEntry = ChartData(
                 x = lastEntry.x,
                 y = lastEntry.y + amount.toFloat(),
-                label = "Today"
+                label = MyApplication.instance.getString(R.string.today)
             )
             currentChartData[currentChartData.lastIndex] = newEntry
             _uiState.update { it.copy(chartData = currentChartData) }
@@ -167,11 +171,11 @@ class InvestmentViewModel(
 
                 _uiState.update { it.copy(
                     withdrawalAmount = "",
-                    successMessage = "Successfully withdrew $${amount}"
+                    successMessage = "${MyApplication.instance.getString(R.string.withdraw_succesful)}${amount}"
                 ) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(
-                    error = e.message ?: "Error processing withdrawal"
+                    error = e.message ?: MyApplication.instance.getString(R.string.error_withdraw)
                 ) }
             }
         }
