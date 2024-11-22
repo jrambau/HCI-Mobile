@@ -68,7 +68,8 @@ fun InvestmentScreen(
                         Text(
                             text = stringResource(R.string.investment),
                             fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
 
                         Row(
@@ -113,11 +114,12 @@ fun InvestmentScreen(
                                 )
                             }
 
-                            Card(
+                            Surface(
                                 modifier = Modifier
                                     .weight(0.6f)
                                     .fillMaxHeight(),
-                                shape = RoundedCornerShape(16.dp)
+                                shape = RoundedCornerShape(8.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant
                             ) {
                                 Column(
                                     modifier = Modifier.padding(16.dp),
@@ -125,8 +127,8 @@ fun InvestmentScreen(
                                 ) {
                                     Text(
                                         text = "Investment History",
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.Medium
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
 
                                     Chart(
@@ -142,11 +144,12 @@ fun InvestmentScreen(
                             }
                         }
 
-                        Card(
+                        Surface(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(0.5f),
-                            shape = RoundedCornerShape(16.dp)
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant
                         ) {
                             Column(
                                 modifier = Modifier
@@ -156,14 +159,14 @@ fun InvestmentScreen(
                             ) {
                                 Text(
                                     text = stringResource(R.string.current_money),
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Medium
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
-                                    text = "$${String.format("%.2f", uiState.currentBalance)}", // Formateamos a 2 decimales
-                                    fontSize = 24.sp,
+                                    text = "$${String.format("%.2f", uiState.currentBalance)}",
+                                    style = MaterialTheme.typography.headlineSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
 
                                 OutlinedTextField(
@@ -245,7 +248,8 @@ fun InvestmentScreen(
                         Text(
                             text = stringResource(R.string.investment),
                             fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
 
                         Row(
@@ -282,9 +286,10 @@ fun InvestmentScreen(
                             )
                         }
 
-                        Card(
+                        Surface(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp)
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant
                         ) {
                             Column(
                                 modifier = Modifier.padding(16.dp),
@@ -292,8 +297,8 @@ fun InvestmentScreen(
                             ) {
                                 Text(
                                     text = "Investment History",
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Medium
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
 
                                 Chart(
@@ -308,9 +313,10 @@ fun InvestmentScreen(
                             }
                         }
 
-                        Card(
+                        Surface(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp)
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant
                         ) {
                             Column(
                                 modifier = Modifier.padding(16.dp),
@@ -318,14 +324,14 @@ fun InvestmentScreen(
                             ) {
                                 Text(
                                     text = stringResource(R.string.current_money),
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Medium
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
-                                    text = "$${String.format("%.2f", uiState.currentBalance)}", // Formateamos a 2 decimales
-                                    fontSize = 24.sp,
+                                    text = "$${String.format("%.2f", uiState.currentBalance)}",
+                                    style = MaterialTheme.typography.headlineSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
 
                                 OutlinedTextField(
@@ -439,9 +445,10 @@ private fun InvestmentCard(
     amount: Double,
     subtitle: (@Composable () -> Unit)? = null
 ) {
-    Card(
+    Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Column(
             modifier = Modifier
@@ -451,14 +458,13 @@ private fun InvestmentCard(
         ) {
             Text(
                 text = title,
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
-                text = "$${amount}",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                text = "$${String.format("%.2f", amount)}",
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             subtitle?.invoke()
         }
