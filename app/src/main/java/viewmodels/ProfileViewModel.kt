@@ -2,7 +2,6 @@ package com.example.lupay.ui.viewmodels
 
 import GeneralUiState
 import SessionManager
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import network.Repository.UserRepository
 import network.Repository.WalletRepository
-import kotlin.math.log
 
 data class ProfileUiState(
     val userName: String = "",
@@ -41,27 +39,20 @@ class ProfileViewModel(
     var generalUiState by mutableStateOf(GeneralUiState(isAuthenticated = sessionManager.loadAuthToken() != null))
         private set
 
-    /**
-     * Fetches user and wallet data and updates the UI state.
-     */
     fun fetchUserData() {
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
-                // Fetch user data
                 val user = userRepository.getUser()
-                // Fetch wallet details
                 val walletInfo = walletRepository.getWalletDetails()
-                val aux1 = walletInfo.cbu
-                val aux2 = walletInfo.alias
                 _uiState.value = _uiState.value.copy(
                     userName = "${user.firstName} ${user.lastName}",
                     firstName = user.firstName,
                     lastName = user.lastName,
                     birthDate = user.birthDate,
                     email = user.email,
-                    cbu = aux1 ?: "No especificado",
-                    alias = aux2 ?: "No especificado",
+                    cbu = walletInfo.cbu ?: "No especificado",
+                    alias = walletInfo.alias ?: "No especificado",
                     isLoading = false
                 )
             } catch (e: Exception) {
@@ -73,9 +64,6 @@ class ProfileViewModel(
         }
     }
 
-    /**
-     * Updates the user's alias and refreshes the UI state.
-     */
     fun updateAlias(newAlias: String) {
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
@@ -93,7 +81,7 @@ class ProfileViewModel(
             }
         }
     }
-    // In ProfileViewModel
+
     fun setError(message: String) {
         _uiState.value = _uiState.value.copy(error = message)
     }
@@ -113,11 +101,24 @@ class ProfileViewModel(
                 _uiState.value = _uiState.value.copy(
                     isLoading = false
                 )
-                // Optionally, handle success, e.g., show a success message or navigate to login screen
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     error = e.message ?: "Failed to reset password"
+                )
+            }
+        }
+    }
+
+    fun logoutUser() {
+        viewModelScope.launch {
+            try {
+                userRepository.logoutUser()
+                sessionManager.removeAuthToken()
+                generalUiState = generalUiState.copy(isAuthenticated = false)
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = e.message ?: "Failed to logout"
                 )
             }
         }
@@ -137,3 +138,4 @@ class ProfileViewModel(
             }
     }
 }
+
