@@ -22,6 +22,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.example.lupay.MyApplication
 import com.example.lupay.R
 import theme.CustomTheme
+import androidx.compose.ui.platform.LocalConfiguration
+import android.content.res.Configuration
 
 @Composable
 fun LoginScreen(
@@ -35,6 +37,8 @@ fun LoginScreen(
     var showResetPasswordDialog by remember { mutableStateOf(false) }
     var confirmationCode by remember { mutableStateOf("") }
     var confirmationEmail by remember { mutableStateOf("") }
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     CustomTheme {
         Box(
@@ -42,118 +46,253 @@ fun LoginScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = stringResource(id = R.string.login_title),
-                    style = MaterialTheme.typography.headlineMedium,
-                    textAlign = TextAlign.Center,
-                    color = if (isSystemInDarkTheme()) Color.White else MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(id = R.string.welcome),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(32.dp))
-
-                InputField(
-                    value = viewModel.email,
-                    onValueChange = { viewModel.onEmailChanged(it) },
-                    label = stringResource(id = R.string.enter_mail),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    isPassword = false,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                InputField(
-                    value = viewModel.password,
-                    onValueChange = { viewModel.onPasswordChanged(it) },
-                    label = stringResource(id = R.string.enter_pass),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    isPassword = true,
-                    showPassword = showPassword,
-                    onPasswordVisibilityChange = { showPassword = !showPassword },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
+            if (isLandscape) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    TextButton(
-                        onClick = { showConfirmationDialog = true },
-                        modifier = Modifier.align(Alignment.CenterVertically)
+                    Column(
+                        modifier = Modifier
+                            .weight(0.4f)
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start
                     ) {
                         Text(
-                            text = stringResource(id = R.string.validate),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary
+                            text = stringResource(id = R.string.login_title),
+                            style = MaterialTheme.typography.headlineLarge,
+                            textAlign = TextAlign.Start,
+                            color = if (isSystemInDarkTheme()) Color.White else MaterialTheme.colorScheme.onBackground
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = stringResource(id = R.string.welcome),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Start
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        if (viewModel.isLoading) {
+                            CircularProgressIndicator()
+                        }
+
+                        if (uiState.isFetching) {
+                            CircularProgressIndicator()
+                        } else {
+                            uiState.error?.let { error ->
+                                Text(
+                                    text = "Error: ${error.message}",
+                                    color = Color.Red,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                            }
+                            uiState.successMessage?.let { message ->
+                                Text(
+                                    text = message,
+                                    color = Color.Green,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                            }
+                        }
                     }
-                    TextButton(
-                        onClick = { showResetPasswordDialog = true },
-                        modifier = Modifier.align(Alignment.CenterVertically)
+
+                    Column(
+                        modifier = Modifier
+                            .weight(0.6f)
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.spacedBy((-6).dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(
-                            text = stringResource(id = R.string.forgot_pass),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary
+                        InputField(
+                            value = viewModel.email,
+                            onValueChange = { viewModel.onEmailChanged(it) },
+                            label = stringResource(id = R.string.enter_mail),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                            isPassword = false,
+                            modifier = Modifier.fillMaxWidth()
                         )
+
+                        InputField(
+                            value = viewModel.password,
+                            onValueChange = { viewModel.onPasswordChanged(it) },
+                            label = stringResource(id = R.string.enter_pass),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                            isPassword = true,
+                            showPassword = showPassword,
+                            onPasswordVisibilityChange = { showPassword = !showPassword },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            TextButton(
+                                onClick = { showConfirmationDialog = true },
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.validate),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            TextButton(
+                                onClick = { showResetPasswordDialog = true },
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.forgot_pass),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+
+                        Button(
+                            onClick = { viewModel.onLoginClicked() },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                        ) {
+                            Text(stringResource(id = R.string.login_title), color = Color.White)
+                        }
+
+                        Button(
+                            onClick = onNavigateToRegister,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isSystemInDarkTheme()) 
+                                    MaterialTheme.colorScheme.surfaceVariant 
+                                else Color.Black
+                            )
+                        ) {
+                            Text(
+                                stringResource(id = R.string.register_title),
+                                color = if (isSystemInDarkTheme()) 
+                                    MaterialTheme.colorScheme.onSurface 
+                                else Color.White
+                            )
+                        }
                     }
                 }
-
-                Spacer(modifier = Modifier.height(24.dp))
-                Button(
-                    onClick = { viewModel.onLoginClicked() },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Text(stringResource(id = R.string.login_title), color = Color.White)
-                }
+                    Text(
+                        text = stringResource(id = R.string.login_title),
+                        style = MaterialTheme.typography.headlineMedium,
+                        textAlign = TextAlign.Center,
+                        color = if (isSystemInDarkTheme()) Color.White else MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(id = R.string.welcome),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
 
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = onNavigateToRegister,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.surfaceVariant else Color.Black)
-                ) {
-                    Text(stringResource(id = R.string.register_title), color = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.onSurface else Color.White)
-                }
+                    InputField(
+                        value = viewModel.email,
+                        onValueChange = { viewModel.onEmailChanged(it) },
+                        label = stringResource(id = R.string.enter_mail),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        isPassword = false,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    InputField(
+                        value = viewModel.password,
+                        onValueChange = { viewModel.onPasswordChanged(it) },
+                        label = stringResource(id = R.string.enter_pass),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        isPassword = true,
+                        showPassword = showPassword,
+                        onPasswordVisibilityChange = { showPassword = !showPassword },
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                if (viewModel.isLoading) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    CircularProgressIndicator()
-                }
-
-                if (uiState.isFetching) {
-                    CircularProgressIndicator()
-                } else {
-                    uiState.error?.let { error ->
-                        Text(
-                            text = "Error: ${error.message}",
-                            color = Color.Red,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        TextButton(
+                            onClick = { showConfirmationDialog = true },
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.validate),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        TextButton(
+                            onClick = { showResetPasswordDialog = true },
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.forgot_pass),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
-                    uiState.successMessage?.let { message ->
-                        Text(
-                            text = message,
-                            color = Color.Green,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(
+                        onClick = { viewModel.onLoginClicked() },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                    ) {
+                        Text(stringResource(id = R.string.login_title), color = Color.White)
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = onNavigateToRegister,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.surfaceVariant else Color.Black)
+                    ) {
+                        Text(stringResource(id = R.string.register_title), color = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.onSurface else Color.White)
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    if (viewModel.isLoading) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CircularProgressIndicator()
+                    }
+
+                    if (uiState.isFetching) {
+                        CircularProgressIndicator()
+                    } else {
+                        uiState.error?.let { error ->
+                            Text(
+                                text = "Error: ${error.message}",
+                                color = Color.Red,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
+                        uiState.successMessage?.let { message ->
+                            Text(
+                                text = message,
+                                color = Color.Green,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
                     }
                 }
             }
