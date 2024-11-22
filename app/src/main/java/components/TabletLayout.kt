@@ -25,6 +25,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.example.lupay.R
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
 fun TabletLayout(
@@ -50,10 +52,13 @@ fun NavigationRail(
     currentRoute: String?,
     onNavigate: (String) -> Unit
 ) {
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     NavigationRail(
         modifier = Modifier
             .fillMaxHeight()
-            .width(200.dp),
+            .width(if (isLandscape) 80.dp else 200.dp),
         containerColor = MaterialTheme.colorScheme.background
     ) {
         val items = listOf(
@@ -69,13 +74,7 @@ fun NavigationRail(
                 selected = currentRoute == route,
                 onClick = { onNavigate(route) },
                 icon = {
-                    Row(
-                        modifier = Modifier
-                            .width(160.dp)
-                            .padding(horizontal = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
+                    if (isLandscape) {
                         Icon(
                             icon,
                             contentDescription = title,
@@ -83,14 +82,30 @@ fun NavigationRail(
                                 MaterialTheme.colorScheme.primary 
                             else MaterialTheme.colorScheme.onSurfaceVariant,
                         )
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
+                    } else {
+                        Row(
+                            modifier = Modifier
+                                .width(160.dp)
+                                .padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            Icon(
+                                icon,
+                                contentDescription = title,
+                                tint = if (currentRoute == route) 
+                                    MaterialTheme.colorScheme.primary 
+                                else MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(start = 16.dp)
+                            )
+                        }
                     }
                 },
-                label = null
+                label = if (isLandscape) { { Text(text = title) } } else null
             )
         }
     }
