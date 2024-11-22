@@ -150,6 +150,33 @@
     <string name="info_qr">Información para el contenido del QR:</string>
     <string name="no_daily_returns">Sin devoluciones diarias\n</string>
     <string name="share">Compartir</string>
+    <string name="error_underage">Debes ser mayor de edad para crear una cuenta\n</string>
+    <string name="error_overage">Edad invalida</string>
+    <string name="error_birthdate">Por favor ingresa una fecha de nacimiento</string>
+    <string name="error_empty_fields">Por favor complete todos los campos</string>
+    <string name="success_login">Incio de sesion exitoso</string>
+    <string name="error_empty_email">Por favor ingrese su correo electronico</string>
+    <string name="success_account_confirmation">Cuenta confirmada exitosamente</string>
+    <string name="error_empty_code">Por favor complete todos los campos</string>
+    <string name="email_sended">Se ha enviado un email con el codigo de verificacion</string>
+    <string name="success_password_reset">Contraseña restablecida correctamente</string>
+    <string name="error_password_mismatch">Las contraseñas no coinciden</string>
+    <string name="success_register">Registro exitoso, por favor verifique su cuenta en la pantalla anterior</string>
+    <string name="error_generic">Error desconocido</string>
+    <string name="error_fetching_wallet_info">Error al cargar la informacion de la billetera</string>
+    <string name="error_fetching_cards">Error al cargar las tarjetas</string>
+    <string name="error_fetching_monthly_expenses">Error al obtener los gastos</string>
+    <string name="error_fetching_transactions">Error al obtener las transacciones</string>
+    <string name="error_no_card_selected">Tarjeta no seleccionada</string>
+    <string name="transfer_successful">Transferencia exitosa</string>
+    <string name="error_transfering_money">Error en la transferencia</string>
+    <string name="error_generating_payment_link">Error al generar link de pago</string>
+    <string name="error_fetching_payment_link_details">Error al obtener los datos del link de pago</string>
+    <string name="payment_successful">Pago exitoso</string>
+    <string name="error_paying_by_link">Error al pagar con link</string>
+    <string name="recharge_successful">Deposito exitoso</string>
+    <string name="error_recharging_wallet">Error al depositar</string>
+    <string name="unknown_description">Sin descripcion</string>
 
 
 </resources>

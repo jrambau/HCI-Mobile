@@ -852,7 +852,7 @@ fun PaymentLinkDialog(
                     )
                     if (generatedLink != null) {
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Link generado: $generatedLink")
+                        Text("${MyApplication.instance.getString(R.string.generated_link)} $generatedLink")
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly

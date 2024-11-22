@@ -465,7 +465,7 @@ fun LoginScreen(
     }
 
     LaunchedEffect(uiState.successMessage) {
-        if (uiState.successMessage != null && uiState.successMessage!!.contains("código de recuperación")) {
+        if (uiState.successMessage != null && uiState.successMessage!!.isNotEmpty()) {
             showResetPasswordDialog = true
         }
     }
