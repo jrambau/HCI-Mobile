@@ -204,16 +204,10 @@ fun AppNavHost(
                 deviceType = deviceType,
                 currentRoute = currentRoute
             ) { paddingValues ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("QR Screen")
-                }
+                QRScreen()
             }
         }
+
 
         composable("profile") {
             TopBarScaffoldWrapper(
