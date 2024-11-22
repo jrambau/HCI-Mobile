@@ -22,6 +22,8 @@ import components.PersonalInfoField
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import com.example.lupay.R
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,36 +102,36 @@ fun AccountInfoScreen(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    // Read-only user information fields
+                    val configuration = LocalConfiguration.current
+                    val dividerPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 4.dp else 12.dp
+
                     ReadOnlyInfoField(
                         label = stringResource(id = R.string.user),
                         value = uiState.userName.ifBlank { stringResource(id = R.string.no_specified)}
                     )
 
-                    Divider(modifier = Modifier.padding(vertical = 12.dp))
+                    Divider(modifier = Modifier.padding(vertical = dividerPadding))
 
                     ReadOnlyInfoField(
                         label = stringResource(id = R.string.mail),
                         value = uiState.email.ifBlank { stringResource(id = R.string.no_specified) }
                     )
 
-                    Divider(modifier = Modifier.padding(vertical = 12.dp))
+                    Divider(modifier = Modifier.padding(vertical = dividerPadding))
 
                     ReadOnlyInfoField(
                         label = stringResource(id = R.string.cbu),
                         value = uiState.cbu.ifBlank { stringResource(id = R.string.no_specified) }
                     )
 
-                    Divider(modifier = Modifier.padding(vertical = 12.dp))
+                    Divider(modifier = Modifier.padding(vertical = dividerPadding))
 
-                    // Editable Alias Field
-                    // Assuming the PersonalInfoField expects a String value on click
                     PersonalInfoField(
                         label = stringResource(id = R.string.alias),
                         value = uiState.alias.ifBlank { stringResource(id = R.string.no_specified) },
-                        onEditClick = { alias: String -> // Make sure alias is a String
+                        onEditClick = { alias: String ->
                             viewModel.updateAlias(alias)
-                        }
+                        },
                     )
                 }
             }

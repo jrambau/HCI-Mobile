@@ -17,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import com.example.lupay.MyApplication
 import com.example.lupay.R
 import components.ReadOnlyInfoField
-import components.PersonalInfoField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
