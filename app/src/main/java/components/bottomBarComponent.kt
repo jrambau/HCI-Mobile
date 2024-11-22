@@ -1,4 +1,5 @@
 package components
+
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Analytics
@@ -53,8 +54,9 @@ fun BottomBar(navController: NavController) {
                     },
                     label = {
                         Text(
-                            title,
-                            color = if (currentRoute == route) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            text = title,
+                            color = if (currentRoute == route) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.labelSmall
                         )
                     },
                     selected = currentRoute == route,
@@ -71,3 +73,4 @@ fun BottomBar(navController: NavController) {
         }
     }
 }
+
