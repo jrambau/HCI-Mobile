@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 
 enum class DeviceType {
     PHONE,
+    LANDSCAPE,
     TABLET
 }
 
@@ -20,7 +21,7 @@ fun rememberDeviceType(): DeviceType {
     
     return when {
         windowInfo.screenWidthInfo is WindowInfo.WindowType.Expanded -> DeviceType.TABLET
-        configuration.screenWidthDp >= 600 -> DeviceType.TABLET
+        configuration.orientation == Configuration.ORIENTATION_LANDSCAPE -> DeviceType.LANDSCAPE
         else -> DeviceType.PHONE
     }
 }

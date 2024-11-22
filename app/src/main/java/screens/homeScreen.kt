@@ -32,6 +32,9 @@ import network.model.NetworkPaymentInfo
 import kotlin.math.abs
 import com.example.lupay.ui.utils.DeviceType
 import com.example.lupay.ui.utils.rememberDeviceType
+import android.content.res.Configuration
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.platform.LocalConfiguration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,6 +51,8 @@ fun HomeScreen(
     var selectedTransaction by remember { mutableStateOf<Transaction?>(null) }
     var showPaymentLinkDetailsDialog by remember { mutableStateOf(false) }
     val deviceType = rememberDeviceType()
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     LaunchedEffect(uiState, viewModel.hasAttemptedToLoadTransactions.collectAsState().value) {
         isLoading = !viewModel.hasAttemptedToLoadTransactions.value ||
@@ -67,19 +72,19 @@ fun HomeScreen(
                 CircularProgressIndicator()
             }
         } else {
-            if (deviceType == DeviceType.TABLET) {
+            if (deviceType == DeviceType.TABLET || isLandscape) {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(16.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    // Left column for balance and expenses
+                    // Left column - more compact layout
                     Column(
                         modifier = Modifier
                             .weight(0.5f)
                             .fillMaxHeight()
-                            .padding(end = 16.dp)
+                            .padding(end = 8.dp)
                     ) {
                         PanelSection(
                             availableBalance = uiState.availableBalance,
@@ -88,14 +93,14 @@ fun HomeScreen(
                             onRechargeClick = { showRechargeDialog = true },
                             viewModel = viewModel
                         )
-                        Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
                         ExpensesSection(
                             expenses = uiState.expenses,
                             monthlyExpenses = uiState.monthlyExpenses
                         )
                     }
 
-                    // Right column for transactions
+                    // Right column - transactions with LazyColumn
                     Column(
                         modifier = Modifier
                             .weight(0.5f)
@@ -107,7 +112,7 @@ fun HomeScreen(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         SearchBar(
                             onSearchQueryChange = { query ->
                                 viewModel.updateSearchQuery(query)
@@ -122,13 +127,13 @@ fun HomeScreen(
                                     transaction = transaction,
                                     onClick = { selectedTransaction = transaction }
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(4.dp))
                             }
                         }
                     }
                 }
             } else {
-                // Original mobile layout
+                // Original portrait layout
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -265,13 +270,17 @@ fun PanelSection(
     viewModel: HomeViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val deviceType = rememberDeviceType()
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(3.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(if (isLandscape) 8.dp else 16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -279,7 +288,7 @@ fun PanelSection(
             ) {
                 Text(
                     text = stringResource(id = R.string.money_av),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = if (isLandscape) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )
             }
@@ -287,15 +296,16 @@ fun PanelSection(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = if (isLandscape) 4.dp else 8.dp)
             ) {
                 Text(
                     text = if (uiState.isHidden) "********" else "$ $availableBalance",
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = if (isLandscape) MaterialTheme.typography.titleLarge else MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
                 IconButton(
                     onClick = { viewModel.toggleHidden() },
+                    modifier = Modifier.size(if (isLandscape) 24.dp else 48.dp)
                 ) {
                     Icon(
                         imageVector = if (uiState.isHidden) Icons.Default.VisibilityOff else Icons.Default.Visibility,
@@ -307,24 +317,39 @@ fun PanelSection(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(top = if (isLandscape) 8.dp else 16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                ActionButton(
-                    icon = Icons.Default.ArrowDownward,
-                    label = stringResource(id = R.string.deposit),
-                    onClick = onRechargeClick
-                )
-                ActionButton(
-                    icon = Icons.Default.CompareArrows,
-                    label = stringResource(id = R.string.to_transfer),
-                    onClick = onTransferClick
-                )
-                ActionButton(
-                    icon = Icons.Default.Payments,
-                    label = stringResource(id = R.string.link),
-                    onClick = onPaymentLinkClick
-                )
+                if (deviceType == DeviceType.TABLET || isLandscape) {
+                    ActionButtonCompact(
+                        icon = Icons.Default.ArrowDownward,
+                        onClick = onRechargeClick
+                    )
+                    ActionButtonCompact(
+                        icon = Icons.Default.CompareArrows,
+                        onClick = onTransferClick
+                    )
+                    ActionButtonCompact(
+                        icon = Icons.Default.Payments,
+                        onClick = onPaymentLinkClick
+                    )
+                } else {
+                    ActionButton(
+                        icon = Icons.Default.ArrowDownward,
+                        label = stringResource(id = R.string.deposit),
+                        onClick = onRechargeClick
+                    )
+                    ActionButton(
+                        icon = Icons.Default.CompareArrows,
+                        label = stringResource(id = R.string.to_transfer),
+                        onClick = onTransferClick
+                    )
+                    ActionButton(
+                        icon = Icons.Default.Payments,
+                        label = stringResource(id = R.string.link),
+                        onClick = onPaymentLinkClick
+                    )
+                }
             }
         }
     }
@@ -353,6 +378,28 @@ fun ActionButton(
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall
+        )
+    }
+}
+
+@Composable
+fun ActionButtonCompact(
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .background(Color(0xFF4CAF50))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+            tint = Color.White
         )
     }
 }
