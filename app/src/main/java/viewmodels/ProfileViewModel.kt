@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.lupay.MyApplication
+import com.example.lupay.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,14 +52,14 @@ class ProfileViewModel(
                     lastName = user.lastName,
                     birthDate = user.birthDate,
                     email = user.email,
-                    cbu = walletInfo.cbu ?: "No especificado",
-                    alias = walletInfo.alias ?: "No especificado",
+                    cbu = walletInfo.cbu ?: MyApplication.instance.getString(R.string.no_specified),
+                    alias = walletInfo.alias ?: MyApplication.instance.getString(R.string.no_specified),
                     isLoading = false
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = e.message ?: "An error occurred"
+                    error = e.message ?: MyApplication.instance.getString(R.string.unkown_error)
                 )
             }
         }
@@ -70,13 +71,13 @@ class ProfileViewModel(
             try {
                 val walletInfo = userRepository.updateAlias(newAlias)
                 _uiState.value = _uiState.value.copy(
-                    alias = walletInfo.alias ?: "No especificado",
+                    alias = walletInfo.alias ?: MyApplication.instance.getString(R.string.no_specified),
                     isLoading = false
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = e.message ?: "Failed to update alias"
+                    error = e.message ?: MyApplication.instance.getString(R.string.error_updating_alias)
                 )
             }
         }
@@ -89,7 +90,7 @@ class ProfileViewModel(
     fun resetPassword(email: String, newPassword: String, resetCode: String) {
         if (newPassword.length <= 6) {
             _uiState.value = _uiState.value.copy(
-                error = "Password must be longer than 6 characters"
+                error = MyApplication.instance.getString(R.string.password_length_error)
             )
             return
         }
@@ -104,7 +105,7 @@ class ProfileViewModel(
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = e.message ?: "Failed to reset password"
+                    error = e.message ?: MyApplication.instance.getString(R.string.error_reset_password)
                 )
             }
         }
@@ -118,7 +119,7 @@ class ProfileViewModel(
                 generalUiState = generalUiState.copy(isAuthenticated = false)
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = e.message ?: "Failed to logout"
+                    error = e.message ?: MyApplication.instance.getString(R.string.error_logout)
                 )
             }
         }

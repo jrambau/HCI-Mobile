@@ -68,7 +68,7 @@ class HomeViewModel(
                 }
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error fetching wallet info", e)
-                generalUiState = generalUiState.copy(error = Error(e.message ?: "Error fetching wallet info"))
+                generalUiState = generalUiState.copy(error = Error(e.message ?: MyApplication.instance.getString(R.string.error_fetching_wallet_info)))
             }
         }
     }
@@ -79,7 +79,7 @@ class HomeViewModel(
                 cards = walletRepository.getCards()
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error fetching cards", e)
-                generalUiState = generalUiState.copy(error = Error(e.message ?: "Error fetching cards"))
+                generalUiState = generalUiState.copy(error = Error(e.message ?: MyApplication.instance.getString(R.string.error_fetching_cards)))
             }
         }
     }
@@ -116,7 +116,7 @@ class HomeViewModel(
                 }
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error fetching monthly expenses", e)
-                generalUiState = generalUiState.copy(error = Error(e.message ?: "Error fetching monthly expenses"))
+                generalUiState = generalUiState.copy(error = Error(e.message ?: MyApplication.instance.getString(R.string.error_fetching_monthly_expenses)))
             }
         }
     }
@@ -149,7 +149,7 @@ class HomeViewModel(
                 }
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error fetching transactions", e)
-                generalUiState = generalUiState.copy(error = Error(e.message ?: "Error fetching transactions"))
+                generalUiState = generalUiState.copy(error = Error(e.message ?: MyApplication.instance.getString(R.string.error_fetching_transactions)))
             } finally {
                 _hasAttemptedToLoadTransactions.value = true
             }
@@ -201,17 +201,17 @@ class HomeViewModel(
                         selectedCard?.let { card ->
                             paymentRepository.makePayment(amount, "CARD", description, card.id, receiverEmail)
                         } ?: run {
-                            generalUiState = generalUiState.copy(error = Error("No card selected"))
+                            generalUiState = generalUiState.copy(error = Error(MyApplication.instance.getString(R.string.error_no_card_selected)))
                             return@launch
                         }
                     }
                 }
                 fetchWalletInfo()
                 fetchTransactions()
-                generalUiState = generalUiState.copy(successMessage = "Transferencia exitosa")
+                generalUiState = generalUiState.copy(successMessage = MyApplication.instance.getString(R.string.transfer_successful))
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error transferring money", e)
-                generalUiState = generalUiState.copy(error = Error(e.message ?: "Error transferring money"))
+                generalUiState = generalUiState.copy(error = Error(e.message ?: MyApplication.instance.getString(R.string.error_transfering_money)))
             }
         }
     }
@@ -225,7 +225,7 @@ class HomeViewModel(
                 }
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error generating payment link", e)
-                generalUiState = generalUiState.copy(error = Error(e.message ?: "Error generating payment link"))
+                generalUiState = generalUiState.copy(error = Error(e.message ?: MyApplication.instance.getString(R.string.error_generating_payment_link)))
             }
         }
     }
@@ -242,7 +242,7 @@ class HomeViewModel(
                 paymentLinkDetails = paymentRepository.getLinkDetails(linkUuid).payment
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error fetching payment link details", e)
-                generalUiState = generalUiState.copy(error = Error(e.message ?: "Error fetching payment link details"))
+                generalUiState = generalUiState.copy(error = Error(e.message ?: MyApplication.instance.getString(R.string.error_fetching_payment_link_details)))
             }
         }
     }
@@ -262,10 +262,10 @@ class HomeViewModel(
                 }
                 fetchWalletInfo()
                 fetchTransactions()
-                generalUiState = generalUiState.copy(successMessage = "Pago realizado con éxito")
+                generalUiState = generalUiState.copy(successMessage = MyApplication.instance.getString(R.string.payment_successful))
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error paying by link", e)
-                generalUiState = generalUiState.copy(error = Error(e.message ?: "Error paying by link"))
+                generalUiState = generalUiState.copy(error = Error(e.message ?: MyApplication.instance.getString(R.string.error_paying_by_link)))
             }
         }
     }
@@ -275,10 +275,10 @@ class HomeViewModel(
             try {
                 walletRepository.rechargeWallet(amount)
                 fetchWalletInfo()
-                generalUiState = generalUiState.copy(successMessage = "Recarga exitosa")
+                generalUiState = generalUiState.copy(successMessage = MyApplication.instance.getString(R.string.recharge_successful))
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error recharging wallet", e)
-                generalUiState = generalUiState.copy(error = Error(e.message ?: "Error recharging wallet"))
+                generalUiState = generalUiState.copy(error = Error(e.message ?: MyApplication.instance.getString(R.string.error_recharging_wallet)))
             }
         }
     }
@@ -315,7 +315,7 @@ class HomeViewModel(
         val isInvestment = this.payer?.id == this.receiver?.id
         return Transaction(
             id = this.id ?: 0,
-            description = this.description ?: "No description",
+            description = this.description ?: MyApplication.instance.getString(R.string.unknown_description),
             date = this.createdAt,
             userName = if (isIncoming) this.payer?.firstName ?: "Unknown" else this.receiver?.firstName ?: "Unknown",
             timestamp = timestamp,

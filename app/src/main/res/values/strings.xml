@@ -19,7 +19,7 @@
     <string name="validate">Confirmar cuenta</string>
     <string name="val_code">Ingrese el código de confirmación:</string>
     <string name="forgot_pass">¿Olvido su contraseña?</string>
-    <string name="reset_pass">Restablecer contraseña</string>
+    <string name="reset_pass">Recuperar contraseña</string>
     <string name="got_code">Ya tengo mi código</string>
     <string name="write_code">Ingrese el código recibido por correo: </string>
     <string name="new_pass">Ingrese la nueva contraseña</string>
@@ -44,8 +44,8 @@
     <string name="expenses">Gastos</string>
     <string name="last_months">Últimos 6 meses</string>
     <string name="search">Buscar</string>
-    <string name="transfer_to">Transferir a</string>
-    <string name="confirm_transfer">Confirmar transferencia: %s</string>
+    <string name="transfer_to">Transferir a %s</string>
+    <string name="confirm_transfer">Confirmar transferencia</string>
     <string name="amount_to_transfer">Monto a transferir: $%.2f</string>
     <string name="description">Descripción: %s</string>
     <!-- tarjetas -->
@@ -117,7 +117,7 @@
     <string name="transfer2">Trasferir</string>
     <string name="generate_link">Generar link de pago</string>
     <string name="pay_link">Pagar con link</string>
-    <string name="copy">Copiar al portapapeles</string>
+    <string name="copy">"Copiar "</string>
     <string name="uuid">UUID del link de pago</string>
     <string name="generate">Generar</string>
     <string name="pay">Pagar</string>
@@ -151,6 +151,49 @@
     <string name="qr_title">Escáner QR</string>
     <string name="no_daily_returns">Sin devoluciones diarias\n</string>
     <string name="share">Compartir</string>
+    <string name="error_underage">Debes ser mayor de edad para crear una cuenta\n</string>
+    <string name="error_overage">Edad invalida</string>
+    <string name="error_birthdate">Por favor ingresa una fecha de nacimiento</string>
+    <string name="error_empty_fields">Por favor complete todos los campos</string>
+    <string name="success_login">Incio de sesion exitoso</string>
+    <string name="error_empty_email">Por favor ingrese su correo electronico</string>
+    <string name="success_account_confirmation">Cuenta confirmada exitosamente</string>
+    <string name="error_empty_code">Por favor complete todos los campos</string>
+    <string name="email_sended">Se ha enviado un email con el codigo de verificacion</string>
+    <string name="success_password_reset">Contraseña restablecida correctamente</string>
+    <string name="error_password_mismatch">Las contraseñas no coinciden</string>
+    <string name="success_register">Registro exitoso, por favor verifique su cuenta en la pantalla anterior</string>
+    <string name="error_generic">Error desconocido</string>
+    <string name="error_fetching_wallet_info">Error al cargar la informacion de la billetera</string>
+    <string name="error_fetching_cards">Error al cargar las tarjetas</string>
+    <string name="error_fetching_monthly_expenses">Error al obtener los gastos</string>
+    <string name="error_fetching_transactions">Error al obtener las transacciones</string>
+    <string name="error_no_card_selected">Tarjeta no seleccionada</string>
+    <string name="transfer_successful">Transferencia exitosa</string>
+    <string name="error_transfering_money">Error en la transferencia</string>
+    <string name="error_generating_payment_link">Error al generar link de pago</string>
+    <string name="error_fetching_payment_link_details">Error al obtener los datos del link de pago</string>
+    <string name="payment_successful">Pago exitoso</string>
+    <string name="error_paying_by_link">Error al pagar con link</string>
+    <string name="recharge_successful">Deposito exitoso</string>
+    <string name="error_recharging_wallet">Error al depositar</string>
+    <string name="unknown_description">Sin descripcion</string>
+    <string name="failed_to_delete_card">Error al borrar la tarjeta</string>
+    <string name="failed_to_add_card">Error al agregar tarjeta</string>
+    <string name="withdraw_succesful">Retiro exitoso $</string>
+    <string name="error_withdraw">Error al retirar</string>
+    <string name="today">Hoy</string>
+    <string name="error_invest">Error al invertir</string>
+    <string name="investment_succesful">Inversion exitosa $</string>
+    <string name="error_interest">Error al cargar el interes diario</string>
+    <string name="days_ago">Ultimos dias</string>
+    <string name="error_daily_returns">Error al cargar los retornos diarios</string>
+    <string name="error_investment">Error al cargar datos de inversion</string>
+    <string name="no_cbu">No especificado</string>
+    <string name="error_updating_alias">Error al actualizar alias</string>
+    <string name="password_length_error">La contraseña debe tener como minimo 6 caracteres</string>
+    <string name="error_reset_password">Error al cambiar la contraseña</string>
+    <string name="error_logout">Error cerrando sesion\n</string>
 
 
 </resources>

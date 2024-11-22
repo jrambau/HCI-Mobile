@@ -1,11 +1,14 @@
 import android.util.Log
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.lupay.MyApplication
+import com.example.lupay.R
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.Period
@@ -54,6 +57,7 @@ class LoginViewModel(
         confirmPassword = newConfirmPassword
     }
 
+
     fun onBirthDateChanged(newDate: LocalDate?) {
         birthDate = newDate
         birthDateError = validateBirthDate(newDate)
@@ -66,75 +70,77 @@ class LoginViewModel(
         }
         return false
     }
+
     private fun validateBirthDate(date: LocalDate?): String? {
         if (date == null) {
-            return "Por favor, seleccione una fecha de nacimiento."
+            return MyApplication.instance.getString(R.string.error_birthdate)
         }
         val age = Period.between(date, LocalDate.now()).years
         return when {
-            age < 18 -> "Debe ser mayor de 18 años para registrarse."
-            age > 120 -> "La fecha de nacimiento no es válida."
+            age < 18 -> MyApplication.instance.getString(R.string.error_underage)
+            age > 120 -> MyApplication.instance.getString(R.string.error_overage)
             else -> null
         }
     }
 
+
     fun onLoginClicked() {
         if (email.isBlank() || password.isBlank()) {
-            uiState = uiState.copy(error = Error("Por favor, complete todos los campos."))
+            uiState = uiState.copy(error = Error(MyApplication.instance.getString(R.string.error_empty_fields)))
             return
         }
         runOnViewModelScope(
             { userRepository.loginUser(email, password) },
             { state, token ->
                 sessionManager.saveAuthToken(token.token)
-                state.copy(isAuthenticated = true, successMessage = "Inicio de sesión exitoso")
+                state.copy(isAuthenticated = true, successMessage = MyApplication.instance.getString(R.string.success_login))
             }
         )
     }
 
     fun onConfirmAccount(code: String) {
         if (code.isBlank()) {
-            uiState = uiState.copy(error = Error("Por favor, complete todos los campos."))
+            uiState = uiState.copy(error = Error(MyApplication.instance.getString(R.string.error_empty_fields)))
             return
         }
         runOnViewModelScope(
             { userRepository.verifyUser(code=code) },
             { state, _ ->
-                state.copy(successMessage = "Cuenta confirmada exitosamente")
+                state.copy(successMessage = MyApplication.instance.getString(R.string.success_account_confirmation))
             }
         )
     }
 
     fun onForgotPasswordClicked(email: String) {
         if (email.isBlank()) {
-            uiState = uiState.copy(error = Error("Por favor, ingrese su correo electrónico."))
+            uiState = uiState.copy(error = Error(MyApplication.instance.getString(R.string.error_empty_email)))
             return
         }
         runOnViewModelScope(
             { userRepository.recoverPassword(email) },
-            { state, _ -> state.copy(successMessage = "Se ha enviado un código de recuperación a su correo electrónico") }
+            { state, _ -> state.copy(successMessage = MyApplication.instance.getString(R.string.email_sended)) }
         )
     }
 
     fun onResetPassword(email: String, code: String, newPassword: String) {
         if (email.isBlank() || code.isBlank() || newPassword.isBlank()) {
-            uiState = uiState.copy(error = Error("Por favor, complete todos los campos."))
+            uiState = uiState.copy(error = Error(MyApplication.instance.getString(R.string.error_empty_fields)))
             return
         }
         runOnViewModelScope(
             { userRepository.resetPassword(email, newPassword, code) },
-            { state, _ -> state.copy(successMessage = "Contraseña restablecida exitosamente") }
+            { state, _ -> state.copy(successMessage = MyApplication.instance.getString(R.string.success_password_reset)) }
         )
     }
 
     fun onRegisterClicked() {
         if (name.isBlank() || lastname.isBlank() || birthDate == null || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
-            uiState = uiState.copy(error = Error("Por favor, complete todos los campos."))
+            uiState = uiState.copy(error = Error(MyApplication.instance.getString(R.string.error_empty_fields)))
             return
         }
 
         if (password != confirmPassword) {
-            uiState = uiState.copy(error = Error("Las contraseñas no coinciden."))
+            uiState = uiState.copy(error = Error(MyApplication.instance.getString(R.string.error_password_mismatch)))
             return
         }
         val user = User(
@@ -147,13 +153,13 @@ class LoginViewModel(
         )
         runOnViewModelScope(
             { userRepository.registerUser(user) },
-            { state, _ -> state.copy(successMessage = "Registro exitoso. Por favor, confirme su cuenta en la pantalla anterior.") }
+            { state, _ -> state.copy(successMessage = MyApplication.instance.getString(R.string.success_register)) }
         )
     }
 
-    private fun<R> runOnViewModelScope(
-        block: suspend () -> R,
-        updateState: (GeneralUiState, R) -> GeneralUiState
+    private fun<F> runOnViewModelScope(
+        block: suspend () -> F,
+        updateState: (GeneralUiState, F) -> GeneralUiState
     ) {
         viewModelScope.launch {
             uiState = uiState.copy(isFetching = true, error = null, successMessage = null)
@@ -162,7 +168,7 @@ class LoginViewModel(
                     uiState = updateState(uiState, response).copy(isFetching = false)
                 }
                 .onFailure { e ->
-                    uiState = uiState.copy(isFetching = false, error = Error(e.message ?: "Error desconocido"))
+                    uiState = uiState.copy(isFetching = false, error = Error(e.message ?: MyApplication.instance.getString(R.string.error_generic)))
                     Log.e("LoginViewModel", "Error", e)
                 }
         }

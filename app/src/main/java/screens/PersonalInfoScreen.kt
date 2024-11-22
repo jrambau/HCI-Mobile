@@ -27,7 +27,6 @@ fun PersonalInfoScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // Fetch personal data when screen loads
     LaunchedEffect(Unit) {
         viewModel.fetchUserData()
     }
@@ -122,8 +121,5 @@ fun PersonalInfoScreen(
                 Divider(modifier = Modifier.padding(vertical = 12.dp))
             }
         }
-
-        // Optionally, add fields for additional personal information if available
-        // You can add more fields below based on the available data, like address, gender, etc.
     }
 }
