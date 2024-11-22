@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import theme.CustomTheme
 import com.example.lupay.R
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
 
 enum class CardType {
     VISA, MASTERCARD, AMEX, UNKNOWN
@@ -31,6 +33,13 @@ fun CreditCard(
     modifier: Modifier = Modifier
 ) {
     CustomTheme {
+        val configuration = LocalConfiguration.current
+        val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        
+        // Definir dimensiones según la orientación
+        val cardWidth = if (isLandscape) 240.dp else 320.dp
+        val cardHeight = if (isLandscape) 120.dp else 200.dp
+        
         val cardType = getCardType(cardNumber)
         val isDarkTheme = isSystemInDarkTheme()
 
@@ -42,8 +51,8 @@ fun CreditCard(
 
         Card(
             modifier = modifier
-                .width(320.dp)
-                .height(200.dp)
+                .width(cardWidth)
+                .height(cardHeight)
                 .border(
                     width = 1.dp,
                     color = cardBorderColor,
