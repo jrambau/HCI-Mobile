@@ -2,10 +2,12 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.lupay.MyApplication
+import com.example.lupay.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,6 +42,9 @@ class HomeViewModel(
     var selectedCard by mutableStateOf<NetworkCard?>(null)
     var cards by mutableStateOf<List<NetworkCard>>(emptyList())
     var paymentLinkDetails by mutableStateOf<NetworkPaymentInfo?>(null)
+
+    private val _showTransferConfirmation = MutableStateFlow<TransferConfirmation?>(null)
+    val showTransferConfirmation: StateFlow<TransferConfirmation?> = _showTransferConfirmation.asStateFlow()
 
     init {
         if (generalUiState.isAuthenticated) {
@@ -93,7 +98,7 @@ class HomeViewModel(
                     val startOfMonth = date.withDayOfMonth(1)
                     val endOfMonth = date.withDayOfMonth(date.lengthOfMonth())
 
-                    val expensesForMonth = allTransactions.filter { it.timestamp.toLocalDate() in startOfMonth..endOfMonth && !it.isIncoming }
+                    val expensesForMonth = allTransactions.filter { it.timestamp.toLocalDate() in startOfMonth..endOfMonth && it.isCost }
                         .sumOf { abs(it.amount) }
 
                     MonthlyExpense(
@@ -119,12 +124,27 @@ class HomeViewModel(
     private fun fetchTransactions() {
         viewModelScope.launch {
             try {
-                val paymentsResponse = paymentRepository.getPaymentsInfo()
-                val allTransactions = paymentsResponse.payments.map { it.toTransaction() }
+                val allTransactions = mutableListOf<Transaction>()
+                var currentPage = 1
+                var hasMoreTransactions = true
+
+                while (hasMoreTransactions) {
+                    val paymentsResponse = paymentRepository.getPaymentsInfo(page = currentPage)
+                    val pageTransactions = paymentsResponse.payments.map { it.toTransaction() }
+
+                    if (pageTransactions.isEmpty()) {
+                        hasMoreTransactions = false
+                    } else {
+                        allTransactions.addAll(pageTransactions)
+                        currentPage++
+                    }
+                }
+
+                val (investments, otherTransactions) = allTransactions.partition { it.isInvestment }
                 _uiState.update { currentState ->
                     currentState.copy(
-                        transactions = allTransactions,
-                        filteredTransactions = allTransactions
+                        transactions = otherTransactions + investments.reversed(),
+                        filteredTransactions = otherTransactions + investments.reversed()
                     )
                 }
             } catch (e: Exception) {
@@ -158,7 +178,21 @@ class HomeViewModel(
         }
     }
 
-    fun transferMoney(amount: Double, receiverEmail: String, description: String) {
+    fun confirmTransfer(amount: Double, receiverEmail: String, description: String) {
+        _showTransferConfirmation.value = TransferConfirmation(amount, receiverEmail, description)
+    }
+
+    fun cancelTransfer() {
+        _showTransferConfirmation.value = null
+    }
+
+    fun executeTransfer() {
+        val confirmation = _showTransferConfirmation.value ?: return
+        transferMoney(confirmation.amount, confirmation.receiverEmail, confirmation.description)
+        _showTransferConfirmation.value = null
+    }
+
+    private fun transferMoney(amount: Double, receiverEmail: String, description: String) {
         viewModelScope.launch {
             try {
                 when (selectedPaymentMethod) {
@@ -263,7 +297,9 @@ class HomeViewModel(
     enum class PaymentMethod {
         WALLET, CARD
     }
-    suspend fun NetworkPaymentInfo.toTransaction(): Transaction {
+
+
+    private suspend fun NetworkPaymentInfo.toTransaction(): Transaction {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd['T'HH:mm:ss]")
         val timestamp = try {
             LocalDateTime.parse(this.createdAt, formatter)
@@ -271,6 +307,7 @@ class HomeViewModel(
             LocalDate.parse(this.createdAt, DateTimeFormatter.ISO_DATE).atStartOfDay()
         }
         val isIncoming = this.receiver?.id == userRepository.getUser().id
+        val isInvestment = this.payer?.id == this.receiver?.id
         return Transaction(
             id = this.id ?: 0,
             description = this.description ?: "No description",
@@ -280,9 +317,16 @@ class HomeViewModel(
             amount = this.amount?.toInt() ?: 0,
             type = this.type ?: "Unknown",
             receiverName = if (isIncoming) this.receiver?.firstName else this.payer?.firstName,
-            isIncoming = isIncoming
+            isIncoming = isIncoming,
+            lastName = if (isIncoming) this.receiver?.lastName ?: "Unknown" else this.payer?.lastName ?: "Unknown",
+            isCost = !isIncoming,
+            isInvestment = isInvestment,
+            balanceBefore = this.balanceBefore ?: 0.0,
+            balanceAfter = this.balanceAfter ?: 0.0
         )
     }
+
+
     companion object {
         fun provideFactory(application: MyApplication): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -296,6 +340,8 @@ class HomeViewModel(
             }
         }
     }
+
+    data class TransferConfirmation(val amount: Double, val receiverEmail: String, val description: String)
 }
 
 data class HomeUiState(
@@ -325,15 +371,15 @@ data class Transaction(
     val amount: Int,
     val type: String,
     val receiverName: String?,
-    val isIncoming: Boolean
+    val isIncoming: Boolean,
+    val lastName: String,
+    val isCost: Boolean,
+    val isInvestment: Boolean,
+    val balanceBefore: Double,
+    val balanceAfter: Double
 ) {
     fun getFormattedTimestamp(): String {
         val formatter = DateTimeFormatter.ofPattern("MMMM dd")
         return timestamp.format(formatter)
     }
 }
-
-
-
-
-

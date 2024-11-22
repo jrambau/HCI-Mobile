@@ -44,7 +44,10 @@
     <string name="expenses">Gastos</string>
     <string name="last_months">Últimos 6 meses</string>
     <string name="search">Buscar</string>
-
+    <string name="transfer_to">Transferir a</string>
+    <string name="confirm_transfer">Confirmar transferencia: %s</string>
+    <string name="amount_to_transfer">Monto a transferir: $%.2f</string>
+    <string name="description">Descripción: %s</string>
     <!-- tarjetas -->
 
     <string name="add">Agregar</string>
@@ -137,7 +140,7 @@
     <string name="log_out">Cerrar sesión</string>
     <string name="log_out_confirm">Confirmar cierre de sesión</string>
     <string name="log_out_desc">¿Estás seguro de que deseas cerrar sesión?</string>
-    <string name="expenses_in">Gastos en</string>
+    <string name="expenses_in">Gasto en</string>
     <string name="date_date">Fecha</string>
     <string name="type">Tipo</string>
     <string name="generated_link">Link generado</string>

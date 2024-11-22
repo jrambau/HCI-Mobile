@@ -53,6 +53,7 @@ fun HomeScreen(
     val deviceType = rememberDeviceType()
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val showTransferConfirmation by viewModel.showTransferConfirmation.collectAsState()
 
     LaunchedEffect(uiState, viewModel.hasAttemptedToLoadTransactions.collectAsState().value) {
         isLoading = !viewModel.hasAttemptedToLoadTransactions.value ||
@@ -190,65 +191,61 @@ fun HomeScreen(
         if (showTransferDialog) {
             TransferDialog(
                 onDismiss = { showTransferDialog = false },
-                onTransfer = { amount, email, description ->
-                    viewModel.transferMoney(amount, email, description)
-                    showTransferDialog = false
+                viewModel = viewModel
+            )
+        }
+
+        if (showPaymentLinkDialog) {
+            PaymentLinkDialog(
+                onDismiss = { showPaymentLinkDialog = false },
+                onGenerate = { amount, description ->
+                    viewModel.generatePaymentLink(amount, description)
+                },
+                onPay = { linkUuid ->
+                    viewModel.getPaymentLinkDetails(linkUuid)
+                    showPaymentLinkDetailsDialog = true
+                },
+                generatedLink = uiState.generatedPaymentLink
+            )
+        }
+
+        if (showPaymentLinkDetailsDialog) {
+            PaymentLinkDetailsDialog(
+                paymentInfo = viewModel.paymentLinkDetails,
+                onDismiss = { showPaymentLinkDetailsDialog = false },
+                onPay = { linkUuid, paymentMetod, cardId ->
+                    viewModel.payByLink(linkUuid, paymentMetod, cardId)
+                    showPaymentLinkDetailsDialog = false
                 },
                 viewModel = viewModel
             )
         }
 
-            if (showPaymentLinkDialog) {
-                PaymentLinkDialog(
-                    onDismiss = { showPaymentLinkDialog = false },
-                    onGenerate = { amount, description ->
-                        viewModel.generatePaymentLink(amount, description)
-                    },
-                    onPay = { linkUuid ->
-                        viewModel.getPaymentLinkDetails(linkUuid)
-                        showPaymentLinkDetailsDialog = true
-                    },
-                    generatedLink = uiState.generatedPaymentLink
-                )
-            }
+        if (showRechargeDialog) {
+            RechargeDialog(
+                onDismiss = { showRechargeDialog = false },
+                onRecharge = { amount ->
+                    viewModel.rechargeMoney(amount)
+                    showRechargeDialog = false
+                }
+            )
+        }
 
-            if (showPaymentLinkDetailsDialog) {
-                PaymentLinkDetailsDialog(
-                    paymentInfo = viewModel.paymentLinkDetails,
-                    onDismiss = { showPaymentLinkDetailsDialog = false },
-                    onPay = { linkUuid, paymentMetod, cardId ->
-                        viewModel.payByLink(linkUuid, paymentMetod, cardId)
-                        showPaymentLinkDetailsDialog = false
-                    },
-                    viewModel = viewModel
-                )
-            }
+        if (selectedTransaction != null) {
+            TransactionDetailsDialog(
+                transaction = selectedTransaction!!,
+                onDismiss = { selectedTransaction = null }
+            )
+        }
 
-            if (showRechargeDialog) {
-                RechargeDialog(
-                    onDismiss = { showRechargeDialog = false },
-                    onRecharge = { amount ->
-                        viewModel.rechargeMoney(amount)
-                        showRechargeDialog = false
-                    }
-                )
-            }
-
-            if (selectedTransaction != null) {
-                TransactionDetailsDialog(
-                    transaction = selectedTransaction!!,
-                    onDismiss = { selectedTransaction = null }
-                )
-            }
-
-            if (generalUiState.error != null) {
-                ErrorDialog(
-                    error = generalUiState.error!!,
-                    onDismiss = {
-                        viewModel.clearError()
-                    }
-                )
-            }
+        if (generalUiState.error != null) {
+            ErrorDialog(
+                error = generalUiState.error!!,
+                onDismiss = {
+                    viewModel.clearError()
+                }
+            )
+        }
 
         if (generalUiState.successMessage != null) {
             SuccessDialog(
@@ -257,8 +254,18 @@ fun HomeScreen(
                     viewModel.clearSuccessMessage()
                 }
             )
-        }}
+        }
+
+        if (showTransferConfirmation != null) {
+            TransferConfirmationDialog(
+                confirmation = showTransferConfirmation!!,
+                onConfirm = { viewModel.executeTransfer() },
+                onDismiss = { viewModel.cancelTransfer() }
+            )
+        }
     }
+}
+
 
 
 @Composable
@@ -495,7 +502,7 @@ fun ExpenseBar(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Gasto en $month",
+                        text = stringResource(id = R.string.expenses_in) + " $month",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -549,7 +556,7 @@ fun TransactionItem(transaction: Transaction, onClick: () -> Unit) {
             CircleAvatar(transaction.userName.first().toString())
             Column {
                 Text(
-                    text = transaction.userName,
+                    text = "${transaction.userName} ${transaction.lastName}",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -567,10 +574,16 @@ fun TransactionItem(transaction: Transaction, onClick: () -> Unit) {
                 text = "$${abs(transaction.amount)}",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
-                color = if (transaction.isIncoming) Color.Green else Color.Red
+                color = if (transaction.isInvestment) {
+                   Color.Gray
+                } else if (!transaction.isCost) {
+                    Color.Green
+                } else {
+                    Color.Red
+                }
             )
             Text(
-                text = transaction.type,
+                text = if(transaction.isInvestment) stringResource(id = R.string.investment)  else transaction.type,
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
@@ -617,10 +630,10 @@ fun TransactionDetailsDialog(transaction: Transaction, onDismiss: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                TransactionDetailItem("Tipo", transaction.type)
-                TransactionDetailItem("Monto", "$${abs(transaction.amount)}")
-                TransactionDetailItem("Fecha", transaction.getFormattedTimestamp())
-                TransactionDetailItem("Usuario", transaction.userName)
+                TransactionDetailItem(stringResource(id = R.string.type), transaction.type)
+                TransactionDetailItem(stringResource(id = R.string.amount), "$${abs(transaction.amount)}")
+                TransactionDetailItem(stringResource(id = R.string.date_date), transaction.getFormattedTimestamp())
+                TransactionDetailItem(stringResource(id = R.string.user), transaction.userName)
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = onDismiss) {
                     Text(stringResource(id = R.string.close))
@@ -645,7 +658,7 @@ fun TransactionDetailItem(label: String, value: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TransferDialog(onDismiss: () -> Unit, onTransfer: (Double, String, String) -> Unit, viewModel: HomeViewModel) {
+fun TransferDialog(onDismiss: () -> Unit, viewModel: HomeViewModel) {
     var amount by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -745,7 +758,8 @@ fun TransferDialog(onDismiss: () -> Unit, onTransfer: (Double, String, String) -
                     onClick = {
                         val amountDouble = amount.toDoubleOrNull()
                         if (amountDouble != null && email.isNotBlank() && description.isNotBlank()) {
-                            onTransfer(amountDouble, email, description)
+                            viewModel.confirmTransfer(amountDouble, email, description)
+                            onDismiss()
                         }
                     }
                 ) {
@@ -755,7 +769,34 @@ fun TransferDialog(onDismiss: () -> Unit, onTransfer: (Double, String, String) -
         }
     }
 }
-
+@Composable
+fun TransferConfirmationDialog(
+    confirmation: HomeViewModel.TransferConfirmation,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(id = R.string.confirm_transfer)) },
+        text = {
+            Column {
+                Text(stringResource(id = R.string.transfer_to, confirmation.receiverEmail))
+                Text(stringResource(id = R.string.amount_to_transfer, confirmation.amount))
+                Text(stringResource(id = R.string.description, confirmation.description))
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(id = R.string.confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(id = R.string.cancel))
+            }
+        }
+    )
+}
 @Composable
 fun PaymentLinkDialog(
     onDismiss: () -> Unit,
