@@ -163,4 +163,9 @@
     <string name="error_interest">Error fetching daily interest rate</string>
     <string name="days_ago">Days ago</string>
     <string name="error_daily_returns">Error fetching daily returns</string>
+    <string name="no_cbu">No cbu</string>
+    <string name="error_logout">Error logging out</string>
+    <string name="error_updating_alias">Error updating alias</string>
+    <string name="password_length_error">Password must be at least 6 characters long</string>
+    <string name="error_reset_password">Error changing password</string>
 </resources>
