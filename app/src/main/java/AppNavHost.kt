@@ -2,6 +2,7 @@ package com.example.lupay.ui
 
 import HomeScreen
 import ProfileScreen
+import QRScreen
 import RegisterScreen
 import SecurityScreen
 import components.TopBarComponent
@@ -198,15 +199,11 @@ fun AppNavHost(
         }
 
         composable("qr") {
-            TopBarScaffoldWrapper(
-                title = "QR",
-                navController = navController,
-                deviceType = deviceType,
-                currentRoute = currentRoute
-            ) { paddingValues ->
-                QRScreen()
-            }
+            QRScreen(
+                navController = navController);
         }
+
+
 
 
         composable("profile") {

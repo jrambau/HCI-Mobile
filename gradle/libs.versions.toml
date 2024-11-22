@@ -9,6 +9,9 @@ cameraCamera2 = "1.4.0"
 cameraLifecycleVersion = "1.2.3"
 cameraViewVersion = "1.2.3"
 compose = "1.12.0"
+composeFoundation = "1.4.0"
+composeMaterial = "1.4.0"
+composeNavigation = "1.4.0"
 converterGson = "2.9.0"
 converterKotlinxSerialization = "2.11.0"
 core = "3.4.1"
@@ -52,6 +55,9 @@ androidx-activity-compose-v172 = { module = "androidx.activity:activity-compose"
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
 androidx-camera-lifecycle-v123 = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraLifecycleVersion" }
 androidx-camera-view-v123 = { module = "androidx.camera:camera-view", version.ref = "cameraViewVersion" }
+androidx-compose-foundation = { module = "androidx.wear.compose:compose-foundation", version.ref = "composeFoundation" }
+androidx-compose-material = { module = "androidx.wear.compose:compose-material", version.ref = "composeMaterial" }
+androidx-compose-navigation = { module = "androidx.wear.compose:compose-navigation", version.ref = "composeNavigation" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-lifecycle-viewmodel-compose-v251 = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }

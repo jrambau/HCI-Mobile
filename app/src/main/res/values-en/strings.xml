@@ -124,5 +124,6 @@
     <string name="api_result">API result:</string>
     <string name="info_qr">"Info for QR content:  "</string>
     <string name="no_daily_returns">No daily returns\n</string>
+    <string name="qr_title">QR Scanner</string>
     <string name="share">Share</string>
 </resources>
