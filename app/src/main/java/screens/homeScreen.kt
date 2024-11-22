@@ -502,7 +502,7 @@ fun ExpenseBar(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Gasto en $month",
+                        text = stringResource(id = R.string.expenses_in) + " $month",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -630,10 +630,10 @@ fun TransactionDetailsDialog(transaction: Transaction, onDismiss: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                TransactionDetailItem("Tipo", transaction.type)
-                TransactionDetailItem("Monto", "$${abs(transaction.amount)}")
-                TransactionDetailItem("Fecha", transaction.getFormattedTimestamp())
-                TransactionDetailItem("Usuario", transaction.userName)
+                TransactionDetailItem(stringResource(id = R.string.type), transaction.type)
+                TransactionDetailItem(stringResource(id = R.string.amount), "$${abs(transaction.amount)}")
+                TransactionDetailItem(stringResource(id = R.string.date_date), transaction.getFormattedTimestamp())
+                TransactionDetailItem(stringResource(id = R.string.user), transaction.userName)
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = onDismiss) {
                     Text(stringResource(id = R.string.close))
