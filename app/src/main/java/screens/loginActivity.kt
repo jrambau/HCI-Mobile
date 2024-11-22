@@ -39,7 +39,12 @@ fun LoginScreen(
     var confirmationEmail by remember { mutableStateOf("") }
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
+    LaunchedEffect(Unit) {
+        // Verifica si hay un token guardado al iniciar la pantalla
+        if (viewModel.checkSavedToken()) {
+            onNavigateToMain()
+        }
+    }
     CustomTheme {
         Box(
             modifier = Modifier

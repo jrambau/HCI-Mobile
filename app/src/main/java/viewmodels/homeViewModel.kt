@@ -223,11 +223,16 @@ class HomeViewModel(
                 _uiState.update { currentState ->
                     currentState.copy(generatedPaymentLink = response.linkUuid)
                 }
-                generalUiState = generalUiState.copy(successMessage = "Link de pago generado: ${response.linkUuid}")
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error generating payment link", e)
                 generalUiState = generalUiState.copy(error = Error(e.message ?: "Error generating payment link"))
             }
+        }
+    }
+
+    fun clearGeneratedPaymentLink() {
+        _uiState.update { currentState ->
+            currentState.copy(generatedPaymentLink = null)
         }
     }
 

@@ -1,4 +1,6 @@
 import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -205,19 +207,26 @@ fun HomeScreen(
                     viewModel.getPaymentLinkDetails(linkUuid)
                     showPaymentLinkDetailsDialog = true
                 },
-                generatedLink = uiState.generatedPaymentLink
+                generatedLink = uiState.generatedPaymentLink,
+                context = LocalContext.current
             )
         }
 
-        if (showPaymentLinkDetailsDialog) {
-            PaymentLinkDetailsDialog(
-                paymentInfo = viewModel.paymentLinkDetails,
-                onDismiss = { showPaymentLinkDetailsDialog = false },
-                onPay = { linkUuid, paymentMetod, cardId ->
-                    viewModel.payByLink(linkUuid, paymentMetod, cardId)
-                    showPaymentLinkDetailsDialog = false
+        if (showPaymentLinkDialog) {
+            PaymentLinkDialog(
+                onDismiss = {
+                    showPaymentLinkDialog = false
+                    viewModel.clearGeneratedPaymentLink()
                 },
-                viewModel = viewModel
+                onGenerate = { amount, description ->
+                    viewModel.generatePaymentLink(amount, description)
+                },
+                onPay = { linkUuid ->
+                    viewModel.getPaymentLinkDetails(linkUuid)
+                    showPaymentLinkDetailsDialog = true
+                },
+                generatedLink = uiState.generatedPaymentLink,
+                context = LocalContext.current
             )
         }
 
@@ -802,7 +811,8 @@ fun PaymentLinkDialog(
     onDismiss: () -> Unit,
     onGenerate: (Double, String) -> Unit,
     onPay: (String) -> Unit,
-    generatedLink: String?
+    generatedLink: String?,
+    context: Context
 ) {
     var amount by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -843,12 +853,30 @@ fun PaymentLinkDialog(
                     if (generatedLink != null) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text("Link generado: $generatedLink")
-                        Button(
-                            onClick = {
-                                clipboardManager.setText(AnnotatedString(generatedLink))
-                            }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            Text(stringResource(id = R.string.copy))
+                            Button(
+                                onClick = {
+                                    clipboardManager.setText(AnnotatedString(generatedLink))
+                                }
+                            ) {
+                                Text(stringResource(id = R.string.copy))
+                            }
+                            Button(
+                                onClick = {
+                                    val sendIntent: Intent = Intent().apply {
+                                        action = Intent.ACTION_SEND
+                                        putExtra(Intent.EXTRA_TEXT, generatedLink)
+                                        type = "text/plain"
+                                    }
+                                    val shareIntent = Intent.createChooser(sendIntent, null)
+                                    context.startActivity(shareIntent)
+                                }
+                            ) {
+                                Text(stringResource(id = R.string.share))
+                            }
                         }
                     }
                 } else {

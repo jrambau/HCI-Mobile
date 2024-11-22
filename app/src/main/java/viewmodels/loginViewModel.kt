@@ -58,7 +58,14 @@ class LoginViewModel(
         birthDate = newDate
         birthDateError = validateBirthDate(newDate)
     }
-
+    fun checkSavedToken(): Boolean {
+        val savedToken = sessionManager.loadAuthToken()
+        if (savedToken != null) {
+            uiState = uiState.copy(isAuthenticated = true)
+            return true
+        }
+        return false
+    }
     private fun validateBirthDate(date: LocalDate?): String? {
         if (date == null) {
             return "Por favor, seleccione una fecha de nacimiento."
