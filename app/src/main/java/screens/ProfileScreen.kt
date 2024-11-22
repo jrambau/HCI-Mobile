@@ -94,6 +94,25 @@ fun ProfileScreen(
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.weight(1f)
             )
+
+            if (isLandscape) {
+                Button(
+                    onClick = { showLogOutConf = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    modifier = Modifier.padding(start = 16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ExitToApp,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(id = R.string.log_out),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
         }
 
         ProfileMenuItem(
@@ -114,25 +133,27 @@ fun ProfileScreen(
             onClick = { navController.navigate("security_screen") }
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        if (!isLandscape) {
+            Spacer(modifier = Modifier.weight(1f))
 
-        Button(
-            onClick = { showLogOutConf = true },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-        ) {
-            Icon(
-                imageVector = Icons.Default.ExitToApp,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(id = R.string.log_out),
-                style = MaterialTheme.typography.bodyLarge
-            )
+            Button(
+                onClick = { showLogOutConf = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ExitToApp,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(id = R.string.log_out),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
         }
     }
 
