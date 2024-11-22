@@ -27,19 +27,25 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.wear.compose.material.ExperimentalWearMaterialApi
 import androidx.wear.compose.material.rememberSwipeableState
 import androidx.wear.compose.material.swipeable
+import com.example.lupay.MyApplication
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
+import viewmodels.QrViewModel
 import java.util.concurrent.Executors
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalWearMaterialApi::class)
 @Composable
-fun QRScreen(navController: NavController) {
+fun QRScreen(
+    navController: NavController,
+    viewModel: QrViewModel = viewModel(factory = QrViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
+) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
@@ -56,21 +62,23 @@ fun QRScreen(navController: NavController) {
     var isCameraActive by remember { mutableStateOf(true) }
     var previewView: PreviewView? by remember { mutableStateOf(null) }
 
-    // Swipeable state setup
-    val swipeableState = rememberSwipeableState(initialValue = 1) // Start with the QR code view
-    val anchors = mapOf(0f to 1, 1f to 0) // Swap the anchors
+    val swipeableState = rememberSwipeableState(initialValue = 1)
+    val anchors = mapOf(0f to 1, 1f to 0)
 
-    // Camera permission launcher
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         hasCameraPermission = granted
     }
 
-    // Show dialog when QR code is scanned
-    var showDialog by remember { mutableStateOf(false) }
+    var showTransferDialog by remember { mutableStateOf(false) }
+    var amount by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var isAccount by remember { mutableStateOf(true) }
 
-    // Camera initialization with analyzer
+    val userEmail by viewModel.userEmail.collectAsState()
+    val paymentResult by viewModel.paymentResult.collectAsState()
+
     LaunchedEffect(key1 = cameraProviderFuture, key2 = isCameraActive) {
         if (hasCameraPermission && isCameraActive) {
             val cameraProvider = cameraProviderFuture.get()
@@ -92,8 +100,8 @@ fun QRScreen(navController: NavController) {
                 Executors.newSingleThreadExecutor(),
                 QRCodeAnalyzer(context) { result ->
                     scannedResult = result
-                    showDialog = true // Show dialog when QR code is found
-                    isCameraActive = false // Stop the camera
+                    showTransferDialog = true
+                    isCameraActive = false
                 }
             )
 
@@ -101,10 +109,8 @@ fun QRScreen(navController: NavController) {
         }
     }
 
-    // Reinitialize camera when swiping back to camera
     LaunchedEffect(key1 = swipeableState.currentValue) {
         if (swipeableState.currentValue == 1 && isCameraActive) {
-            // Reinitialize the camera when swiping back to the camera view
             val cameraProvider = cameraProviderFuture.get()
             cameraProvider.unbindAll()
 
@@ -124,8 +130,8 @@ fun QRScreen(navController: NavController) {
                 Executors.newSingleThreadExecutor(),
                 QRCodeAnalyzer(context) { result ->
                     scannedResult = result
-                    showDialog = true // Show dialog when QR code is found
-                    isCameraActive = false // Stop the camera
+                    showTransferDialog = true
+                    isCameraActive = false
                 }
             )
 
@@ -133,19 +139,72 @@ fun QRScreen(navController: NavController) {
         }
     }
 
-    // Dialog to show QR code result
-    if (showDialog) {
+    if (showTransferDialog) {
         AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("QR Code Scanned") },
-            text = { Text("Scanned QR Code: $scannedResult") },
+            onDismissRequest = {
+                showTransferDialog = false
+                isCameraActive = true
+            },
+            title = { Text("Transfer") },
+            text = {
+                Column {
+                    TextField(
+                        value = scannedResult ?: "",
+                        onValueChange = { /* Read-only */ },
+                        label = { Text("Recipient's email") },
+                        readOnly = true
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TextField(
+                        value = amount,
+                        onValueChange = { amount = it },
+                        label = { Text("Amount") }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TextField(
+                        value = description,
+                        onValueChange = { description = it },
+                        label = { Text("Description") }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        FilterChip(
+                            selected = isAccount,
+                            onClick = { isAccount = true },
+                            label = { Text("Account") }
+                        )
+                        FilterChip(
+                            selected = !isAccount,
+                            onClick = { isAccount = false },
+                            label = { Text("Card") }
+                        )
+                    }
+                }
+            },
             confirmButton = {
+                TextButton(
+                    onClick = {
+                        val amountDouble = amount.toDoubleOrNull()
+                        if (amountDouble != null && scannedResult != null) {
+                            viewModel.makePayment(scannedResult!!, amountDouble, description, isAccount, null) // Assuming no card selection for now
+                            showTransferDialog = false
+                            isCameraActive = true
+                        }
+                    },
+                    enabled = amount.isNotEmpty() && amount.toDoubleOrNull() != null && scannedResult != null
+                ) {
+                    Text("Transfer")
+                }
+            },
+            dismissButton = {
                 TextButton(onClick = {
-                    showDialog = false
-                    // Ensure smooth transition back to the QR Code view
-                    isCameraActive = true // Reactivate the camera if needed
+                    showTransferDialog = false
+                    isCameraActive = true
                 }) {
-                    Text("Confirm")
+                    Text("Cancel")
                 }
             }
         )
@@ -180,7 +239,6 @@ fun QRScreen(navController: NavController) {
                         orientation = Orientation.Vertical
                     )
             ) {
-                // Camera view (State 0)
                 if (swipeableState.currentValue == 1 && isCameraActive && hasCameraPermission) {
                     AndroidView(
                         factory = { ctx ->
@@ -191,7 +249,6 @@ fun QRScreen(navController: NavController) {
                         modifier = Modifier.fillMaxSize()
                     )
 
-                    // White arrow at the bottom (for swipe indication)
                     Icon(
                         Icons.Default.ArrowUpward,
                         contentDescription = "Swipe to QR Code",
@@ -199,11 +256,10 @@ fun QRScreen(navController: NavController) {
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(16.dp)
-                            .size(40.dp) // Adjust size to match the QR code arrow
+                            .size(40.dp)
                     )
                 }
 
-                // QR Code view (State 1)
                 if (swipeableState.currentValue == 0) {
                     Column(
                         Modifier
@@ -218,17 +274,12 @@ fun QRScreen(navController: NavController) {
                                 .background(MaterialTheme.colorScheme.background, MaterialTheme.shapes.medium)
                                 .padding(16.dp)
                         ) {
-                            scannedResult?.let {
+                            userEmail?.let {
                                 val bitmap = generateQRCode(it)
-                                Image(bitmap = bitmap.asImageBitmap(), contentDescription = null)
-                            } ?: run {
-                                val placeholderData = "No QR Code Scanned"
-                                val bitmap = generateQRCode(placeholderData)
                                 Image(bitmap = bitmap.asImageBitmap(), contentDescription = null)
                             }
                         }
 
-                        // Icon to swipe back to camera
                         Icon(
                             Icons.Default.ArrowDownward,
                             contentDescription = "Swipe to Camera",
@@ -236,16 +287,29 @@ fun QRScreen(navController: NavController) {
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(16.dp)
-                                .size(40.dp) // Adjust size to match the camera arrow
+                                .size(40.dp)
                         )
                     }
                 }
             }
         }
     )
+
+    LaunchedEffect(viewModel.uiState) {
+        val uiState = viewModel.uiState
+        if (!uiState.isFetching) {
+            if (uiState.successMessage != null) {
+                // Show success message
+                // You can use a Snackbar or another AlertDialog here
+            } else if (uiState.error != null) {
+                // Show error message
+                // You can use a Snackbar or another AlertDialog here
+            }
+        }
+    }
 }
 
-// QR Code analyzer class remains unchanged
+// QRCodeAnalyzer and generateQRCode functions remain unchanged
 class QRCodeAnalyzer(
     private val context: Context,
     private val onQrCodeScanned: (String) -> Unit
@@ -274,14 +338,14 @@ class QRCodeAnalyzer(
     }
 }
 
-// Function to generate QR code bitmap
 fun generateQRCode(content: String): Bitmap {
     val writer = QRCodeWriter()
     val bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, 512, 512)
     val bitmap = Bitmap.createBitmap(512, 512, Bitmap.Config.RGB_565)
     for (x in 0 until 512) {
         for (y in 0 until 512) {
-            bitmap.setPixel(x, y, if (bitMatrix[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE)        }
+            bitmap.setPixel(x, y, if (bitMatrix[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
+        }
     }
     return bitmap
 }
