@@ -17,7 +17,7 @@ import retrofit2.http.PUT
 
 interface UserApiService {
     @POST("user")
-    suspend fun registerUser(@Body request: NetworkUser): Response<NetworkUserResponse>
+    suspend fun registerUser(@Body request: NetworkUser): Response<NetworkUser>
     @PUT("wallet/update-alias")
     suspend fun updateAlias(@Body request: NetworkAlias): Response<NetworkWalletInfo>
     @GET("user")

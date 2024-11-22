@@ -25,13 +25,13 @@ data class NetworkUser(
     }
 }
 
-fun asModel(userResponse: NetworkUserResponse): model.User {
+fun asModel(userResponse: NetworkUser): model.User {
     return model.User(
-        id = userResponse.user.id,
-        firstName = userResponse.user.firstName,
-        lastName = userResponse.user.lastName,
-        birthDate = userResponse.user.getBirthdateAsLocalDate(),
-        email = userResponse.user.email,
-        password = userResponse.user.password
+        id = userResponse.id,
+        firstName = userResponse.firstName,
+        lastName = userResponse.lastName,
+        birthDate = userResponse.getBirthdateAsLocalDate(),
+        email = userResponse.email,
+        password = userResponse.password
     )
 }
