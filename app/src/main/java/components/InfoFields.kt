@@ -7,7 +7,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.lupay.R
 
 @Composable
 fun ReadOnlyInfoField(
@@ -58,7 +60,7 @@ fun PersonalInfoField(
         IconButton(onClick = onEditClick) {
             Icon(
                 imageVector = Icons.Default.Edit,
-                contentDescription = "Edit $label",
+                contentDescription = stringResource(id = R.string.edit) +" $label",
                 tint = MaterialTheme.colorScheme.primary
             )
         }

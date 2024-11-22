@@ -109,5 +109,14 @@
     <string name="pay_to">Pay  to</string>
     <string name="fail_fetch">Failed to fetch cards</string>
     <string name="log_out">Log out</string>
+    <string name="log_out_confirm">Confirm log out</string>
     <string name="log_out_desc">Are you sure you want to log out?</string>
+    <string name="expenses_in">Expenses in</string>
+    <string name="date_date">Date</string>
+    <string name="type">Type</string>
+    <string name="generated_link">Generated link</string>
+    <string name="camara_permission">Camara permission in required to scan QR codes</string>
+    <string name="scanned_result">Scanned result</string>
+    <string name="api_result">API result:</string>
+    <string name="info_qr">"Info for QR content:  "</string>
 </resources>
