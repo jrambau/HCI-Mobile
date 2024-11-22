@@ -1,5 +1,6 @@
 package com.example.lupay.ui.screens
 
+import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -175,105 +177,250 @@ private fun AddCardContent(
         }
     }
 
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CreditCard(
-            cardNumber = cardNumber,
-            cardName = cardName,
-            cardExpiry = cardExpiry,
-            isHidden = false
-        )
-        Spacer(modifier = Modifier.height(32.dp))
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val deviceType = rememberDeviceType()
 
-        // Credit Card Number Field
-        Text(text = stringResource(id = R.string.card_number), style = MaterialTheme.typography.bodyMedium)
-        OutlinedTextField(
-            value = cardNumber,
-            onValueChange = { cardNumber = it.take(16) },
-            label = { Text(stringResource(id = R.string.enter)) },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(24.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Cardholder Name Field
-        Text(text = stringResource(id = R.string.card_owner), style = MaterialTheme.typography.bodyMedium)
-        OutlinedTextField(
-            value = cardName,
-            onValueChange = { cardName = it },
-            label = { Text(stringResource(id = R.string.enter)) },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(24.dp)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Expiry Date Field
-        Text(text = stringResource(id = R.string.expiration), style = MaterialTheme.typography.bodyMedium)
-        OutlinedTextField(
-            value = cardExpiry,
-            onValueChange = {
-                // Add slash ("/") after 2 digits and ensure it's limited to 5 characters (MM/YY format)
-                var formattedExpiry = it.replace(" ", "").take(5)
-                if (formattedExpiry.length > 2 && formattedExpiry[2] != '/') {
-                    formattedExpiry = formattedExpiry.substring(0, 2) + "/" + formattedExpiry.substring(2)
-                }
-                cardExpiry = formattedExpiry
-            },
-            label = { Text(stringResource(id = R.string.date)) },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(24.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(text = stringResource(id = R.string.cvv), style = MaterialTheme.typography.bodyMedium)
-        OutlinedTextField(
-            value = cvv,
-            onValueChange = { cvv = it },
-            label = { Text(stringResource(id = R.string.enter)) },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(24.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Add Card Button
-        Button(
-            onClick = {
-                if (validateInputs()) {
-                    viewModel.addNewCard(NetworkCard(id = null, number = cardNumber, fullName = cardName, expirationDate = cardExpiry, cvv = cvv, type = "CREDIT", createdAt = null, updatedAt = null))
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(24.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+    if (isLandscape && deviceType != DeviceType.TABLET) {
+        Row(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(top = 0.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(stringResource(id = R.string.add))
-        }
+            Column(
+                modifier = Modifier
+                    .weight(0.4f)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(32.dp))  // Added spacing from top
+                
+                CreditCard(
+                    cardNumber = cardNumber,
+                    cardName = cardName,
+                    cardExpiry = cardExpiry,
+                    isHidden = false
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Button(
+                    onClick = {
+                        if (validateInputs()) {
+                            viewModel.addNewCard(NetworkCard(id = null, number = cardNumber, fullName = cardName, expirationDate = cardExpiry, cvv = cvv, type = "CREDIT", createdAt = null, updatedAt = null))
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(minHeight = 48.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                ) {
+                    Text(stringResource(id = R.string.add))
+                }
 
-        if (uiState.isLoading) {
-            CircularProgressIndicator()
-        }
+                if (uiState.isLoading) {
+                    CircularProgressIndicator()
+                }
 
-        error?.let {
-            Text(it, color = Color.Red)
+                error?.let {
+                    Text(it, color = Color.Red)
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(0.6f)
+                    .fillMaxHeight()
+                    .padding(top = 4.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = stringResource(id = R.string.card_number), style = MaterialTheme.typography.bodyMedium)
+                OutlinedTextField(
+                    value = cardNumber,
+                    onValueChange = { cardNumber = it.take(16) },
+                    label = { Text(stringResource(id = R.string.enter)) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(minHeight = 48.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(text = stringResource(id = R.string.card_owner), style = MaterialTheme.typography.bodyMedium)
+                OutlinedTextField(
+                    value = cardName,
+                    onValueChange = { cardName = it },
+                    label = { Text(stringResource(id = R.string.enter)) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(minHeight = 48.dp),
+                    shape = RoundedCornerShape(24.dp)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(id = R.string.expiration), style = MaterialTheme.typography.bodyMedium)
+                        OutlinedTextField(
+                            value = cardExpiry,
+                            onValueChange = {
+                                var formattedExpiry = it.replace(" ", "").take(5)
+                                if (formattedExpiry.length > 2 && formattedExpiry[2] != '/') {
+                                    formattedExpiry = formattedExpiry.substring(0, 2) + "/" + formattedExpiry.substring(2)
+                                }
+                                cardExpiry = formattedExpiry
+                            },
+                            label = { Text(stringResource(id = R.string.date)) },
+                            singleLine = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .defaultMinSize(minHeight = 48.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+                    }
+
+                    // Security code column
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = stringResource(id = R.string.cvv), style = MaterialTheme.typography.bodyMedium)
+                        OutlinedTextField(
+                            value = cvv,
+                            onValueChange = { cvv = it },
+                            label = { Text(stringResource(id = R.string.enter)) },
+                            singleLine = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .defaultMinSize(minHeight = 48.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                error?.let {
+                    Text(it, color = Color.Red)
+                }
+            }
+        }
+    } else {
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CreditCard(
+                cardNumber = cardNumber,
+                cardName = cardName,
+                cardExpiry = cardExpiry,
+                isHidden = false
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Credit Card Number Field
+            Text(text = stringResource(id = R.string.card_number), style = MaterialTheme.typography.bodyMedium)
+            OutlinedTextField(
+                value = cardNumber,
+                onValueChange = { cardNumber = it.take(16) },
+                label = { Text(stringResource(id = R.string.enter)) },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = 48.dp),
+                shape = RoundedCornerShape(24.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Cardholder Name Field
+            Text(text = stringResource(id = R.string.card_owner), style = MaterialTheme.typography.bodyMedium)
+            OutlinedTextField(
+                value = cardName,
+                onValueChange = { cardName = it },
+                label = { Text(stringResource(id = R.string.enter)) },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = 48.dp),
+                shape = RoundedCornerShape(24.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Expiry Date Field
+            Text(text = stringResource(id = R.string.expiration), style = MaterialTheme.typography.bodyMedium)
+            OutlinedTextField(
+                value = cardExpiry,
+                onValueChange = {
+                    // Add slash ("/") after 2 digits and ensure it's limited to 5 characters (MM/YY format)
+                    var formattedExpiry = it.replace(" ", "").take(5)
+                    if (formattedExpiry.length > 2 && formattedExpiry[2] != '/') {
+                        formattedExpiry = formattedExpiry.substring(0, 2) + "/" + formattedExpiry.substring(2)
+                    }
+                    cardExpiry = formattedExpiry
+                },
+                label = { Text(stringResource(id = R.string.date)) },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = 48.dp),
+                shape = RoundedCornerShape(24.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(text = stringResource(id = R.string.cvv), style = MaterialTheme.typography.bodyMedium)
+            OutlinedTextField(
+                value = cvv,
+                onValueChange = { cvv = it },
+                label = { Text(stringResource(id = R.string.enter)) },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = 48.dp),
+                shape = RoundedCornerShape(24.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Add Card Button
+            Button(
+                onClick = {
+                    if (validateInputs()) {
+                        viewModel.addNewCard(NetworkCard(id = null, number = cardNumber, fullName = cardName, expirationDate = cardExpiry, cvv = cvv, type = "CREDIT", createdAt = null, updatedAt = null))
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+            ) {
+                Text(stringResource(id = R.string.add))
+            }
+
+            if (uiState.isLoading) {
+                CircularProgressIndicator()
+            }
+
+            error?.let {
+                Text(it, color = Color.Red)
+            }
         }
     }
 
