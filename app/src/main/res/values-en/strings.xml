@@ -4,7 +4,7 @@
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
     <string name="unkown_error">Unknown error</string>
-    <string name="enter">Sign In...</string>
+    <string name="enter">Fill the fields</string>
     <string name="no_specified">Not specified</string>
     <string name="login_title">Sign In</string>
     <string name="enter_mail">Enter you email</string>
