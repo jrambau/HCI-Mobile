@@ -12,7 +12,7 @@
     <string name="validate">Validate account</string>
     <string name="val_code">Enter the verification token</string>
     <string name="forgot_pass">Forgot password?</string>
-    <string name="reset_pass">Reset password</string>
+    <string name="reset_pass">Recover password</string>
     <string name="got_code">I already have my token</string>
     <string name="write_code">Enter the token received by email:</string>
     <string name="new_pass">Enter new password</string>
