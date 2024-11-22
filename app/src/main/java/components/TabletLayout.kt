@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.example.lupay.R
 
 @Composable
 fun TabletLayout(
@@ -55,11 +57,11 @@ fun NavigationRail(
         containerColor = MaterialTheme.colorScheme.background
     ) {
         val items = listOf(
-            Triple("main", "Panel", Icons.Default.Home),
-            Triple("wallet", "Tarjetas", Icons.Default.CreditCard),
+            Triple("main", stringResource(id = R.string.general), Icons.Default.Home),
+            Triple("wallet", stringResource(id = R.string.cards), Icons.Default.CreditCard),
             Triple("qr", "QR", Icons.Default.QrCode),
-            Triple("analytics", "Inversiones", Icons.Default.Analytics),
-            Triple("profile", "Perfil", Icons.Default.Person)
+            Triple("analytics", stringResource(id = R.string.investment), Icons.Default.Analytics),
+            Triple("profile", stringResource(id = R.string.profile), Icons.Default.Person)
         )
 
         items.forEach { (route, title, icon) ->

@@ -10,9 +10,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.lupay.R
 import theme.CustomTheme
 
 @Composable
@@ -33,11 +35,11 @@ fun BottomBar(navController: NavController) {
             tonalElevation = 8.dp
         ) {
             val items = listOf(
-                Triple("main", "Panel", Icons.Default.Home),
-                Triple("wallet", "Tarjetas", Icons.Default.CreditCard),
+                Triple("main", stringResource(id = R.string.general), Icons.Default.Home),
+                Triple("wallet", stringResource(id = R.string.cards), Icons.Default.CreditCard),
                 Triple("qr", "QR", Icons.Default.QrCode),
-                Triple("analytics", "Inversiones", Icons.Default.Analytics),
-                Triple("profile", "Perfil", Icons.Default.Person)
+                Triple("analytics", stringResource(id = R.string.investment), Icons.Default.Analytics),
+                Triple("profile", stringResource(id = R.string.profile), Icons.Default.Person)
             )
 
             items.forEach { (route, title, icon) ->

@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.lupay.R
 
 @Composable
 fun PersonalInfoField(
@@ -37,7 +39,7 @@ fun PersonalInfoField(
                 onEditClick(textFieldValue)
                 isEditing = false
             }) {
-                Text("Save")
+                Text(stringResource(id = R.string.save))
             }
         } else {
             Text(
@@ -46,7 +48,7 @@ fun PersonalInfoField(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { isEditing = true }) {
-                Text("Edit")
+                Text(stringResource(id = R.string.edit))
             }
         }
     }

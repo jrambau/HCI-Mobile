@@ -13,7 +13,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.lupay.ui.viewmodels.ProfileViewModel
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.example.lupay.MyApplication
+import com.example.lupay.R
 import components.ReadOnlyInfoField
 import components.PersonalInfoField
 
@@ -56,7 +58,7 @@ fun PersonalInfoScreen(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = "Información personal",
+                text = stringResource(id = R.string.personal_info),
                 style = MaterialTheme.typography.headlineMedium
             )
         }
@@ -100,22 +102,22 @@ fun PersonalInfoScreen(
                     .padding(16.dp)
             ) {
                 ReadOnlyInfoField(
-                    label = "Nombre",
-                    value = uiState.firstName.ifBlank { "No especificado" }
+                    label = stringResource(id = R.string.name),
+                    value = uiState.firstName.ifBlank { stringResource(id = R.string.no_specified) }
                 )
 
                 Divider(modifier = Modifier.padding(vertical = 12.dp))
 
                 ReadOnlyInfoField(
-                    label = "Apellido",
-                    value = uiState.lastName.ifBlank { "No especificado" }
+                    label = stringResource(id = R.string.lastname),
+                    value = uiState.lastName.ifBlank { stringResource(id = R.string.no_specified)}
                 )
 
                 Divider(modifier = Modifier.padding(vertical = 12.dp))
 
                 ReadOnlyInfoField(
-                    label = "Fecha de Nacimiento",
-                    value = uiState.birthDate ?: "No especificado"
+                    label = stringResource(id = R.string.enter_bday),
+                    value = uiState.birthDate ?: stringResource(id = R.string.no_specified)
                 )
 
                 Divider(modifier = Modifier.padding(vertical = 12.dp))

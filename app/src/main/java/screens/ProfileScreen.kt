@@ -9,12 +9,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lupay.ui.viewmodels.ProfileViewModel
 import androidx.navigation.NavController
 import com.example.lupay.MyApplication
+import com.example.lupay.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,7 +75,7 @@ fun ProfileScreen(
                     val names = uiState.userName.split(" ")
                     names.joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
                 } else {
-                    "Cargando..."
+                    stringResource(id = R.string.charging)
                 },
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onBackground
@@ -82,21 +84,21 @@ fun ProfileScreen(
 
         // Profile menu items
         ProfileMenuItem(
-            title = "Información personal",
-            description = "Información de tu documento de identidad y tu actividad fiscal.",
+            title = stringResource(id = R.string.personal_info),
+            description = stringResource(id = R.string.personal_info_desc),
             onClick = { navController.navigate("personal_info") },
         )
 
         // Fix: Show email data in account info
         ProfileMenuItem(
-            title = "Datos de tu cuenta",
-            description = "Email, CBU y alias de tu cuenta.",
+            title = stringResource(id = R.string.user_info),
+            description = stringResource(id = R.string.user_info_desc),
             onClick = { navController.navigate("account_info") }
         )
 
         ProfileMenuItem(
-            title = "Seguridad",
-            description = "Configura la seguridad de tu cuenta.",
+            title = stringResource(id = R.string.security),
+            description = stringResource(id = R.string.security_desc),
             onClick = { navController.navigate("security_screen") } // Navigate to Seguridad screen
         )
     }

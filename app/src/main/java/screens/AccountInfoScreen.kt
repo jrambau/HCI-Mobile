@@ -20,6 +20,8 @@ import com.example.lupay.MyApplication
 import components.ReadOnlyInfoField
 import components.PersonalInfoField
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.res.stringResource
+import com.example.lupay.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +63,7 @@ fun AccountInfoScreen(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = "Datos de tu cuenta",
+                text = stringResource(id = R.string.user_info),
                 style = MaterialTheme.typography.headlineMedium
             )
         }
@@ -100,22 +102,22 @@ fun AccountInfoScreen(
                 ) {
                     // Read-only user information fields
                     ReadOnlyInfoField(
-                        label = "Usuario",
-                        value = uiState.userName.ifBlank { "No especificado" }
+                        label = stringResource(id = R.string.user),
+                        value = uiState.userName.ifBlank { stringResource(id = R.string.no_specified)}
                     )
 
                     Divider(modifier = Modifier.padding(vertical = 12.dp))
 
                     ReadOnlyInfoField(
-                        label = "Email",
-                        value = uiState.email.ifBlank { "No especificado" }
+                        label = stringResource(id = R.string.mail),
+                        value = uiState.email.ifBlank { stringResource(id = R.string.no_specified) }
                     )
 
                     Divider(modifier = Modifier.padding(vertical = 12.dp))
 
                     ReadOnlyInfoField(
-                        label = "CBU",
-                        value = uiState.cbu.ifBlank { "No especificado" }
+                        label = stringResource(id = R.string.cbu),
+                        value = uiState.cbu.ifBlank { stringResource(id = R.string.no_specified) }
                     )
 
                     Divider(modifier = Modifier.padding(vertical = 12.dp))
@@ -123,8 +125,8 @@ fun AccountInfoScreen(
                     // Editable Alias Field
                     // Assuming the PersonalInfoField expects a String value on click
                     PersonalInfoField(
-                        label = "Alias",
-                        value = uiState.alias.ifBlank { "No especificado" },
+                        label = stringResource(id = R.string.alias),
+                        value = uiState.alias.ifBlank { stringResource(id = R.string.no_specified) },
                         onEditClick = { alias: String -> // Make sure alias is a String
                             viewModel.updateAlias(alias)
                         }

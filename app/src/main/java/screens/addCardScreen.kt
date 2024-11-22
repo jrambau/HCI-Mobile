@@ -12,11 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.lupay.MyApplication
+import com.example.lupay.R
 import com.example.lupay.ui.viewmodels.CreditCardViewModel
 import components.CreditCard
 import network.model.NetworkCard
@@ -36,7 +38,7 @@ fun AddCardScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Agregar Tarjeta", color = MaterialTheme.colorScheme.onBackground) },
+                title = { Text(text = stringResource(id = R.string.add_card), color = MaterialTheme.colorScheme.onBackground) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -147,21 +149,25 @@ private fun AddCardContent(
         }
     }
 
+    val err_card_num = stringResource(id = R.string.invalid_card_num)
+    val err_card_date = stringResource(id = R.string.invalid_date)
+    val err_cvv = stringResource(id = R.string.cvv_invalid)
+
     // Validate Inputs
     fun validateInputs(): Boolean {
         return when {
             !isValidCardNumber(cardNumber) -> {
-                errorMessage = "Número de tarjeta inválido"
+                errorMessage = err_card_num
                 showErrorDialog = true
                 false
             }
             !isValidExpiryDate(cardExpiry) -> {
-                errorMessage = "Fecha de vencimiento inválida"
+                errorMessage = err_card_date
                 showErrorDialog = true
                 false
             }
             cvv.length != 3 -> {
-                errorMessage = "Código de seguridad inválido"
+                errorMessage = err_cvv
                 showErrorDialog = true
                 false
             }
@@ -183,11 +189,11 @@ private fun AddCardContent(
         Spacer(modifier = Modifier.height(32.dp))
 
         // Credit Card Number Field
-        Text(text = "Número de Tarjeta", style = MaterialTheme.typography.bodyMedium)
+        Text(text = stringResource(id = R.string.card_number), style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(
             value = cardNumber,
             onValueChange = { cardNumber = it.take(16) },
-            label = { Text("Ingresar...") },
+            label = { Text(stringResource(id = R.string.enter)) },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
@@ -198,11 +204,11 @@ private fun AddCardContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         // Cardholder Name Field
-        Text(text = "Nombre del titular", style = MaterialTheme.typography.bodyMedium)
+        Text(text = stringResource(id = R.string.card_owner), style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(
             value = cardName,
             onValueChange = { cardName = it },
-            label = { Text("Ingresar") },
+            label = { Text(stringResource(id = R.string.enter)) },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
@@ -212,7 +218,7 @@ private fun AddCardContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         // Expiry Date Field
-        Text(text = "Vencimiento", style = MaterialTheme.typography.bodyMedium)
+        Text(text = stringResource(id = R.string.expiration), style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(
             value = cardExpiry,
             onValueChange = {
@@ -223,7 +229,7 @@ private fun AddCardContent(
                 }
                 cardExpiry = formattedExpiry
             },
-            label = { Text("MM/AA") },
+            label = { Text(stringResource(id = R.string.date)) },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
@@ -246,7 +252,7 @@ private fun AddCardContent(
             shape = RoundedCornerShape(24.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
         ) {
-            Text("Agregar")
+            Text(stringResource(id = R.string.add))
         }
 
         if (uiState.isLoading) {
@@ -262,11 +268,11 @@ private fun AddCardContent(
     if (showErrorDialog) {
         AlertDialog(
             onDismissRequest = { showErrorDialog = false },
-            title = { Text("Error") },
+            title = { Text(stringResource(id = R.string.error)) },
             text = { Text(errorMessage) },
             confirmButton = {
                 TextButton(onClick = { showErrorDialog = false }) {
-                    Text("OK")
+                    Text(stringResource(id = R.string.ok))
                 }
             }
         )

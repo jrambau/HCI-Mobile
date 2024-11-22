@@ -18,6 +18,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.stringResource
+import com.example.lupay.R
 import components.NavigationRail
 import components.TabletLayout
 import com.example.lupay.ui.screens.*
@@ -153,7 +155,7 @@ fun AppNavHost(
 
         composable("main") {
             TopBarScaffoldWrapper(
-                title = "General",
+                title = stringResource(id = R.string.general),
                 navController = navController,
                 deviceType = deviceType,
                 currentRoute = currentRoute
@@ -166,7 +168,7 @@ fun AppNavHost(
 
         composable("wallet") {
             TopBarScaffoldWrapper(
-                title = "Tarjetas",
+                title = stringResource(id = R.string.cards),
                 navController = navController,
                 deviceType = deviceType,
                 currentRoute = currentRoute
@@ -180,7 +182,7 @@ fun AppNavHost(
 
         composable("analytics") {
             TopBarScaffoldWrapper(
-                title = "Inversiones",
+                title = stringResource(id = R.string.investment),
                 navController = navController,
                 deviceType = deviceType,
                 currentRoute = currentRoute
@@ -211,7 +213,7 @@ fun AppNavHost(
 
         composable("profile") {
             TopBarScaffoldWrapper(
-                title = "Perfil",
+                title = stringResource(id = R.string.profile),
                 navController = navController,
                 deviceType = deviceType,
                 currentRoute = currentRoute

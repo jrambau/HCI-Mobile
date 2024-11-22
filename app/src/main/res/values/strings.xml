@@ -88,6 +88,48 @@
     <string name="security">Seguridad</string>
     <string name="security_desc">Configura la seguridad de tu cuenta.</string>
     <string name="enter2">Ingresar</string>
+    <string name="charging">Cargando...</string>
+    <string name="user">Usuario</string>
+    <string name="change_pass">Cambiar contraseña</string>
+    <string name="n_pass">Nueva contraseña</string>
+    <string name="confirm_pass">Confirmar contraseña</string>
+    <string name="match_pass">Las contraseñas no coinciden</string>
+    <string name="update_pass">Actualizar contraseña</string>
+    <string name="success_pass">Contraseña cambiada con éxito</string>
+    <string name="add_card">Agregar tarjeta</string>
+    <string name="invalid_card_num">Numero de tarjeta inválido</string>
+    <string name="invalid_date">Fecha de vencimiento inválida</string>
+    <string name="cvv_invalid">Código de seguridad inválido</string>
+    <string name="error" translatable="false">Error</string>
+    <string name="transactions">Transacciones</string>
+    <string name="no_data">No hay datos de gastos disponibles</string>
+    <string name="transaction_data">Datalles de la transacción</string>
+    <string name="close">Cerrar</string>
+    <string name="amount">Monto</string>
+    <string name="dest_mail">Email del destinatario</string>
+    <string name="desc">Descripción</string>
+    <string name="account">Cuenta</string>
+    <string name="card">Tarjeta</string>
+    <string name="select_card">Seleccionar tarjeta</string>
+    <string name="transfer2">Trasferir</string>
+    <string name="generate_link">Generar link de pago</string>
+    <string name="pay_link">Pagar con link</string>
+    <string name="copy">Copiar al portapapeles</string>
+    <string name="uuid">UUID del link de pago</string>
+    <string name="generate">Generar</string>
+    <string name="pay">Pagar</string>
+    <string name="generate_link2">Generar link</string>
+    <string name="get_details">Obtener detalles</string>
+    <string name="details">Detalles del pago</string>
+    <string name="err_details">No se pudieron cargar los detalles del pago</string>
+    <string name="refresh">Recargar</string>
+    <string name="success">Éxito</string>
+    <string name="general" translatable="false">General</string>
+    <string name="cards">Tarjetas</string>
+    <string name="profile">Perfil</string>
+    <string name="expiration_cap">VENCIMIENTO</string>
+    <string name="save">Guardar</string>
+    <string name="edit">Editar</string>
 
 
 </resources>

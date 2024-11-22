@@ -18,12 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lupay.ui.viewmodels.CreditCardViewModel
 import theme.CustomTheme
 import androidx.navigation.NavHostController
 import com.example.lupay.MyApplication
+import com.example.lupay.R
 import components.CreditCard
 import kotlinx.coroutines.flow.collectLatest
 import network.model.NetworkCard
@@ -75,7 +77,7 @@ fun WalletScreen(
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null)
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Agregar")
+                        Text(stringResource(id = R.string.add))
                     }
                 }
 
@@ -137,8 +139,8 @@ fun WalletScreen(
                         onDismiss = {
                             delete = false
                         },
-                        title = "Eliminar tarjeta",
-                        message = "¿Estás seguro de eliminar la tarjeta?"
+                        title = stringResource(id = R.string.delete),
+                        message = stringResource(id = R.string.confirm_delete)
                     )
                 }
             }

@@ -14,6 +14,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.res.stringResource
+import com.example.lupay.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,13 +57,13 @@ fun SecurityScreen(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = "Seguridad",
+                text = stringResource(id = R.string.security),
                 style = MaterialTheme.typography.headlineMedium
             )
         }
 
         Text(
-            text = "Cambiar Contraseña",
+            text = stringResource(id = R.string.change_pass),
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -71,7 +73,7 @@ fun SecurityScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "Nueva Contraseña",
+                text = stringResource(id = R.string.n_pass),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.align(Alignment.CenterStart).padding(start = 16.dp)
             )
@@ -79,7 +81,7 @@ fun SecurityScreen(
         OutlinedTextField(
             value = newPassword,
             onValueChange = { newPassword = it },
-            label = { Text("Ingresar") },
+            label = { Text(stringResource(id = R.string.enter)) },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
@@ -95,7 +97,7 @@ fun SecurityScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "Confirmar Contraseña",
+                text = stringResource(id = R.string.confirm_pass),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.align(Alignment.CenterStart).padding(start = 16.dp)
             )
@@ -103,7 +105,7 @@ fun SecurityScreen(
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text("Ingresar") },
+            label = { Text(stringResource(id = R.string.enter)) },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
@@ -114,12 +116,13 @@ fun SecurityScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        val err= stringResource(id = R.string.match_pass)
         // Submit button to reset password
         Button(
             onClick = {
                 if (newPassword != confirmPassword) {
                     // Use the setError method to update the error message
-                    viewModel.setError("Las contraseñas no coinciden")
+                    viewModel.setError(err)
                 } else {
                     viewModel.resetPassword(email, newPassword, "resetCode") // Pass actual reset code if needed
                     passwordChangeSuccess.value = true
@@ -129,7 +132,7 @@ fun SecurityScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
-            Text("Actualizar Contraseña")
+            Text(stringResource(id = R.string.update_pass))
         }
 
         // Show loading state if password is being updated
@@ -140,7 +143,7 @@ fun SecurityScreen(
         // Show success or error message
         if (passwordChangeSuccess.value) {
             Text(
-                text = "Contraseña cambiada con éxito.",
+                text = stringResource(id = R.string.success_pass),
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )

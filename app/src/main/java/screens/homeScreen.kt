@@ -23,8 +23,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import com.example.lupay.MyApplication
+import com.example.lupay.R
 import network.model.NetworkCard
 import network.model.NetworkPaymentInfo
 import kotlin.math.abs
@@ -88,7 +90,7 @@ fun HomeScreen(
 
             item {
                 Text(
-                    text = "Transacciones",
+                    text = stringResource(id = R.string.transactions),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -206,7 +208,7 @@ fun PanelSection(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Disponible",
+                    text = stringResource(id = R.string.money_av),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )
@@ -240,17 +242,17 @@ fun PanelSection(
             ) {
                 ActionButton(
                     icon = Icons.Default.ArrowDownward,
-                    label = "Ingresar dinero",
+                    label = stringResource(id = R.string.deposit),
                     onClick = onRechargeClick
                 )
                 ActionButton(
                     icon = Icons.Default.CompareArrows,
-                    label = "Transferir dinero",
+                    label = stringResource(id = R.string.to_transfer),
                     onClick = onTransferClick
                 )
                 ActionButton(
                     icon = Icons.Default.Payments,
-                    label = "Link de pago",
+                    label = stringResource(id = R.string.link),
                     onClick = onPaymentLinkClick
                 )
             }
@@ -291,7 +293,7 @@ fun ExpensesSection(
     monthlyExpenses: List<MonthlyExpense>
 ) {
     Text(
-        text = "Gastos",
+        text = stringResource(id = R.string.expenses),
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold
     )
@@ -301,7 +303,7 @@ fun ExpensesSection(
         fontWeight = FontWeight.Bold
     )
     Text(
-        text = "últimos 6 meses",
+        text = stringResource(id = R.string.last_months),
         style = MaterialTheme.typography.bodySmall,
         color = Color.Gray
     )
@@ -310,7 +312,7 @@ fun ExpensesSection(
 
     if (monthlyExpenses.isEmpty()) {
         Text(
-            text = "No hay datos de gastos disponibles",
+            text = stringResource(id = R.string.no_data),
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray
         )
@@ -405,7 +407,7 @@ fun SearchBar(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp)),
-        placeholder = { Text("Buscar") },
+        placeholder = { Text(stringResource(id = R.string.search)) },
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
         singleLine = true
     )
@@ -490,7 +492,7 @@ fun TransactionDetailsDialog(transaction: Transaction, onDismiss: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Detalles de la transacción",
+                    text = stringResource(id = R.string.transaction_data),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -501,7 +503,7 @@ fun TransactionDetailsDialog(transaction: Transaction, onDismiss: () -> Unit) {
                 TransactionDetailItem("Usuario", transaction.userName)
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = onDismiss) {
-                    Text("Cerrar")
+                    Text(stringResource(id = R.string.close))
                 }
             }
         }
@@ -540,7 +542,7 @@ fun TransferDialog(onDismiss: () -> Unit, onTransfer: (Double, String, String) -
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Transferir dinero",
+                    text = stringResource(id = R.string.tranfer),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -548,20 +550,20 @@ fun TransferDialog(onDismiss: () -> Unit, onTransfer: (Double, String, String) -
                 TextField(
                     value = amount,
                     onValueChange = { amount = it },
-                    label = { Text("Monto") },
+                    label = { Text(stringResource(id = R.string.amount)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 TextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email del destinatario") }
+                    label = { Text(stringResource(id = R.string.dest_mail)) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 TextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Descripción") }
+                    label = { Text(stringResource(id = R.string.desc)) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
@@ -575,7 +577,7 @@ fun TransferDialog(onDismiss: () -> Unit, onTransfer: (Double, String, String) -
                                 MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
                         )
                     ) {
-                        Text("Cuenta")
+                        Text(stringResource(id = R.string.account))
                     }
                     Button(
                         onClick = { viewModel.setPaymentMethod(HomeViewModel.PaymentMethod.CARD) },
@@ -584,7 +586,7 @@ fun TransferDialog(onDismiss: () -> Unit, onTransfer: (Double, String, String) -
                                 MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
                         )
                     ) {
-                        Text("Tarjeta")
+                        Text(stringResource(id = R.string.card))
                     }
                 }
                 if (viewModel.selectedPaymentMethod == HomeViewModel.PaymentMethod.CARD) {
@@ -596,7 +598,7 @@ fun TransferDialog(onDismiss: () -> Unit, onTransfer: (Double, String, String) -
                     ) {
                         TextField(
                             readOnly = true,
-                            value = viewModel.selectedCard?.number?.let { it } ?: "Seleccionar tarjeta",
+                            value = viewModel.selectedCard?.number?.let { it } ?: stringResource(id = R.string.select_card),
                             onValueChange = { },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                             colors = ExposedDropdownMenuDefaults.textFieldColors(),
@@ -627,7 +629,7 @@ fun TransferDialog(onDismiss: () -> Unit, onTransfer: (Double, String, String) -
                         }
                     }
                 ) {
-                    Text("Transferir")
+                    Text(stringResource(id = R.string.transfer2))
                 }
             }
         }
@@ -659,7 +661,7 @@ fun PaymentLinkDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = if (isGenerating) "Generar link de pago" else "Pagar con link",
+                    text = if (isGenerating) stringResource(id = R.string.generate_link) else stringResource(id = R.string.pay_link),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -668,14 +670,14 @@ fun PaymentLinkDialog(
                     TextField(
                         value = amount,
                         onValueChange = { amount = it },
-                        label = { Text("Monto") },
+                        label = { Text(stringResource(id = R.string.amount)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     TextField(
                         value = description,
                         onValueChange = { description = it },
-                        label = { Text("Descripción") }
+                        label = { Text(stringResource(id = R.string.desc)) }
                     )
                     if (generatedLink != null) {
                         Spacer(modifier = Modifier.height(8.dp))
@@ -685,14 +687,14 @@ fun PaymentLinkDialog(
                                 clipboardManager.setText(AnnotatedString(generatedLink))
                             }
                         ) {
-                            Text("Copiar al portapapeles")
+                            Text(stringResource(id = R.string.copy))
                         }
                     }
                 } else {
                     TextField(
                         value = linkUuid,
                         onValueChange = { linkUuid = it },
-                        label = { Text("UUID del link de pago") }
+                        label = { Text(stringResource(id = R.string.uuid)) }
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -706,7 +708,7 @@ fun PaymentLinkDialog(
                             containerColor = if (isGenerating) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
                         )
                     ) {
-                        Text("Generar")
+                        Text(stringResource(id = R.string.generate))
                     }
                     Button(
                         onClick = { isGenerating = false },
@@ -714,7 +716,7 @@ fun PaymentLinkDialog(
                             containerColor = if (!isGenerating) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
                         )
                     ) {
-                        Text("Pagar")
+                        Text(stringResource(id = R.string.pay))
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -732,7 +734,7 @@ fun PaymentLinkDialog(
                         }
                     }
                 ) {
-                    Text(if (isGenerating) "Generar link" else "Obtener detalles")
+                    Text(if (isGenerating) stringResource(id = R.string.generate_link2) else stringResource(id = R.string.get_details))
                 }
             }
         }
@@ -762,7 +764,7 @@ fun PaymentLinkDetailsDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Detalles del pago",
+                    text = stringResource(id = R.string.details),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -783,7 +785,7 @@ fun PaymentLinkDetailsDialog(
                                     MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
                             )
                         ) {
-                            Text("Cuenta")
+                            Text(stringResource(id = R.string.account))
                         }
                         Button(
                             onClick = { selectedPaymentMethod = HomeViewModel.PaymentMethod.CARD },
@@ -792,7 +794,7 @@ fun PaymentLinkDetailsDialog(
                                     MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
                             )
                         ) {
-                            Text("Tarjeta")
+                            Text(stringResource(id = R.string.card))
                         }
                     }
 
@@ -805,7 +807,7 @@ fun PaymentLinkDetailsDialog(
                         ) {
                             TextField(
                                 readOnly = true,
-                                value = selectedCard?.number ?: "Seleccionar tarjeta",
+                                value = selectedCard?.number ?: stringResource(id = R.string.select_card),
                                 onValueChange = { },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                                 colors = ExposedDropdownMenuDefaults.textFieldColors(),
@@ -838,12 +840,12 @@ fun PaymentLinkDetailsDialog(
                             )
                         }
                     ) {
-                        Text("Pagar")
+                        Text(stringResource(id = R.string.pay))
                     }
-                } ?: Text("No se pudieron cargar los detalles del pago")
+                } ?: Text(stringResource(id = R.string.err_details))
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = onDismiss) {
-                    Text("Cerrar")
+                    Text(stringResource(id = R.string.close))
                 }
             }
         }
@@ -866,7 +868,7 @@ fun RechargeDialog(onDismiss: () -> Unit, onRecharge: (Double) -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Ingresar dinero",
+                    text = stringResource(id = R.string.deposit),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -874,7 +876,7 @@ fun RechargeDialog(onDismiss: () -> Unit, onRecharge: (Double) -> Unit) {
                 TextField(
                     value = amount,
                     onValueChange = { amount = it },
-                    label = { Text("Monto") },
+                    label = { Text(stringResource(id = R.string.amount)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -886,7 +888,7 @@ fun RechargeDialog(onDismiss: () -> Unit, onRecharge: (Double) -> Unit) {
                         }
                     }
                 ) {
-                    Text("Recargar")
+                    Text(stringResource(id = R.string.refresh))
                 }
             }
         }
@@ -897,11 +899,11 @@ fun RechargeDialog(onDismiss: () -> Unit, onRecharge: (Double) -> Unit) {
 fun ErrorDialog(error: Error, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Error") },
-        text = { Text(error.message ?: "An unknown error occurred") },
+        title = { Text(stringResource(id = R.string.error)) },
+        text = { Text(error.message ?: stringResource(id = R.string.unkown_error)) },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("OK")
+                Text(stringResource(id = R.string.ok))
             }
         }
     )
@@ -911,11 +913,11 @@ fun ErrorDialog(error: Error, onDismiss: () -> Unit) {
 fun SuccessDialog(message: String, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Éxito") },
+        title = { stringResource(id = R.string.success) },
         text = { Text(message) },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("OK")
+                Text(stringResource(id = R.string.ok))
             }
         }
     )
