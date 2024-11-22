@@ -133,6 +133,7 @@ fun AppNavHost(
             if (deviceType == DeviceType.TABLET) {
                 TabletScreenWrapper {
                     RegisterScreen(
+                        navController = navController,
                         onNavigateToLogin = { navController.navigate("login") },
                         onNavigateToMain = {
                             navController.navigate("main") {
@@ -143,6 +144,7 @@ fun AppNavHost(
                 }
             } else {
                 RegisterScreen(
+                    navController = navController,
                     onNavigateToLogin = { navController.navigate("login") },
                     onNavigateToMain = {
                         navController.navigate("main") {
@@ -152,6 +154,8 @@ fun AppNavHost(
                 )
             }
         }
+
+
 
         composable("main") {
             TopBarScaffoldWrapper(
