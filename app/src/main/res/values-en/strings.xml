@@ -110,4 +110,8 @@
     <string name="fail_fetch">Failed to fetch cards</string>
     <string name="log_out">Log out</string>
     <string name="log_out_desc">Are you sure you want to log out?</string>
+    <string name="confirm_transfer">Confirm transfer</string>
+    <string name="transfer_to">Transfer to: %s</string>
+    <string name="amount_to_transfer">Amount: $%.2f</string>
+    <string name="description">Description: %s</string>
 </resources>
