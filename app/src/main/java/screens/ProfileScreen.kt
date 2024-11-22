@@ -1,4 +1,4 @@
-
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -18,6 +18,10 @@ import androidx.navigation.NavController
 import com.example.lupay.MyApplication
 import com.example.lupay.R
 import components.ConfirmationDialog
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.foundation.layout.navigationBars
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +33,10 @@ fun ProfileScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showLogOutConf by remember { mutableStateOf(false) }
 
+    // Add configuration to check orientation
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     // Fetch user data on screen load
     LaunchedEffect(Unit) {
         viewModel.fetchUserData()
@@ -37,7 +45,12 @@ fun ProfileScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(
+                top = if (isLandscape) 0.dp else 16.dp,
+                bottom = 16.dp,
+                start = 16.dp,
+                end = 16.dp
+            )
     ) {
         // Show loading indicator if data is being fetched
         if (uiState.isLoading) {
@@ -65,12 +78,17 @@ fun ProfileScreen(
             return@Column
         }
 
-        // Profile Title: Capitalize the first letter of the first name and surname
+        Spacer(modifier = Modifier.height((-4).dp))
+
         Row(
-            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(bottom = 15.dp)
-                .padding(top = 10.dp)
+                .fillMaxWidth()
+                .padding(
+                    top = 0.dp,
+                    bottom = if (isLandscape) 8.dp else 24.dp
+                ),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = if (uiState.userName.isNotBlank()) {
@@ -80,8 +98,22 @@ fun ProfileScreen(
                     stringResource(id = R.string.charging)
                 },
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.weight(1f)
             )
+
+            // Show logout button here if in landscape
+            if (isLandscape) {
+                TextButton(
+                    onClick = { showLogOutConf = true },
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.log_out),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         }
 
         // Profile menu items
@@ -104,20 +136,23 @@ fun ProfileScreen(
             onClick = { navController.navigate("security_screen") } // Navigate to Seguridad screen
         )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-        TextButton(
-            onClick = { showLogOutConf = true },
-        ) {
-            Text(
-                text = stringResource(id = R.string.log_out),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
+        // Show logout button at bottom only if NOT in landscape
+        if (!isLandscape) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(
+                    onClick = { showLogOutConf = true },
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.log_out),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
+        }
     }
 
     if(showLogOutConf){
