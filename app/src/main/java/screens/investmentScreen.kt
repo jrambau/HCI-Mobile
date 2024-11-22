@@ -30,7 +30,7 @@ import com.example.lupay.ui.utils.DeviceType
 import com.example.lupay.ui.utils.rememberDeviceType
 import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
 
-@SuppressLint("DefaultLocale")
+
 @Composable
 fun InvestmentScreen(
     modifier: Modifier = Modifier,
