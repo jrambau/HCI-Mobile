@@ -29,7 +29,6 @@ class MyApplication : Application() {
         get() = PaymentRepository(paymentRemoteDataSource)
     val walletRepository : WalletRepository
         get() = WalletRepository(walletRemoteDataSource)
-
     companion object {
         lateinit var instance: MyApplication
             private set

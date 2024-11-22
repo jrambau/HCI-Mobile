@@ -44,8 +44,8 @@
     <string name="expenses">Gastos</string>
     <string name="last_months">Últimos 6 meses</string>
     <string name="search">Buscar</string>
-    <string name="transfer_to">Transferir a</string>
-    <string name="confirm_transfer">Confirmar transferencia: %s</string>
+    <string name="transfer_to">Transferir a %s</string>
+    <string name="confirm_transfer">Confirmar transferencia</string>
     <string name="amount_to_transfer">Monto a transferir: $%.2f</string>
     <string name="description">Descripción: %s</string>
     <!-- tarjetas -->

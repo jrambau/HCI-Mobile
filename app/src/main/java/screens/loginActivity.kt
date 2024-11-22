@@ -40,7 +40,6 @@ fun LoginScreen(
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     LaunchedEffect(Unit) {
-        // Verifica si hay un token guardado al iniciar la pantalla
         if (viewModel.checkSavedToken()) {
             onNavigateToMain()
         }
@@ -465,7 +464,7 @@ fun LoginScreen(
     }
 
     LaunchedEffect(uiState.successMessage) {
-        if (uiState.successMessage != null && uiState.successMessage!!.isNotEmpty()) {
+        if (uiState.successMessage != null && uiState.successMessage == MyApplication.instance.getString(R.string.email_sended)) {
             showResetPasswordDialog = true
         }
     }

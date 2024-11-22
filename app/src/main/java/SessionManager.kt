@@ -2,23 +2,18 @@ import android.content.Context
 import android.content.SharedPreferences
 
 
-class SessionManager(context: Context) {
-    private var preferences: SharedPreferences =
-        context.getSharedPreferences("session", Context.MODE_PRIVATE)
-
-
-    fun saveAuthToken(token: String) {
-        val editor = preferences.edit()
-        editor.putString("authToken", token)
-        editor.apply()
-    }
+class SessionManager(private val context: Context) {
+    private val preferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
 
     fun loadAuthToken(): String? {
-        return preferences.getString("authToken", null)
+        return preferences.getString("auth_token", null)
     }
+
+    fun saveAuthToken(token: String) {
+        preferences.edit().putString("auth_token", token).apply()
+    }
+
     fun removeAuthToken() {
-        val editor = preferences.edit()
-        editor.remove("authToken")
-        editor.apply()
+        preferences.edit().remove("auth_token").apply()
     }
 }
