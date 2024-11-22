@@ -17,6 +17,7 @@ import com.example.lupay.ui.viewmodels.ProfileViewModel
 import androidx.navigation.NavController
 import com.example.lupay.MyApplication
 import com.example.lupay.R
+import components.ConfirmationDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,6 +27,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var showLogOutConf by remember { mutableStateOf(false) }
 
     // Fetch user data on screen load
     LaunchedEffect(Unit) {
@@ -101,6 +103,31 @@ fun ProfileScreen(
             description = stringResource(id = R.string.security_desc),
             onClick = { navController.navigate("security_screen") } // Navigate to Seguridad screen
         )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+        TextButton(
+            onClick = { showLogOutConf = true },
+        ) {
+            Text(
+                text = stringResource(id = R.string.log_out),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+            }
+    }
+
+    if(showLogOutConf){
+        ConfirmationDialog(
+            onConfirm = {navController.navigate("login")},
+            onDismiss = {navController.navigate("profile")},
+            title = stringResource(id = R.string.log_out_confirm),
+            message = stringResource(id = R.string.log_out_desc)
+        )
+        showLogOutConf = false
     }
 }
 

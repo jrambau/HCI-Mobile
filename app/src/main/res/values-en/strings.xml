@@ -108,4 +108,6 @@
     <string name="daily_interest">Daily interest rate</string>
     <string name="pay_to">Pay  to</string>
     <string name="fail_fetch">Failed to fetch cards</string>
+    <string name="log_out">Log out</string>
+    <string name="log_out_desc">Are you sure you want to log out?</string>
 </resources>

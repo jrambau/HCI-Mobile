@@ -134,6 +134,9 @@
     <string name="daily_interest">Tasa de interés diaria</string>
     <string name="pay_to">Pagar a</string>
     <string name="fail_fetch">No se pudieron obtener tarjetas</string>
+    <string name="log_out">Cerrar sesión</string>
+    <string name="log_out_confirm">Confirmar cierre de sesión</string>
+    <string name="log_out_desc">¿Estás seguro de que deseas cerrar sesión?</string>
 
 
 </resources>
