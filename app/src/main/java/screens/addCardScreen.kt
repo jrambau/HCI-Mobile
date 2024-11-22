@@ -239,6 +239,19 @@ private fun AddCardContent(
         )
         Spacer(modifier = Modifier.height(8.dp))
 
+        Text(text = stringResource(id = R.string.cvv), style = MaterialTheme.typography.bodyMedium)
+        OutlinedTextField(
+            value = cvv,
+            onValueChange = { cvv = it },
+            label = { Text(stringResource(id = R.string.enter)) },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(24.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Add Card Button
         Button(
             onClick = {
