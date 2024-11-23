@@ -96,7 +96,7 @@ fun HomeScreen(
                             onRechargeClick = { showRechargeDialog = true },
                             viewModel = viewModel
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         ExpensesSection(
                             expenses = uiState.expenses,
                             monthlyExpenses = uiState.monthlyExpenses
@@ -136,7 +136,6 @@ fun HomeScreen(
                     }
                 }
             } else {
-                // Original portrait layout
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -160,7 +159,7 @@ fun HomeScreen(
                             expenses = uiState.expenses,
                             monthlyExpenses = uiState.monthlyExpenses
                         )
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(30.dp))
                     }
 
                     item {
@@ -189,7 +188,7 @@ fun HomeScreen(
             }
         }
 
-        // Keep all the dialogs outside the conditional layout
+
         if (showTransferDialog) {
             TransferDialog(
                 onDismiss = { showTransferDialog = false },
@@ -458,7 +457,7 @@ fun ExpensesSection(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp),
+                .height(150.dp), // Increased height to accommodate month labels
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom
         ) {
@@ -487,12 +486,13 @@ fun ExpenseBar(
         Box(
             modifier = Modifier
                 .width(30.dp)
-                .height(80.dp * height)
+                .height(100.dp * height)
                 .background(Color(0xFF4CAF50), RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
                 .clickable { showDialog = true }
         )
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = month,
+            text = translateMonth(month),
             style = MaterialTheme.typography.bodySmall,
             color = Color.Gray
         )
@@ -511,7 +511,7 @@ fun ExpenseBar(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = stringResource(id = R.string.expenses_in) + " $month",
+                        text = stringResource(id = R.string.expenses_in) + " ${translateMonth(month)}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -1110,4 +1110,25 @@ fun SuccessDialog(message: String, onDismiss: () -> Unit) {
             }
         }
     )
+}
+
+@Composable
+fun translateMonth(month: String): String {
+    val context = LocalContext.current
+    val monthResId = when (month.toLowerCase()) {
+        "jan" -> R.string.january
+        "feb" -> R.string.february
+        "mar" -> R.string.march
+        "apr" -> R.string.april
+        "may" -> R.string.may
+        "jun" -> R.string.june
+        "jul" -> R.string.july
+        "aug" -> R.string.august
+        "sep" -> R.string.september
+        "oct" -> R.string.october
+        "nov" -> R.string.november
+        "dec" -> R.string.december
+        else -> R.string.unknown_month
+    }
+    return context.getString(monthResId)
 }

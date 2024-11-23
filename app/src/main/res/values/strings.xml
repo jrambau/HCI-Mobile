@@ -201,6 +201,18 @@
     <string name="scan_qr">Escanear QR</string>
     <string name="error_fetch_wallwt">Error al cargar información de la billetera</string>
     <string name="error_feching_cards">Error al cargar tarjetas</string>
-
+    <string name="january">Enero</string>
+    <string name="february">Febrero</string>
+    <string name="march">Marzo</string>
+    <string name="april">Abril</string>
+    <string name="may">Mayo</string>
+    <string name="june">Junio</string>
+    <string name="july">Julio</string>
+    <string name="august">Agosto</string>
+    <string name="september">Septiembre</string>
+    <string name="october">Octubre</string>
+    <string name="november">Noviembre</string>
+    <string name="december">Diciembre</string>
+    <string name="unknown_month">Desconocido</string>
 
 </resources>
