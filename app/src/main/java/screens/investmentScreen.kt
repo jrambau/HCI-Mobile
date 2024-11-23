@@ -33,7 +33,6 @@ import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 
-
 @SuppressLint("DefaultLocale")
 @Composable
 fun InvestmentScreen(
@@ -46,10 +45,13 @@ fun InvestmentScreen(
     var isInvestAction by remember { mutableStateOf(true) }
     val deviceType = rememberDeviceType()
     val snackbarHostState = remember { SnackbarHostState() }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     LaunchedEffect(uiState.error, uiState.successMessage) {
         uiState.error?.let {
-            snackbarHostState.showSnackbar(it)
+            errorMessage = it
+            showErrorDialog = true
             viewModel.clearMessages()
         }
         uiState.successMessage?.let {
@@ -113,7 +115,7 @@ fun InvestmentScreen(
                                     amount = uiState.currentValue,
                                     subtitle = {
                                         Text(
-                                            text = stringResource(id = R.string.daily_interest) + ": ${String.format("%.2f", uiState.dailyInterestRate)}%",
+                                            text = stringResource(id = R.string.daily_interest) + ": ${String.format("%.3f", uiState.dailyInterestRate)}%",
                                             color = MaterialTheme.colorScheme.primary,
                                             fontSize = 14.sp
                                         )
@@ -301,7 +303,7 @@ fun InvestmentScreen(
                                 amount = uiState.currentValue,
                                 subtitle = {
                                     Text(
-                                        text = stringResource(R.string.daily_interest) + ": ${String.format("%.8f", uiState.dailyInterestRate)}%",
+                                        text = stringResource(R.string.daily_interest) + ": ${String.format("%.3f", uiState.dailyInterestRate)}%",
                                         color = MaterialTheme.colorScheme.primary,
                                         fontSize = 14.sp
                                     )
@@ -469,6 +471,19 @@ fun InvestmentScreen(
                         onDismiss = { showWithdrawConfirmation = false },
                         title = stringResource(R.string.confirm_withdraw),
                         message = stringResource(R.string.confirm_withdraw_desc) + " $${uiState.withdrawalAmount}?"
+                    )
+                }
+
+                if (showErrorDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showErrorDialog = false },
+                        title = { Text(text = stringResource(R.string.error)) },
+                        text = { Text(text = errorMessage) },
+                        confirmButton = {
+                            TextButton(onClick = { showErrorDialog = false }) {
+                                Text(stringResource(R.string.ok))
+                            }
+                        }
                     )
                 }
 

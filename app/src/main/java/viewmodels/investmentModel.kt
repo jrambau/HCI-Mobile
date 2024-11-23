@@ -43,8 +43,7 @@ class InvestmentViewModel(
                 }
             } catch (e: Exception) {
                 _uiState.update { currentState ->
-                    currentState.copy(error = e.message ?: MyApplication.instance.getString(R.string.error_investment)
-                    )
+                    currentState.copy(error = e.message ?: MyApplication.instance.getString(R.string.error_investment))
                 }
             }
         }
@@ -71,8 +70,7 @@ class InvestmentViewModel(
                 }
             } catch (e: Exception) {
                 _uiState.update { currentState ->
-                    currentState.copy(error = e.message ?: MyApplication.instance.getString(R.string.error_daily_returns)
-                    )
+                    currentState.copy(error = e.message ?: MyApplication.instance.getString(R.string.error_daily_returns))
                 }
             }
         }
@@ -110,8 +108,7 @@ class InvestmentViewModel(
                 }
             } catch (e: Exception) {
                 _uiState.update { currentState ->
-                    currentState.copy(error = e.message ?: MyApplication.instance.getString(R.string.error_interest)
-                    )
+                    currentState.copy(error = e.message ?: MyApplication.instance.getString(R.string.error_interest))
                 }
             }
         }
