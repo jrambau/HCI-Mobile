@@ -15,7 +15,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -271,13 +273,18 @@ private fun AddCardContent(
                     ) {
                         Text(text = stringResource(id = R.string.expiration), style = MaterialTheme.typography.bodyMedium)
                         OutlinedTextField(
-                            value = cardExpiry,
-                            onValueChange = {
-                                var formattedExpiry = it.replace(" ", "").take(5)
-                                if (formattedExpiry.length > 2 && formattedExpiry[2] != '/') {
-                                    formattedExpiry = formattedExpiry.substring(0, 2) + "/" + formattedExpiry.substring(2)
+                            value = TextFieldValue(text = cardExpiry, selection = TextRange(cardExpiry.length)),
+                            onValueChange = { newValue ->
+                                var rawInput = newValue.text.replace(" ", "")
+                                if (rawInput.length > 5) rawInput = rawInput.take(5)
+                                if (rawInput.length > 2 && rawInput[2] != '/') {
+                                    rawInput = rawInput.substring(0, 2) + "/" + rawInput.substring(2)
                                 }
-                                cardExpiry = formattedExpiry
+                                if (rawInput.length == 2 && rawInput.contains("/")) {
+                                    rawInput = rawInput.replace("/", "")
+                                }
+
+                                cardExpiry = rawInput
                             },
                             label = { Text(stringResource(id = R.string.date)) },
                             singleLine = true,
@@ -358,13 +365,18 @@ private fun AddCardContent(
 
             Text(text = stringResource(id = R.string.expiration), style = MaterialTheme.typography.bodyMedium)
             OutlinedTextField(
-                value = cardExpiry,
-                onValueChange = {
-                    var formattedExpiry = it.replace(" ", "").take(5)
-                    if (formattedExpiry.length > 2 && formattedExpiry[2] != '/') {
-                        formattedExpiry = formattedExpiry.substring(0, 2) + "/" + formattedExpiry.substring(2)
+                value = TextFieldValue(text = cardExpiry, selection = TextRange(cardExpiry.length)),
+                onValueChange = { newValue ->
+                    var rawInput = newValue.text.replace(" ", "")
+                    if (rawInput.length > 5) rawInput = rawInput.take(5)
+                    if (rawInput.length > 2 && rawInput[2] != '/') {
+                        rawInput = rawInput.substring(0, 2) + "/" + rawInput.substring(2)
                     }
-                    cardExpiry = formattedExpiry
+                    if (rawInput.length == 2 && rawInput.contains("/")) {
+                        rawInput = rawInput.replace("/", "")
+                    }
+
+                    cardExpiry = rawInput
                 },
                 label = { Text(stringResource(id = R.string.date)) },
                 singleLine = true,

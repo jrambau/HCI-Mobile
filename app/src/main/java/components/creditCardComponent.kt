@@ -36,7 +36,7 @@ fun CreditCard(
         val configuration = LocalConfiguration.current
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-        val cardWidth = if (isLandscape) 240.dp else 320.dp
+        val cardWidth = if (isLandscape) 280.dp else 320.dp
         val cardHeight = if (isLandscape) 150.dp else 200.dp
         
         val cardType = getCardType(cardNumber)
