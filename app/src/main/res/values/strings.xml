@@ -194,7 +194,7 @@
     <string name="password_length_error">La contraseña debe tener como minimo 6 caracteres</string>
     <string name="error_reset_password">Error al cambiar la contraseña</string>
     <string name="error_logout">Error cerrando sesion\n</string>
-    <string name="show_my_qr">Mostrar Qr</string>
+    <string name="show_my_qr">Mostrar QR</string>
     <string name="qr_code">Codigo QR</string>
     <string name="qr_scanner">QR escaner</string>
     <string name="back">Volver</string>
