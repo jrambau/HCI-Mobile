@@ -30,6 +30,8 @@ import components.ConfirmationDialog
 import com.example.lupay.ui.utils.DeviceType
 import com.example.lupay.ui.utils.rememberDeviceType
 import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 
 @SuppressLint("DefaultLocale")
@@ -66,7 +68,8 @@ fun InvestmentScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.spacedBy(24.dp)
                     ) {
                         Text(
@@ -79,7 +82,7 @@ fun InvestmentScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .weight(0.5f),
+                                .weight(0.5f, fill = false),
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Column(
@@ -261,7 +264,8 @@ fun InvestmentScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.spacedBy(24.dp)
                     ) {
                         Text(
