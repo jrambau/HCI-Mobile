@@ -112,6 +112,12 @@ fun RegisterScreen(
                             }
                             if (showDatePicker) {
                                 val datePickerState = rememberDatePickerState()
+                                val configuration = LocalConfiguration.current
+                                val screenHeight = configuration.screenHeightDp.dp
+                                val screenWidth = configuration.screenWidthDp.dp
+                                val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                                val deviceType = rememberDeviceType()
+
                                 DatePickerDialog(
                                     onDismissRequest = { showDatePicker = false },
                                     confirmButton = {
@@ -130,7 +136,24 @@ fun RegisterScreen(
                                         }
                                     }
                                 ) {
-                                    DatePicker(state = datePickerState)
+                                    Box(
+                                        modifier = Modifier
+                                            .then(
+                                                if (isLandscape && deviceType != DeviceType.TABLET) {
+                                                    Modifier
+                                                        .width(screenWidth * 0.7f)
+                                                        .height(screenHeight * 0.8f)
+                                                } else {
+                                                    Modifier.fillMaxSize()
+                                                }
+                                            )
+                                            .verticalScroll(rememberScrollState())
+                                    ) {
+                                        DatePicker(
+                                            state = datePickerState,
+                                            modifier = Modifier.align(Alignment.Center)
+                                        )
+                                    }
                                 }
                             }
                             if (uiState.isFetching) {
