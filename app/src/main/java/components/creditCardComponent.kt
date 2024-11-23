@@ -35,10 +35,9 @@ fun CreditCard(
     CustomTheme {
         val configuration = LocalConfiguration.current
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        
-        // Definir dimensiones según la orientación
+
         val cardWidth = if (isLandscape) 240.dp else 320.dp
-        val cardHeight = if (isLandscape) 120.dp else 200.dp
+        val cardHeight = if (isLandscape) 150.dp else 200.dp
         
         val cardType = getCardType(cardNumber)
         val isDarkTheme = isSystemInDarkTheme()

@@ -114,7 +114,7 @@ private fun AddCardContent(
         }
     }
 
-    // Luhn Algorithm
+
     fun luhnAlgorithm(cardNumber: String): Boolean {
         var sum = 0
         var shouldDouble = false
@@ -132,13 +132,12 @@ private fun AddCardContent(
         return sum % 10 == 0
     }
 
-    // Validate Credit Card Number - Luhn Algorithm
+
     fun isValidCardNumber(cardNumber: String): Boolean {
-//        return cardNumber.length == 16 && luhnAlgorithm(cardNumber)
         return cardNumber.length == 16;
     }
 
-    // Validate Expiry Date - MM/YY format
+
     fun isValidExpiryDate(expiry: String): Boolean {
         return try {
             val sdf = SimpleDateFormat("MM/yy", Locale.getDefault())
@@ -155,7 +154,7 @@ private fun AddCardContent(
     val err_card_date = stringResource(id = R.string.invalid_date)
     val err_cvv = stringResource(id = R.string.cvv_invalid)
 
-    // Validate Inputs
+
     fun validateInputs(): Boolean {
         return when {
             !isValidCardNumber(cardNumber) -> {
@@ -185,27 +184,31 @@ private fun AddCardContent(
         Row(
             modifier = modifier
                 .fillMaxSize()
-                .padding(top = 0.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(top = 0.dp, start = 16.dp, end = 16.dp, bottom = 5.dp),
+            horizontalArrangement = Arrangement.spacedBy(15.dp)
         ) {
             Column(
                 modifier = Modifier
-                    .weight(0.4f)
-                    .fillMaxHeight(),
+                    .weight(0.5f)
+                    .fillMaxHeight(0.99f),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(32.dp))  // Added spacing from top
-                
-                CreditCard(
-                    cardNumber = cardNumber,
-                    cardName = cardName,
-                    cardExpiry = cardExpiry,
-                    isHidden = false
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight(0.8f)
+                        .padding(vertical = 20.dp)
+                ) {
+                    CreditCard(
+                        cardNumber = cardNumber,
+                        cardName = cardName,
+                        cardExpiry = cardExpiry,
+                        isHidden = false
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Button(
                     onClick = {
                         if (validateInputs()) {
@@ -214,19 +217,11 @@ private fun AddCardContent(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .defaultMinSize(minHeight = 48.dp),
+                        .padding(horizontal = 16.dp),
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                 ) {
                     Text(stringResource(id = R.string.add))
-                }
-
-                if (uiState.isLoading) {
-                    CircularProgressIndicator()
-                }
-
-                error?.let {
-                    Text(it, color = Color.Red)
                 }
             }
 
@@ -293,8 +288,6 @@ private fun AddCardContent(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
                     }
-
-                    // Security code column
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
@@ -334,7 +327,6 @@ private fun AddCardContent(
             )
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Credit Card Number Field
             Text(text = stringResource(id = R.string.card_number), style = MaterialTheme.typography.bodyMedium)
             OutlinedTextField(
                 value = cardNumber,
@@ -349,7 +341,7 @@ private fun AddCardContent(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Cardholder Name Field
+
             Text(text = stringResource(id = R.string.card_owner), style = MaterialTheme.typography.bodyMedium)
             OutlinedTextField(
                 value = cardName,
@@ -363,12 +355,11 @@ private fun AddCardContent(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Expiry Date Field
+
             Text(text = stringResource(id = R.string.expiration), style = MaterialTheme.typography.bodyMedium)
             OutlinedTextField(
                 value = cardExpiry,
                 onValueChange = {
-                    // Add slash ("/") after 2 digits and ensure it's limited to 5 characters (MM/YY format)
                     var formattedExpiry = it.replace(" ", "").take(5)
                     if (formattedExpiry.length > 2 && formattedExpiry[2] != '/') {
                         formattedExpiry = formattedExpiry.substring(0, 2) + "/" + formattedExpiry.substring(2)
@@ -398,7 +389,6 @@ private fun AddCardContent(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Add Card Button
             Button(
                 onClick = {
                     if (validateInputs()) {
@@ -424,7 +414,6 @@ private fun AddCardContent(
         }
     }
 
-    // Error Dialog
     if (showErrorDialog) {
         AlertDialog(
             onDismissRequest = { showErrorDialog = false },
