@@ -37,12 +37,15 @@ import com.example.lupay.ui.utils.rememberDeviceType
 import android.content.res.Configuration
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.navigation.NavController
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel(factory = HomeViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication))
+    navController: NavController,
+    viewModel: HomeViewModel = viewModel(factory = HomeViewModel.provideFactory(LocalContext.current.applicationContext as MyApplication)),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var generalUiState = viewModel.generalUiState
@@ -63,6 +66,14 @@ fun HomeScreen(
                         uiState.monthlyExpenses.isEmpty() &&
                         uiState.availableBalance == 0)
     }
+    if (!generalUiState.isAuthenticated) {
+        LaunchedEffect(Unit) {
+            navController.navigate("login") {
+                popUpTo("home") { inclusive = true }
+            }
+        }
+        return
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -75,67 +86,8 @@ fun HomeScreen(
                 CircularProgressIndicator()
             }
         } else {
-            if (deviceType == DeviceType.TABLET || isLandscape) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    // Left column - more compact layout
-                    Column(
-                        modifier = Modifier
-                            .weight(0.5f)
-                            .fillMaxHeight()
-                            .padding(end = 8.dp)
-                    ) {
-                        PanelSection(
-                            availableBalance = uiState.availableBalance,
-                            onTransferClick = { showTransferDialog = true },
-                            onPaymentLinkClick = { showPaymentLinkDialog = true },
-                            onRechargeClick = { showRechargeDialog = true },
-                            viewModel = viewModel
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        ExpensesSection(
-                            expenses = uiState.expenses,
-                            monthlyExpenses = uiState.monthlyExpenses
-                        )
-                    }
-
-                    // Right column - transactions with LazyColumn
-                    Column(
-                        modifier = Modifier
-                            .weight(0.5f)
-                            .fillMaxHeight()
-                            .padding(start = 8.dp)
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.transactions),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        SearchBar(
-                            onSearchQueryChange = { query ->
-                                viewModel.updateSearchQuery(query)
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            items(uiState.filteredTransactions) { transaction ->
-                                TransactionItem(
-                                    transaction = transaction,
-                                    onClick = { selectedTransaction = transaction }
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                            }
-                        }
-                    }
-                }
-            } else {
+            if (deviceType == DeviceType.TABLET || (deviceType != DeviceType.TABLET && !isLandscape)) {
+                // Diseño original para tablets o dispositivos en modo retrato
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -177,18 +129,97 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                     }
 
-                    items(uiState.filteredTransactions) { transaction ->
-                        TransactionItem(
-                            transaction = transaction,
-                            onClick = { selectedTransaction = transaction }
+                    if (uiState.filteredTransactions.isEmpty()) {
+                        item {
+                            Text(
+                                text = stringResource(id = R.string.no_transactions),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.Gray,
+                                modifier = Modifier.padding(vertical = 16.dp)
+                            )
+                        }
+                    } else {
+                        items(uiState.filteredTransactions) { transaction ->
+                            TransactionItem(
+                                transaction = transaction,
+                                onClick = { selectedTransaction = transaction }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+                }
+            } else {
+                // Nuevo diseño para dispositivos no tablet en modo paisaje
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    // Columna izquierda - Panel y Transacciones
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .padding(end = 8.dp)
+                    ) {
+                        PanelSection(
+                            availableBalance = uiState.availableBalance,
+                            onTransferClick = { showTransferDialog = true },
+                            onPaymentLinkClick = { showPaymentLinkDialog = true },
+                            onRechargeClick = { showRechargeDialog = true },
+                            viewModel = viewModel
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = stringResource(id = R.string.transactions),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(8.dp))
+                        SearchBar(
+                            onSearchQueryChange = { query ->
+                                viewModel.updateSearchQuery(query)
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        if (uiState.filteredTransactions.isEmpty()) {
+                            Text(
+                                text = stringResource(id = R.string.no_transactions),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.Gray,
+                                modifier = Modifier.padding(vertical = 16.dp)
+                            )
+                        } else {
+                            LazyColumn {
+                                items(uiState.filteredTransactions) { transaction ->
+                                    TransactionItem(
+                                        transaction = transaction,
+                                        onClick = { selectedTransaction = transaction }
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                }
+                            }
+                        }
+                    }
+
+                    // Columna derecha - Gastos
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .padding(start = 8.dp)
+                    ) {
+                        ExpensesSection(
+                            expenses = uiState.expenses,
+                            monthlyExpenses = uiState.monthlyExpenses
+                        )
                     }
                 }
             }
         }
 
-
+        // Diálogos y otros componentes...
         if (showTransferDialog) {
             TransferDialog(
                 onDismiss = { showTransferDialog = false },
@@ -204,25 +235,6 @@ fun HomeScreen(
                 },
                 onPay = { linkUuid ->
                     viewModel.getPaymentLinkDetails(linkUuid)
-                    showPaymentLinkDetailsDialog = true
-                },
-                generatedLink = uiState.generatedPaymentLink,
-                context = LocalContext.current
-            )
-        }
-
-        if (showPaymentLinkDialog) {
-            PaymentLinkDialog(
-                onDismiss = {
-                    showPaymentLinkDialog = false
-                    viewModel.clearGeneratedPaymentLink()
-                },
-                onGenerate = { amount, description ->
-                    viewModel.generatePaymentLink(amount, description)
-                },
-                onPay = { linkUuid ->
-                    viewModel.getPaymentLinkDetails(linkUuid)
-                    showPaymentLinkDetailsDialog = true
                 },
                 generatedLink = uiState.generatedPaymentLink,
                 context = LocalContext.current
@@ -273,7 +285,6 @@ fun HomeScreen(
         }
     }
 }
-
 
 
 @Composable
@@ -332,7 +343,7 @@ fun PanelSection(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = if (isLandscape) 8.dp else 16.dp),
+                    .padding(top = if (isLandscape) 6.dp else 16.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 if (deviceType == DeviceType.TABLET || isLandscape) {
@@ -369,7 +380,6 @@ fun PanelSection(
         }
     }
 }
-
 @Composable
 fun ActionButton(
     icon: ImageVector,
@@ -680,7 +690,7 @@ fun TransferDialog(onDismiss: () -> Unit, viewModel: HomeViewModel) {
             shape = RoundedCornerShape(16.dp),
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(5.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -688,7 +698,7 @@ fun TransferDialog(onDismiss: () -> Unit, viewModel: HomeViewModel) {
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 TextField(
                     value = amount,
                     onValueChange = { amount = it },

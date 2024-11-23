@@ -97,7 +97,7 @@
     <string name="get_details">Get details</string>
     <string name="details">Payment details</string>
     <string name="err_details">Payment details are not loaded</string>
-    <string name="refresh">Refresh</string>
+    <string name="refresh">Recharge</string>
     <string name="success">Success</string>
     <string name="cards">Cards</string>
     <string name="profile">Profile</string>
@@ -189,4 +189,5 @@
     <string name="november">November</string>
     <string name="december">December</string>
     <string name="unknown_month">Unknown</string>
+    <string name="no_transactions">No transactions available</string>
 </resources>

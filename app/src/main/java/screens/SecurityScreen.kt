@@ -114,11 +114,13 @@ fun SecurityScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             val err = stringResource(id = R.string.match_pass)
+            val emptyFieldsError = stringResource(id = R.string.error_empty_fields)
             // Submit button to reset password
             Button(
                 onClick = {
-                    if (newPassword != confirmPassword) {
-                        // Use the setError method to update the error message
+                    if (newPassword.isEmpty() || confirmPassword.isEmpty() || email.isEmpty()) {
+                        viewModel.setError(emptyFieldsError)
+                    } else if (newPassword != confirmPassword) {
                         viewModel.setError(err)
                     } else {
                         viewModel.resetPassword(email, newPassword, "resetCode") // Pass actual reset code if needed
@@ -156,4 +158,3 @@ fun SecurityScreen(
         }
     }
 }
-

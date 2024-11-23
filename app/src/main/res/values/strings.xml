@@ -48,6 +48,7 @@
     <string name="confirm_transfer">Confirmar transferencia</string>
     <string name="amount_to_transfer">Monto a transferir: $%.2f</string>
     <string name="description">Descripción: %s</string>
+    <string name="no_transactions">No hay transacciones disponibles</string>
     <!-- tarjetas -->
 
     <string name="add">Agregar</string>

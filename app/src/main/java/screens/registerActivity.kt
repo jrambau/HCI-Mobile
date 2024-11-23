@@ -24,6 +24,7 @@ import theme.CustomTheme
 import java.time.format.DateTimeFormatter
 import java.time.Instant
 import java.time.ZoneId
+import java.time.LocalDate
 import android.content.res.Configuration
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -103,13 +104,35 @@ fun RegisterScreen(
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            
+
                             // Status messages
                             if (viewModel.isLoading) {
                                 Spacer(modifier = Modifier.height(16.dp))
                                 CircularProgressIndicator()
                             }
-
+                            if (showDatePicker) {
+                                val datePickerState = rememberDatePickerState()
+                                DatePickerDialog(
+                                    onDismissRequest = { showDatePicker = false },
+                                    confirmButton = {
+                                        TextButton(
+                                            onClick = {
+                                                datePickerState.selectedDateMillis?.let { millis ->
+                                                    val selectedDate = Instant.ofEpochMilli(millis)
+                                                        .atZone(ZoneId.systemDefault())
+                                                        .toLocalDate()
+                                                    viewModel.onBirthDateChanged(selectedDate)
+                                                }
+                                                showDatePicker = false
+                                            }
+                                        ) {
+                                            Text("OK")
+                                        }
+                                    }
+                                ) {
+                                    DatePicker(state = datePickerState)
+                                }
+                            }
                             if (uiState.isFetching) {
                                 CircularProgressIndicator()
                             } else {
@@ -241,7 +264,7 @@ fun RegisterScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Spacer(modifier = Modifier.height(16.dp))
-                        
+
                         Text(
                             text = stringResource(id = R.string.register_title),
                             style = MaterialTheme.typography.headlineMedium,
@@ -347,7 +370,8 @@ fun RegisterScreen(
                             )
                         }
 
-                        // Status messages
+
+// Status messages
                         if (viewModel.isLoading || uiState.isFetching) {
                             CircularProgressIndicator()
                         }
@@ -359,7 +383,7 @@ fun RegisterScreen(
                                 modifier = Modifier.padding(top = 8.dp)
                             )
                         }
-                        
+
                         uiState.successMessage?.let { message ->
                             Text(
                                 text = message,
@@ -370,6 +394,30 @@ fun RegisterScreen(
                     }
                 }
             }
+        }
+    }
+
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState()
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val selectedDate = Instant.ofEpochMilli(millis)
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate()
+                            viewModel.onBirthDateChanged(selectedDate)
+                        }
+                        showDatePicker = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
         }
     }
 }

@@ -195,7 +195,9 @@ fun AppNavHost(
                 currentRoute = currentRoute
             ) { paddingValues ->
                 HomeScreen(
-                    modifier = Modifier.padding(paddingValues)
+                    modifier = Modifier.padding(paddingValues),
+                    navController = navController
+
                 )
             }
         }
