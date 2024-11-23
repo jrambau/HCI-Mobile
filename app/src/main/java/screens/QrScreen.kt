@@ -41,7 +41,6 @@ import kotlinx.coroutines.launch
 import viewmodels.QrViewModel
 import java.util.concurrent.Executors
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QRScreen(
@@ -97,45 +96,53 @@ fun QRScreen(
             )
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            if (hasCameraPermission && isCameraActive) {
-                CameraPreview(
-                    onQrCodeScanned = { result ->
-                        scannedResult = result
-                        showTransferDialog = true
-                        isCameraActive = false
-                    }
-                )
-                Box(
-                    modifier = Modifier
-                        .size(200.dp)
-                        .align(Alignment.Center)
-                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
-                )
-            } else {
-                userEmail?.let { email ->
-                    val bitmap = generateQRCode(email)
-                    Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = stringResource(id = R.string.qr_code),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        contentScale = ContentScale.Fit
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                if (hasCameraPermission && isCameraActive) {
+                    CameraPreview(
+                        onQrCodeScanned = { result ->
+                            scannedResult = result
+                            showTransferDialog = true
+                            isCameraActive = false
+                        }
                     )
+                    Box(
+                        modifier = Modifier
+                            .size(200.dp)
+                            .align(Alignment.Center)
+                            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
+                    )
+                } else {
+                    userEmail?.let { email ->
+                        val bitmap = generateQRCode(email)
+                        Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = stringResource(id = R.string.qr_code),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = { isCameraActive = !isCameraActive },
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
@@ -174,8 +181,6 @@ fun QRScreen(
         }
     }
 }
-
-
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -297,7 +302,6 @@ fun TransferDialog(
     }
 }
 
-
 class QRCodeAnalyzer(private val onQrCodeScanned: (String) -> Unit) : ImageAnalysis.Analyzer {
     private val scanner = BarcodeScanning.getClient()
 
@@ -374,3 +378,4 @@ fun CameraPreview(
         modifier = Modifier.fillMaxSize()
     )
 }
+
