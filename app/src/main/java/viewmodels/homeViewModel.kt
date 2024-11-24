@@ -42,10 +42,14 @@ class HomeViewModel(
     var selectedCard by mutableStateOf<NetworkCard?>(null)
     var cards by mutableStateOf<List<NetworkCard>>(emptyList())
     var paymentLinkDetails by mutableStateOf<NetworkPaymentInfo?>(null)
+    private val _showPaymentLinkDetailsDialog = MutableStateFlow(false)
+    val showPaymentLinkDetailsDialog: StateFlow<Boolean> = _showPaymentLinkDetailsDialog.asStateFlow()
 
+    fun showPaymentLinkDetailsDialog(show: Boolean) {
+        _showPaymentLinkDetailsDialog.value = show
+    }
     private val _showTransferConfirmation = MutableStateFlow<TransferConfirmation?>(null)
     val showTransferConfirmation: StateFlow<TransferConfirmation?> = _showTransferConfirmation.asStateFlow()
-
     init {
         if (generalUiState.isAuthenticated) {
             viewModelScope.launch {
@@ -98,8 +102,10 @@ class HomeViewModel(
                     val startOfMonth = date.withDayOfMonth(1)
                     val endOfMonth = date.withDayOfMonth(date.lengthOfMonth())
 
-                    val expensesForMonth = allTransactions.filter { it.timestamp.toLocalDate() in startOfMonth..endOfMonth && it.isCost }
-                        .sumOf { abs(it.amount) }
+                    val expensesForMonth = allTransactions.filter {
+                        it.timestamp.toLocalDate() in startOfMonth..endOfMonth &&
+                                (it.isCost && !it.isInvestment)
+                    }.sumOf { abs(it.amount) }
 
                     MonthlyExpense(
                         month = date.format(DateTimeFormatter.ofPattern("MMM")),
@@ -208,6 +214,7 @@ class HomeViewModel(
                 }
                 fetchWalletInfo()
                 fetchTransactions()
+                fetchMonthlyExpenses()  // Update expenses after transfer
                 generalUiState = generalUiState.copy(successMessage = MyApplication.instance.getString(R.string.transfer_successful))
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error transferring money", e)
@@ -230,6 +237,16 @@ class HomeViewModel(
         }
     }
 
+
+    fun refreshData() {
+        viewModelScope.launch {
+            fetchWalletInfo()
+            fetchTransactions()
+            fetchMonthlyExpenses()
+            fetchCards()
+        }
+    }
+
     fun clearGeneratedPaymentLink() {
         _uiState.update { currentState ->
             currentState.copy(generatedPaymentLink = null)
@@ -240,6 +257,7 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 paymentLinkDetails = paymentRepository.getLinkDetails(linkUuid).payment
+                showPaymentLinkDetailsDialog(true)
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error fetching payment link details", e)
                 generalUiState = generalUiState.copy(error = Error(e.message ?: MyApplication.instance.getString(R.string.error_fetching_payment_link_details)))
@@ -262,6 +280,8 @@ class HomeViewModel(
                 }
                 fetchWalletInfo()
                 fetchTransactions()
+                fetchMonthlyExpenses()
+                showPaymentLinkDetailsDialog(false)
                 generalUiState = generalUiState.copy(successMessage = MyApplication.instance.getString(R.string.payment_successful))
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error paying by link", e)
@@ -317,7 +337,11 @@ class HomeViewModel(
             id = this.id ?: 0,
             description = this.description ?: MyApplication.instance.getString(R.string.unknown_description),
             date = this.createdAt,
-            userName = if (isIncoming) this.payer?.firstName ?: "Unknown" else this.receiver?.firstName ?: "Unknown",
+            userName = if (isIncoming) {
+                "${this.payer?.firstName ?: "Unknown"} ${this.payer?.lastName ?: "Unknown"}"
+            } else {
+                "${this.receiver?.firstName ?: "Unknown"} ${this.receiver?.lastName ?: "Unknown"}"
+            },
             timestamp = timestamp,
             amount = this.amount?.toInt() ?: 0,
             type = this.type ?: "Unknown",

@@ -54,7 +54,7 @@ fun HomeScreen(
     var showPaymentLinkDialog by remember { mutableStateOf(false) }
     var showRechargeDialog by remember { mutableStateOf(false) }
     var selectedTransaction by remember { mutableStateOf<Transaction?>(null) }
-    var showPaymentLinkDetailsDialog by remember { mutableStateOf(false) }
+    val showPaymentLinkDetailsDialog by viewModel.showPaymentLinkDetailsDialog.collectAsState()
     val deviceType = rememberDeviceType()
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -77,7 +77,7 @@ fun HomeScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-    ) { paddingValues ->
+        ) { paddingValues ->
         if (isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -229,18 +229,33 @@ fun HomeScreen(
 
         if (showPaymentLinkDialog) {
             PaymentLinkDialog(
-                onDismiss = { showPaymentLinkDialog = false },
-                onGenerate = { amount, description ->
+                onDismiss = {
+                    showPaymentLinkDialog = false
+                    viewModel.clearGeneratedPaymentLink()
+                },
+                onGenerate = { amount: Double, description: String ->
                     viewModel.generatePaymentLink(amount, description)
                 },
-                onPay = { linkUuid ->
+                onPay = { linkUuid: String ->
                     viewModel.getPaymentLinkDetails(linkUuid)
+                    showPaymentLinkDialog = false
                 },
                 generatedLink = uiState.generatedPaymentLink,
-                context = LocalContext.current
+                context = LocalContext.current,
+                viewModel = viewModel
             )
         }
 
+        if (showPaymentLinkDetailsDialog) {
+            PaymentLinkDetailsDialog(
+                paymentInfo = viewModel.paymentLinkDetails,
+                onDismiss = { viewModel.showPaymentLinkDetailsDialog(false) },
+                onPay = { linkUuid, paymentMethod, cardId ->
+                    viewModel.payByLink(linkUuid, paymentMethod, cardId)
+                },
+                viewModel = viewModel
+            )
+        }
         if (showRechargeDialog) {
             RechargeDialog(
                 onDismiss = { showRechargeDialog = false },
@@ -575,7 +590,7 @@ fun TransactionItem(transaction: Transaction, onClick: () -> Unit) {
             CircleAvatar(transaction.userName.first().toString())
             Column {
                 Text(
-                    text = "${transaction.userName} ${transaction.lastName}",
+                    text = "${transaction.userName}",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -822,7 +837,8 @@ fun PaymentLinkDialog(
     onGenerate: (Double, String) -> Unit,
     onPay: (String) -> Unit,
     generatedLink: String?,
-    context: Context
+    context: Context,
+    viewModel: HomeViewModel
 ) {
     var amount by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
